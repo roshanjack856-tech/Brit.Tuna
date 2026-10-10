@@ -3,7 +3,6 @@
    - Builds the header, right-side mobile menu, footer and the
      floating WhatsApp button (edit them once, here).
    - FAQ accordion, toast messages, cart badge, WhatsApp links.
-   - Home page hero background slideshow.
    Required in every HTML page:
      <div id="site-header"></div> ... <div id="site-footer"></div>
    ========================================================== */
@@ -309,77 +308,6 @@
     }).catch(function () { /* ignore: site works without Supabase */ });
   }
 
-  /* ---------- Home page hero background slideshow ----------
-     Needs <div id="hero-slides"> (and optional <button id="hero-pause">) in index.html.
-     Slides come from BT_CONFIG.heroSlides in config.js. */
-  function setupHeroSlideshow() {
-    var box = document.getElementById('hero-slides');
-    var slides = CFG.heroSlides || [];
-    if (!box || !slides.length) return;
-
-    var interval = Math.max(500, parseInt(CFG.heroSlideInterval, 10) || 1000);
-    var tones = [['#3a3633', '#5b524a'], ['#2b2927', '#4d443b'], ['#463f38', '#6b6054'], ['#242220', '#443c35']];
-
-    box.innerHTML = slides.map(function (s, i) {
-      if (s.image) {
-        var url = encodeURI(s.image).replace(/'/g, '%27');
-        return '<div class="hero-slide" style="background-image:url(\'' + url + '\')"></div>';
-      }
-      var t = tones[i % tones.length];
-      return '<div class="hero-slide hero-slide-placeholder" style="background:linear-gradient(135deg,' + t[0] + ',' + t[1] + ')">' +
-        '<span class="hero-slide-icon">' + (s.icon || '') + '</span>' +
-        '<span class="hero-slide-label">' + U.escapeHtml(s.label || '') + '</span></div>';
-    }).join('');
-
-    // Preload photos so the 1-second changes never flash
-    slides.forEach(function (s) {
-      if (s.image) { var im = new Image(); im.src = s.image; }
-    });
-
-    var els = box.querySelectorAll('.hero-slide');
-    var btn = document.getElementById('hero-pause');
-    var index = 0;
-    var timer = null;
-    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var userPaused = !!reduce;
-
-    function show(i) {
-      els[index].classList.remove('is-active');
-      index = (i + els.length) % els.length;
-      els[index].classList.add('is-active');
-    }
-    function setBtn(playing) {
-      if (!btn) return;
-      btn.textContent = playing ? 'Pause' : 'Play';
-      btn.setAttribute('aria-label', playing ? 'Pause background slideshow' : 'Play background slideshow');
-    }
-    function play() {
-      if (timer || els.length < 2) return;
-      timer = setInterval(function () { show(index + 1); }, interval);
-      setBtn(true);
-    }
-    function pause() {
-      clearInterval(timer);
-      timer = null;
-      setBtn(false);
-    }
-
-    els[0].classList.add('is-active');
-    if (btn) {
-      btn.addEventListener('click', function () {
-        if (timer) { userPaused = true; pause(); }
-        else { userPaused = false; play(); }
-      });
-    }
-    // Stop running while the tab is hidden
-    document.addEventListener('visibilitychange', function () {
-      if (document.hidden) { clearInterval(timer); timer = null; }
-      else if (!userPaused) play();
-    });
-
-    if (userPaused) setBtn(false); else play();
-  }
-
   /* ---------- Boot ---------- */
   function boot() {
     var h = document.getElementById('site-header');
@@ -393,4 +321,24 @@
     document.body.insertAdjacentHTML('beforeend', mobileMenuHTML());
     document.body.insertAdjacentHTML('beforeend', whatsappFloatHTML());
 
-    // Pre-fill header search from
+    // Pre-fill header search from ?q=
+    var q = U.getParam('q');
+    var input = document.getElementById('header-search');
+    if (input && q) input.value = q;
+
+    Array.prototype.forEach.call(document.querySelectorAll('[data-year]'), function (el) {
+      el.textContent = new Date().getFullYear();
+    });
+
+    setupMobileMenu();
+    setupWhatsappLinks();
+    setupFaq();
+    updateCartBadge();
+    updateAccountLink();
+  }
+
+  document.addEventListener('DOMContentLoaded', boot);
+  document.addEventListener('bt:cart-changed', updateCartBadge);
+
+  window.BTUI = { toast: toast, updateCartBadge: updateCartBadge };
+})();
