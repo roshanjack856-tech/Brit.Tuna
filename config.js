@@ -15,6 +15,16 @@ window.BT_CONFIG = {
   // Set to false only after the real backend is connected.
   demoMode: true,
 
+  // Home page background slideshow. Paste your own image URLs into "image".
+  // While "image" is empty, a coloured placeholder slide is shown instead.
+  heroSlides: [
+    { label: 'Peanuts',       icon: '🥜', image: '' },
+    { label: 'Mango Pickles', icon: '🥭', image: '' },
+    { label: 'Rice',          icon: '🍚', image: '' },
+    { label: 'Red Chilli',    icon: '🌶️', image: '' }
+  ],
+  heroSlideInterval: 1000,   // milliseconds between slides (1000 = 1 second)
+
   // DEMO PLACEHOLDERS — leave empty until you have real details.
   // WhatsApp numbers: digits only with country code, e.g. 91XXXXXXXXXX
   contact: {
