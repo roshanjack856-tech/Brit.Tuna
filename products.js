@@ -22,10 +22,10 @@
 
   /* ---------- Categories ---------- */
   var CATEGORIES = [
-    { id: 'peanuts', name: 'Peanuts', icon: '🥜', color: '#f4e3c1', blurb: 'Raw, premium, roasted, skinless and wholesale peanuts.' },
-    { id: 'mango-pickles', name: 'Mango Pickles', icon: '🥭', color: '#fbe3a6', blurb: 'Five mango pickle styles.' },
-    { id: 'red-chilli', name: 'Red Chilli', icon: '🌶️', color: '#f6cbc4', blurb: 'Whole, dried, powder, premium and wholesale chilli.' },
-    { id: 'rice', name: 'Rice', icon: '🍚', color: '#edf0dc', blurb: 'Ponni, idli, basmati, sona masoori, raw and parboiled rice.' }
+    { id: 'peanuts', name: 'Peanuts', icon: '🥜', color: '#e9e0d4', blurb: 'Raw, premium, roasted, skinless and wholesale peanuts.' },
+    { id: 'mango-pickles', name: 'Mango Pickles', icon: '🥭', color: '#d6cabb', blurb: 'Five mango pickle styles.' },
+    { id: 'red-chilli', name: 'Red Chilli', icon: '🌶️', color: '#c9baa8', blurb: 'Whole, dried, powder, premium and wholesale chilli.' },
+    { id: 'rice', name: 'Rice', icon: '🍚', color: '#f1ece4', blurb: 'Ponni, idli, basmati, sona masoori, raw and parboiled rice.' }
   ];
 
   var STOCK_LABELS = {
@@ -202,12 +202,12 @@
   }
   function imageFor(p) {
     if (p.image) return p.image;
-    var cat = getCategory(p.category) || { icon: '🛒', color: '#f3ead4' };
+    var cat = getCategory(p.category) || { icon: '🛒', color: '#e4dacd' };
     var svg =
       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">' +
       '<rect width="400" height="300" fill="' + cat.color + '"/>' +
       '<text x="200" y="165" font-size="110" text-anchor="middle">' + cat.icon + '</text>' +
-      '<text x="200" y="262" font-size="22" text-anchor="middle" fill="#1f5a3a" font-family="sans-serif">' +
+      '<text x="200" y="262" font-size="22" text-anchor="middle" fill="#2b2927" font-family="sans-serif">' +
       xmlEscape(p.name) + '</text></svg>';
     return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
   }
