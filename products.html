@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Products | Brit.Tuna</title>
+  <meta name="description" content="Browse Brit.Tuna products by category: peanuts, mango pickles, red chilli and rice.">
+  <meta name="theme-color" content="#1f5a3a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="responsive.css">
+</head>
+<body data-page="products">
+
+  <div id="site-header"></div>
+
+  <main id="main">
+    <section class="page-hero">
+      <div class="container">
+        <h1 id="products-heading">All Products</h1>
+        <p>Choose a category to see its products.</p>
+      </div>
+    </section>
+
+    <div class="container page-body">
+      <!-- Category tabs (filled by products.js) -->
+      <div class="chip-row" id="category-tabs" role="navigation" aria-label="Product categories"></div>
+
+      <div class="result-bar">
+        <span id="result-count" aria-live="polite"></span>
+        <div class="field" style="min-width:210px">
+          <label for="sort-select">Sort by</label>
+          <select id="sort-select"></select>
+        </div>
+      </div>
+
+      <div class="product-grid" id="product-grid">
+        <p class="loading">Loading products…</p>
+      </div>
+
+      <div class="empty-state" id="empty-state" hidden>
+        <h2>No products in this category yet</h2>
+        <p><a class="link-btn" href="shop.html">Browse the full shop</a></p>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="config.js"></script>
+  <script src="products.js"></script>
+  <script src="cart.js"></script>
+  <script src="supabase.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

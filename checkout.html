@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Checkout | Brit.Tuna</title>
+  <meta name="theme-color" content="#1f5a3a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="responsive.css">
+</head>
+<body data-page="checkout">
+
+  <div id="site-header"></div>
+
+  <main id="main">
+    <section class="page-hero">
+      <div class="container">
+        <h1>Checkout</h1>
+        <p>Enter your delivery details.</p>
+      </div>
+    </section>
+
+    <div class="container page-body">
+      <p class="notice">
+        Demo mode: checkout is a layout only. No order is saved and no payment is taken.
+        Orders and Razorpay payments will work only after a secure backend is connected.
+      </p>
+
+      <div class="checkout-layout" style="margin-top:18px">
+        <form class="form-card" id="checkout-form" novalidate>
+          <h2>Delivery details</h2>
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="name">Full name</label>
+              <input id="name" name="name" type="text" autocomplete="name" required>
+              <span class="error" id="err-name" aria-live="polite"></span>
+            </div>
+            <div class="form-field">
+              <label for="phone">Phone number</label>
+              <input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="10-digit mobile number" required>
+              <span class="error" id="err-phone" aria-live="polite"></span>
+            </div>
+            <div class="form-field full">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" autocomplete="email" required>
+              <span class="error" id="err-email" aria-live="polite"></span>
+            </div>
+            <div class="form-field full">
+              <label for="address">Delivery address</label>
+              <textarea id="address" name="address" rows="3" autocomplete="street-address" required></textarea>
+              <span class="error" id="err-address" aria-live="polite"></span>
+            </div>
+            <div class="form-field">
+              <label for="city">City</label>
+              <input id="city" name="city" type="text" autocomplete="address-level2" required>
+              <span class="error" id="err-city" aria-live="polite"></span>
+            </div>
+            <div class="form-field">
+              <label for="state">State</label>
+              <input id="state" name="state" type="text" autocomplete="address-level1" required>
+              <span class="error" id="err-state" aria-live="polite"></span>
+            </div>
+            <div class="form-field">
+              <label for="pin">PIN code</label>
+              <input id="pin" name="pin" type="text" inputmode="numeric" maxlength="6" autocomplete="postal-code" required>
+              <span class="error" id="err-pin" aria-live="polite"></span>
+            </div>
+          </div>
+
+          <p class="form-note" style="margin-top:14px">Do not enter card details on this page. Online payment will be handled by Razorpay's secure checkout once the backend is connected.</p>
+
+          <button type="submit" class="btn btn-primary btn-block">Place Order (Demo)</button>
+          <div class="notice notice-small" id="demo-result" role="status" hidden></div>
+        </form>
+
+        <!-- Filled by cart.js -->
+        <aside class="checkout-summary" id="checkout-summary" aria-label="Order summary"></aside>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="config.js"></script>
+  <script src="products.js"></script>
+  <script src="cart.js"></script>
+  <script src="supabase.js"></script>
+  <script src="script.js"></script>
+  <script>
+    /* Checkout form validation (frontend demo only).
+       Nothing is sent anywhere. Real validation and order creation
+       must be repeated on the server when the backend is connected. */
+    (function () {
+      var form = document.getElementById('checkout-form');
+      var result = document.getElementById('demo-result');
+
+      var rules = {
+        name: function (v) { return v.trim().length >= 2 ? '' : 'Please enter your full name.'; },
+        phone: function (v) {
+          var d = v.replace(/[\s-]/g, '');
+          return /^(\+?91)?[6-9]\d{9}$/.test(d) ? '' : 'Enter a valid 10-digit Indian mobile number.';
+        },
+        email: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) ? '' : 'Enter a valid email address.'; },
+        address: function (v) { return v.trim().length >= 10 ? '' : 'Please enter your full delivery address.'; },
+        city: function (v) { return v.trim().length >= 2 ? '' : 'Please enter your city.'; },
+        state: function (v) { return v.trim().length >= 2 ? '' : 'Please enter your state.'; },
+        pin: function (v) { return /^[1-9]\d{5}$/.test(v.trim()) ? '' : 'Enter a valid 6-digit PIN code.'; }
+      };
+
+      function check(field) {
+        var input = document.getElementById(field);
+        var msg = rules[field](input.value);
+        document.getElementById('err-' + field).textContent = msg;
+        input.classList.toggle('invalid', !!msg);
+        input.setAttribute('aria-invalid', msg ? 'true' : 'false');
+        return !msg;
+      }
+
+      Object.keys(rules).forEach(function (f) {
+        document.getElementById(f).addEventListener('blur', function () { check(f); });
+      });
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        result.hidden = true;
+        var firstBad = null;
+        Object.keys(rules).forEach(function (f) {
+          if (!check(f) && !firstBad) firstBad = f;
+        });
+        if (firstBad) {
+          document.getElementById(firstBad).focus();
+          return;
+        }
+        if (window.BTCart.count() === 0) {
+          result.textContent = 'Your cart is empty. Add products before checking out.';
+          result.hidden = false;
+          return;
+        }
+        // Demo only: no order is created and no payment is made.
+        result.textContent = 'Demo mode: your details look valid, but no order was saved and no payment was taken. ' +
+          'This button will create a real order only after the backend is connected.';
+        result.hidden = false;
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Account | Brit.Tuna</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#1f5a3a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="responsive.css">
+</head>
+<body data-page="account">
+
+  <!-- Header, mobile menu and WhatsApp button are built by script.js -->
+  <div id="site-header"></div>
+
+  <main id="main">
+
+    <section class="page-hero">
+      <div class="container">
+        <h1>My Account</h1>
+        <p>Your profile and delivery details.</p>
+      </div>
+    </section>
+
+    <div class="container page-body">
+
+      <!-- Shown when Supabase is not configured, or the visitor is not signed in -->
+      <p class="notice notice-error" id="account-notice" role="status" hidden></p>
+
+      <div class="checkout-layout" style="margin-top:18px">
+
+        <!-- PROFILE FORM -->
+        <form class="form-card" id="profile-form" novalidate>
+          <h2>Profile</h2>
+
+          <div class="form-grid">
+            <div class="form-field full">
+              <label for="p-email">Email</label>
+              <input id="p-email" type="email" disabled placeholder="Sign in to see your email">
+            </div>
+            <div class="form-field">
+              <label for="p-name">Full name</label>
+              <input id="p-name" type="text" autocomplete="name" disabled>
+              <span class="error" id="err-p-name" aria-live="polite"></span>
+            </div>
+            <div class="form-field">
+              <label for="p-phone">Phone number</label>
+              <input id="p-phone" type="tel" autocomplete="tel" placeholder="10-digit mobile number" disabled>
+              <span class="error" id="err-p-phone" aria-live="polite"></span>
+            </div>
+            <div class="form-field full">
+              <label for="p-address">Delivery address</label>
+              <textarea id="p-address" rows="3" autocomplete="street-address" disabled></textarea>
+            </div>
+            <div class="form-field">
+              <label for="p-city">City</label>
+              <input id="p-city" type="text" autocomplete="address-level2" disabled>
+            </div>
+            <div class="form-field">
+              <label for="p-state">State</label>
+              <input id="p-state" type="text" autocomplete="address-level1" disabled>
+            </div>
+            <div class="form-field">
+              <label for="p-pin">PIN code</label>
+              <input id="p-pin" type="text" inputmode="numeric" maxlength="6" autocomplete="postal-code" disabled>
+              <span class="error" id="err-p-pin" aria-live="polite"></span>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block" id="save-btn" disabled>Save profile</button>
+          <div class="notice notice-small" id="profile-result" role="status" hidden></div>
+        </form>
+
+        <!-- ACCOUNT MENU -->
+        <aside class="summary-box" aria-label="Account menu">
+          <h2>Account</h2>
+          <ul>
+            <li class="summary-row"><a href="account.html"><strong>Profile</strong></a></li>
+            <li class="summary-row"><a href="orders.html">My orders</a></li>
+            <li class="summary-row"><a href="cart.html">My cart</a></li>
+          </ul>
+          <div id="account-actions" style="margin-top:14px">
+            <a class="btn btn-primary btn-block" href="login.html" id="signin-link">Sign in</a>
+            <a class="btn btn-outline btn-block" href="register.html" id="register-link">Create account</a>
+            <button type="button" class="btn

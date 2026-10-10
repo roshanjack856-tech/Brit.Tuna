@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacy Policy | Brit.Tuna</title>
+  <meta name="description" content="Brit.Tuna privacy policy (starter draft).">
+  <meta name="theme-color" content="#1f5a3a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="responsive.css">
+</head>
+<body data-page="privacy-policy">
+
+  <!-- Header, mobile menu and WhatsApp button are built by script.js -->
+  <div id="site-header"></div>
+
+  <main id="main">
+
+    <section class="page-hero">
+      <div class="container">
+        <h1>Privacy Policy</h1>
+        <p>How Brit.Tuna handles your personal information.</p>
+      </div>
+    </section>
+
+    <div class="container page-body">
+      <div class="prose">
+
+        <p class="notice">
+          <strong>Starter draft, not final.</strong> The business owner must check every section against how the
+          business really works, and should have it reviewed by a qualified professional before publishing.
+          Items marked <strong>(Editable)</strong> need to be confirmed or replaced.
+        </p>
+
+        <p><strong>Last updated:</strong> (Editable: add the date)</p>
+
+        <h2>1. Who we are</h2>
+        <p>
+          This website is operated by Brit.Tuna. (Editable: add your registered business name, address and
+          other legal details.) You can contact us using the details on our <a href="contact.html"><u>Contact page</u></a>
+          or at <span id="policy-email">the email address shown on the Contact page once added</span>.
+        </p>
+
+        <h2>2. Information we may collect</h2>
+        <ul>
+          <li><strong>Information you give us:</strong> name, phone number, email address, delivery address, and the messages or enquiries you send us.</li>
+          <li><strong>Account information:</strong> if you create an account, your email address and profile details. Passwords are handled by our authentication provider and are not stored on this website.</li>
+          <li><strong>Order information:</strong> the products, pack sizes and quantities you order, and order and payment status.</li>
+          <li><strong>Technical information:</strong> basic information such as browser type and pages visited, if analytics or similar tools are added. (Editable: list the tools you really use, or delete this line.)</li>
+        </ul>
+
+        <h2>3. Information stored in your browser</h2>
+        <p>
+          Your shopping cart is saved in your own browser (local storage) so it stays when you move between pages.
+          It contains product and quantity details only. It is not sent to us until a real order system is connected.
+        </p>
+
+        <h2>4. How we use your information</h2>
+        <ul>
+          <li>To answer your questions and enquiries.</li>
+          <li>To create and manage your account.</li>
+          <li>To process, deliver and support your orders.</li>
+          <li>To keep the website secure and working properly.</li>
+          <li>To meet legal and accounting requirements. (Editable.)</li>
+        </ul>
+
+        <h2>5. Payments</h2>
+        <p>
+          We do not collect or store your card details on this website. When online payment is enabled, payments are
+          planned to be handled by a payment provider (Razorpay) through its own secure payment window.
+          (Editable: confirm your payment provider and what data it receives.)
+        </p>
+
+        <h2>6. Who we share information with</h2>
+        <p>We do not sell your personal information. We may share it only with service providers needed to run the business, for example:</p>
+        <ul>
+          <li>Our backend and database provider (planned: Supabase).</li>
+          <li>Our payment provider (planned: Razorpay).</li>
+          <li>Delivery or courier partners. (Editable: add the partners you use.)</li>
+          <li>Authorities, where the law requires it.</li>
+        </ul>
+
+        <h2>7. WhatsApp and phone enquiries</h2>
+        <p>
+          If you contact us on WhatsApp or by phone, we receive the details you share, such as your number and message.
+          WhatsApp is operated by a third party under its own privacy terms. A WhatsApp message is an enquiry and is not a confirmed order.
+        </p>
+
+        <h2>8. How long we keep information</h2>
+        <p>(Editable: state how long you keep order, account and enquiry records, and why.)</p>
+
+        <h2>9. Your choices and rights</h2>
+        <p>
+          You can ask us to access, correct or delete the personal information we hold about you, subject to applicable
+          law and our record-keeping duties. To make a request, contact us using the details above.
+          (Editable: add the process you will follow and the response time you can honestly commit to.)
+        </p>
+
+        <h2>10. Security</h2>
+        <p>
+          We take reasonable steps to protect your information. No website can guarantee complete security.
+          (Editable: describe your real security practices only.)
+        </p>
+
+        <h2>11. Children</h2>
+        <p>This website is not intended for children. (Editable: confirm.)</p>
+
+        <h2>12. Changes to this policy</h2>
+        <p>We may update this policy from time to time. The "Last updated" date at the top shows when it last changed.</p>
+
+        <h2>13. Contact</h2>
+        <p>Questions about this policy? Please use our <a href="contact.html"><u>Contact page</u></a>.</p>
+
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <!-- Load order matters: config → products → cart → supabase → script -->
+  <script src="config.js"></script>
+  <script src="products.js"></script>
+  <script src="cart.js"></script>
+  <script src="supabase.js"></script>
+  <script src="script.js"></script>
+
+  <script>
+    // Show the business email from config.js, only if it has been set
+    (function () {
+      var email = (window.BT_CONFIG.contact || {}).email;
+      var el = document.getElementById('policy-email');
+      if (email && el) {
+        var safe = window.BTUtil.escapeHtml(email);
+        el.innerHTML = '<a href="mailto:' + safe + '"><u>' + safe + '</u></a>';
+      }
+    })();
+  </script>
+</body>
+</html>

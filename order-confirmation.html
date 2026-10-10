@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Order Confirmation | Brit.Tuna</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#1f5a3a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="responsive.css">
+</head>
+<body data-page="order-confirmation">
+
+  <!-- Header, mobile menu and WhatsApp button are built by script.js -->
+  <div id="site-header"></div>
+
+  <main id="main">
+
+    <section class="page-hero">
+      <div class="container">
+        <h1>Order Confirmation</h1>
+        <p>Your order status, as recorded by our system.</p>
+      </div>
+    </section>
+
+    <div class="container page-body">
+      <div class="prose">
+
+        <!-- Status box: always starts neutral. It is filled only from real backend data. -->
+        <div class="empty-state" id="confirm-state" role="status" aria-live="polite">
+          <h2>Checking your order…</h2>
+          <p>Please wait a moment.</p>
+        </div>
+
+        <!-- Order details (shown only after the backend returns the order) -->
+        <div id="order-details" style="margin-top:24px" hidden>
+          <div class="order-card">
+            <h2 style="margin-top:0">Order summary</h2>
+            <div id="order-meta"></div>
+            <ul class="summary-list" id="order-items" style="margin-top:12px"></ul>
+            <div id="order-totals" style="margin-top:12px"></div>
+          </div>
+          <div class="order-card">
+            <h2 style="margin-top:0">Delivery details</h2>
+            <div id="order-delivery"></div>
+          </div>
+        </div>
+
+        <div class="hero-actions" style="margin-top:24px">
+          <a class="btn btn-primary" href="orders.html">My orders</a>
+          <a class="btn btn-outline" href="shop.html">Continue shopping</a>
+          <a class="btn btn-whatsapp" data-whatsapp data-message="Hello Brit.Tuna, I have a question about my order." href="#">Ask on WhatsApp</a>
+        </div>
+
+        <p class="form-note" style="margin-top:18px">
+          This page never trusts the web address or the browser for payment status. It shows what the secure backend has recorded.
+          A WhatsApp message is not a confirmed order or proof of payment.
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <!-- Load order matters: config → products → cart → supabase → script -->
+  <script src="config.js"></script>
+  <script src="products.js"></script>
+  <script src="cart.js"></script>
+  <script src="supabase.js"></script>
+  <script src="script.js"></script>
+
+  <script>
+    /* ==========================================================
+       Order confirmation (ready for Supabase).
+
+       URL: order-confirmation.html?order=<order id>
+
+       Expected Supabase tables (create them later, with Row Level
+       Security so a customer can read only their own orders):
+
+       orders:      id (uuid), order_number, user_id, status,
+                    payment_status, currency, subtotal, total_amount,
+                    created_at, shipping_name, shipping_phone,
+                    shipping_address, shipping_city, shipping_state,
+                    shipping_pin
+       order_items: id, order_id, product_name, pack_label,
+                    quantity, unit_price, line_total
+
+       payment_status must be set to 'paid' ONLY by your secure
+       backend after Razorpay payment verification. This page shows
+       "confirmed" only when the database says payment_status = 'paid'.
+       ========================================================== */
+    (function () {
+      var U = window.BTUtil;
+      var $ = function (id) { return document.getElementById(id); };
+      var stateBox = $('confirm-state');
+      var details = $('order-details');
+
+      function setState(title, text, extraHtml) {
+        stateBox.innerHTML = '<h2>' + U.escapeHtml(title) + '</h2><p>' + U.escapeHtml(text) + '</p>' + (extraHtml || '');
+      }
+
+      function row(label, value) {
+        return '<div class="summary-row"><span>' + U.escapeHtml(label) + '</span><span>' + value + '</span></div>';
+      }
+
+      function renderOrder(o) {
+        var items = o.order_items || [];
+        $('order-meta').innerHTML =
+          row('Order number', U.escapeHtml(o.order_number || o.id)) +
+          row('Placed on', o.created_at ? U.escapeHtml(new Date(o.created_at).toLocaleString(window.BT_CONFIG.locale)) : '-') +
+          row('Order status', U.escapeHtml(o.status || '-')) +
+          row('Payment status', U.escapeHtml(o.payment_status || '-'));
+
+        $('order-items').innerHTML = items.map(function (i) {
+          return '<li><span>' + U.escapeHtml(i.product_name) +
+            (i.pack_label ? ' (' + U.escapeHtml(i.pack_label) + ')' : '') +
+            ' × ' + U.escapeHtml(i.quantity) + '</span><span>' + U.formatINR(i.line_total) + '</span></li>';
+        }).join('');
+
+        $('order-totals').innerHTML =
+          row('Subtotal', U.formatINR(o.subtotal != null ? o.subtotal : o.total_amount)) +
+          '<div class="summary-row summary-total"><span>Total</span><span>' + U.formatINR(o.total_amount) + '</span></div>';
+
+        $('order-delivery').innerHTML =
+          row('Name', U.escapeHtml(o.shipping_name || '-')) +
+          row('Phone', U.escapeHtml(o.shipping_phone || '-')) +
+          row('Address', U.escapeHtml([o.shipping_address, o.shipping_city, o.shipping_state, o.shipping_pin].filter(Boolean).join(', ') || '-'));
+
+        details.hidden = false;
+      }
+
+      function showStatus(o) {
+        var refresh = '<p><button type="button" class="btn btn-outline" onclick="window.location.reload()">Refresh status</button></p>';
+        switch (o.payment_status) {
+          case 'paid':
+            setState('Payment verified. Order confirmed.',
+              'Thank you! Our system has verified your payment and recorded your order.');
+            // The order is now saved by the backend, so the browser cart can be cleared.
+            if (window.BTCart) window.BTCart.clear();
+            break;
+          case 'failed':
+            setState('Payment failed', 'Your payment was not completed and no money should be taken. You can try again from your cart.');
+            break;
+          case 'cancelled':
+            setState('Payment cancelled', 'This payment was cancelled. Your order has not been confirmed.');
+            break;
+          default:
+            setState('Payment not confirmed yet',
+              'We have your order, but payment has not been verified. If you just paid, wait a minute and refresh. Please do not pay twice.',
+              refresh);
+        }
+      }
+
+      /* ----- Start ----- */
+      var orderId = U.getParam('order');
+
+      if (!orderId || !/^[A-Za-z0-9_-]{6,64}$/.test(orderId)) {
+        setState('No order to show',
+          'Open this page from the order link you receive after checkout. Online ordering is not connected yet, so no orders exist right now.');
+        return;
+      }
+
+      if (!window.BTSupabase.isConfigured()) {
+        setState('Order cannot be shown',
+          'Orders are not available yet because the backend (Supabase) is not connected. Nothing has been ordered or paid through this website.');
+        return;
+      }
+
+      window.BTSupabase.getClient().then(function (client) {
+        return client.auth.getSession().then(function (res) {
+          var session = res && res.data ? res.data.session : null;
+          if (!session) {
+            setState('Please sign in', 'Sign in to view your order.',
+              '<p><a class="btn btn-primary" href="login.html">Sign in</a></p>');
+            return null;
+          }
+          // Row Level Security makes sure customers can only read their own orders.
+          return client.from('orders').select('*, order_items(*)').eq('id', orderId).maybeSingle();
+        });
+      }).then(function (r) {
+        if (!r) return;
+        if (r.error) {
+          setState('Could not load the order', 'Something went wrong while loading your order. Please try again later.');
+          return;
+        }
+        if (!r.data) {
+          setState('Order not found', 'We could not find that order on your account.');
+          return;
+        }
+        renderOrder(r.data);
+        showStatus(r.data);
+      }).catch(function (err) {
+        setState('Could not load the order', err.message || 'Something went wrong. Please try again.');
+      });
+    })();
+  </script>
+</body>
+</html>

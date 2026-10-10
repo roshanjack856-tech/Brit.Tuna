@@ -1,0 +1,73 @@
+/* ==========================================================
+   responsive.css — tablet and mobile rules.
+   Desktop layout (above 1024px) lives in style.css.
+   ========================================================== */
+
+/* Large tablets */
+@media (max-width: 1024px) {
+  .product-grid, .cat-grid { grid-template-columns: repeat(3, 1fr); }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .shop-toolbar { grid-template-columns: 1fr 1fr 1fr; }
+  .shop-toolbar .field-search { grid-column: 1 / -1; }
+  .cart-layout, .checkout-layout { grid-template-columns: 1fr 320px; }
+}
+
+/* Tablets and below: desktop nav is replaced by the slide-out menu */
+@media (max-width: 900px) {
+  .nav-row { display: none; }
+  .desktop-only { display: none !important; }
+  .icon-text { display: none; }
+  .hamburger { display: inline-flex; }
+  .header-actions { gap: 16px; }
+
+  .hero { padding: 44px 0; }
+  .hero-inner { grid-template-columns: 1fr; }
+  .product-grid, .cat-grid { grid-template-columns: repeat(2, 1fr); }
+  .pd-grid { grid-template-columns: 1fr; gap: 24px; }
+  .cart-layout, .checkout-layout { grid-template-columns: 1fr; }
+  .summary-box, .cart-summary, .checkout-summary { position: static; }
+  .section { padding: 42px 0; }
+}
+
+/* Phones */
+@media (max-width: 640px) {
+  .container { padding: 0 14px; }
+  .topbar { font-size: 0.72rem; }
+
+  /* Logo + cart + hamburger on the first row, search bar on its own row */
+  .header-main { flex-wrap: wrap; gap: 10px 12px; padding-top: 10px; padding-bottom: 10px; min-height: 0; }
+  .logo { font-size: 1.35rem; }
+  .search-pill { order: 3; flex: 1 1 100%; max-width: none; }
+  .search-label { display: none; }
+  .search-pill button { padding: 9px 14px; }
+
+  .product-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .cat-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .cat-card { padding: 18px 14px; }
+  .pc-body { padding: 10px 12px 12px; }
+  .pc-short, .pc-packs { display: none; }
+  .pc-actions { flex-direction: column; }
+  .pc-name { font-size: 0.98rem; }
+
+  .shop-toolbar { grid-template-columns: 1fr 1fr; padding: 12px; }
+  .shop-toolbar .field-search { grid-column: 1 / -1; }
+
+  .cart-line { grid-template-columns: 72px 1fr; gap: 10px 12px; }
+  .cart-line .qty { grid-column: 1 / 2; justify-self: start; }
+  .cart-line .cart-total { grid-column: 2 / 3; text-align: right; align-self: center; }
+  .cart-img img { width: 72px; height: 54px; object-fit: cover; }
+
+  .form-grid { grid-template-columns: 1fr; }
+  .form-card { padding: 18px; }
+  .spec-table th { width: 120px; }
+  .pd-tabs { padding: 16px; }
+  .banner { padding: 24px; }
+  .footer-grid { grid-template-columns: 1fr; gap: 24px; }
+  .wa-float { right: 14px; bottom: 14px; width: 52px; height: 52px; }
+  .toast { bottom: 80px; }
+}
+
+/* Very small phones: single column products */
+@media (max-width: 380px) {
+  .product-grid { grid-template-columns: 1fr; }
+}

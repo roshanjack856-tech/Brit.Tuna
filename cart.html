@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Your Cart | Brit.Tuna</title>
+  <meta name="theme-color" content="#1f5a3a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="responsive.css">
+</head>
+<body data-page="cart">
+
+  <div id="site-header"></div>
+
+  <main id="main">
+    <section class="page-hero">
+      <div class="container">
+        <h1>Your Cart</h1>
+        <p>Review your items, pack sizes and quantities.</p>
+      </div>
+    </section>
+
+    <div class="container page-body">
+      <p class="notice">Demo mode: this cart is saved only in your browser. Prices are sample data, and no order is placed from this page.</p>
+
+      <!-- Shown when the cart has no items -->
+      <div class="empty-state" id="cart-empty" style="margin-top:18px" hidden>
+        <h2>Your cart is empty</h2>
+        <p>Add some products to get started.</p>
+        <a class="btn btn-primary" href="shop.html">Start Shopping</a>
+      </div>
+
+      <!-- Shown when the cart has items (filled by cart.js) -->
+      <div class="cart-layout" id="cart-content" style="margin-top:18px" hidden>
+        <div>
+          <div id="cart-items"></div>
+          <button type="button" class="link-btn" id="clear-cart">Clear cart</button>
+        </div>
+        <aside class="cart-summary" id="cart-summary" aria-label="Order summary"></aside>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="config.js"></script>
+  <script src="products.js"></script>
+  <script src="cart.js"></script>
+  <script src="supabase.js"></script>
+  <script src="script.js"></script>
+  <script>
+    // Clear-cart button (cart page only)
+    document.getElementById('clear-cart').addEventListener('click', function () {
+      if (window.confirm('Remove all items from your cart?')) window.BTCart.clear();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shop | Brit.Tuna</title>
+  <meta name="description" content="Shop all Brit.Tuna peanuts, mango pickles, red chilli and rice.">
+  <meta name="theme-color" content="#1f5a3a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="responsive.css">
+</head>
+<body data-page="shop">
+
+  <div id="site-header"></div>
+
+  <main id="main">
+    <section class="page-hero">
+      <div class="container">
+        <h1>Shop</h1>
+        <p>Search, filter and sort all available products.</p>
+      </div>
+    </section>
+
+    <div class="container page-body">
+      <p class="notice">Demo mode: product prices and stock shown here are sample data and must be replaced before publishing.</p>
+
+      <!-- Filters (the select options are filled in by products.js) -->
+      <div class="shop-toolbar" style="margin-top:18px">
+        <div class="field field-search">
+          <label for="search-input">Search products</label>
+          <input id="search-input" type="search" placeholder="e.g. basmati, garlic pickle" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="category-filter">Category</label>
+          <select id="category-filter"></select>
+        </div>
+        <div class="field">
+          <label for="price-filter">Price</label>
+          <select id="price-filter"></select>
+        </div>
+        <div class="field">
+          <label for="sort-select">Sort by</label>
+          <select id="sort-select"></select>
+        </div>
+        <button type="button" class="btn btn-outline" id="reset-filters">Reset</button>
+      </div>
+
+      <div class="result-bar">
+        <span id="result-count" aria-live="polite"></span>
+      </div>
+
+      <div class="product-grid" id="product-grid">
+        <p class="loading">Loading products…</p>
+      </div>
+
+      <div class="empty-state" id="empty-state" hidden>
+        <h2>No products found</h2>
+        <p>Try a different search word, category or price range.</p>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="config.js"></script>
+  <script src="products.js"></script>
+  <script src="cart.js"></script>
+  <script src="supabase.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

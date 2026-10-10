@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Brit.Tuna | Peanuts, Mango Pickles, Red Chilli &amp; Rice</title>
+  <meta name="description" content="Shop peanuts, mango pickles, red chilli and rice from Brit.Tuna. Retail and bulk enquiries welcome.">
+  <meta name="theme-color" content="#1f5a3a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="responsive.css">
+</head>
+<body data-page="home">
+
+  <!-- Header, mobile menu and WhatsApp button are built by script.js -->
+  <div id="site-header"></div>
+
+  <main id="main">
+
+    <!-- HERO (edit the headline here) -->
+    <section class="hero">
+      <div class="container hero-inner">
+        <div>
+          <span class="eyebrow">Retail &amp; wholesale foods</span>
+          <h1>Quality Foods for Every Kitchen</h1>
+          <p>Shop peanuts, mango pickles, red chilli and rice. Retail packs and bulk enquiries welcome.</p>
+          <div class="hero-actions">
+            <a class="btn btn-red" href="shop.html">Shop Now</a>
+            <a class="btn btn-light" href="products.html">Explore Products</a>
+          </div>
+        </div>
+        <div class="hero-tiles" aria-label="Product categories">
+          <a class="hero-tile" style="--tile:#f4e3c1" href="products.html?category=peanuts"><span>🥜</span>Peanuts</a>
+          <a class="hero-tile" style="--tile:#fbe3a6" href="products.html?category=mango-pickles"><span>🥭</span>Mango Pickles</a>
+          <a class="hero-tile" style="--tile:#f6cbc4" href="products.html?category=red-chilli"><span>🌶️</span>Red Chilli</a>
+          <a class="hero-tile" style="--tile:#edf0dc" href="products.html?category=rice"><span>🍚</span>Rice</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURED CATEGORIES (filled by products.js) -->
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Shop by Category</h2>
+            <p class="section-sub">Pick a category to see all available products.</p>
+          </div>
+        </div>
+        <div class="cat-grid" id="category-grid"></div>
+      </div>
+    </section>
+
+    <!-- BESTSELLERS (filled by products.js) -->
+    <section class="section section-alt">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Bestselling Products</h2>
+            <p class="section-sub">Sample listing. Prices and stock are demo data.</p>
+          </div>
+          <a class="btn btn-outline" href="shop.html">View all products</a>
+        </div>
+        <div class="product-grid" id="bestsellers-grid">
+          <p class="loading">Loading products…</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHY CHOOSE (edit these points to match your real business) -->
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Why Choose Brit.Tuna</h2>
+            <p class="section-sub">Edit these points so they describe your real business.</p>
+          </div>
+        </div>
+        <div class="card-grid">
+          <div class="info-card"><span class="ic-icon" aria-hidden="true">🛒</span><h3>Simple shopping</h3><p>Browse by category, pick a pack size and add to cart in a few clicks.</p></div>
+          <div class="info-card"><span class="ic-icon" aria-hidden="true">₹</span><h3>Clear prices in rupees</h3><p>Every pack size shows its price in Indian Rupees.</p></div>
+          <div class="info-card"><span class="ic-icon" aria-hidden="true">📦</span><h3>Retail and bulk</h3><p>Choose everyday packs, or contact us for wholesale and bulk quantities.</p></div>
+          <div class="info-card"><span class="ic-icon" aria-hidden="true">💬</span><h3>Ask on WhatsApp</h3><p>Message us with questions about any product before you order.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHOLESALE ENQUIRY -->
+    <section class="section" style="padding-top:0">
+      <div class="container">
+        <div class="banner">
+          <div>
+            <h2>Wholesale &amp; Bulk Enquiries</h2>
+            <p>Shops, caterers and food businesses can ask about bulk supply.</p>
+          </div>
+          <div class="hero-actions" style="margin:0">
+            <a class="btn btn-light" href="contact.html">Send an enquiry</a>
+            <a class="btn btn-whatsapp" data-whatsapp data-message="Hello Brit.Tuna, I have a wholesale / bulk enquiry." href="#">WhatsApp us</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ PREVIEW (edit answers once you confirm your policies) -->
+    <section class="section section-alt">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <p class="section-sub">Answers marked as editable must be confirmed by the business owner.</p>
+          </div>
+          <a class="btn btn-outline" href="faq.html">See all FAQs</a>
+        </div>
+        <div class="prose">
+          <div class="faq-item">
+            <button type="button" class="faq-q" aria-expanded="false">How do I place an order?</button>
+            <div class="faq-a" hidden>Add products to your cart and go to checkout. Online ordering is not connected yet, so for now please use the WhatsApp button on any product to enquire.</div>
+          </div>
+          <div class="faq-item">
+            <button type="button" class="faq-q" aria-expanded="false">Do you accept bulk or wholesale orders?</button>
+            <div class="faq-a" hidden>Wholesale products are listed in the shop. Please contact us for current bulk rates and availability. (Editable: confirm minimum quantities.)</div>
+          </div>
+          <div class="faq-item">
+            <button type="button" class="faq-q" aria-expanded="false">What are the shipping and delivery terms?</button>
+            <div class="faq-a" hidden>Shipping areas, charges and delivery times are not confirmed yet. (Editable: add your real shipping policy.)</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHATSAPP CTA -->
+    <section class="section">
+      <div class="container">
+        <div class="banner banner-green">
+          <div>
+            <h2>Questions? Chat with us on WhatsApp</h2>
+            <p>Ask about products, pack sizes or bulk quantities. A WhatsApp message is an enquiry, not a confirmed order.</p>
+          </div>
+          <a class="btn btn-whatsapp" data-whatsapp data-message="Hello Brit.Tuna, I have a question." href="#">Chat on WhatsApp</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="site-footer"></div>
+
+  <!-- Load order matters: config → products → cart → supabase → script -->
+  <script src="config.js"></script>
+  <script src="products.js"></script>
+  <script src="cart.js"></script>
+  <script src="supabase.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
