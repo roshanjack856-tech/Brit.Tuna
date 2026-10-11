@@ -39,7 +39,7 @@ window.BT_CONFIG = {
 
   // Supabase (public/publishable key only). Leave empty until configured.
   supabase: {
-    url: 'https://supabase.com/dashboard/project/wrzxlmviwpeiggzgycpl/settings/api-keys',      // https://supabase.com/dashboard/project/wrzxlmviwpeiggzgycpl/settings/api-keys
+    url: 'https://wrzxlmviwpeiggzgycpl.supabase.co',      // https://supabase.com/dashboard/project/wrzxlmviwpeiggzgycpl/settings/api-keys
     anonKey: 'sb_publishable_js68PKxlcJMbq_BqBRHrpQ_cgCig1es'   // sb_publishable_js68PKxlcJMbq_BqBRHrpQ_cgCig1es
   }
 };
