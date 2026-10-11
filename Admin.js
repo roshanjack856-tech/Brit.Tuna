@@ -1,63 +1,61 @@
 /* ==========================================================================
    BRIT.TUNA ADMIN — admin.js (shared by admin-login.html and admin.html)
 
+   Connected to your site:
+   • Reads the Supabase URL + anon key from config.js  (window.BT_CONFIG.supabase)
+   • Uses supabase.js (window.BTSupabase) — the same client/session as login.html
+   • Load order on both admin pages:  config.js → supabase.js → admin.js
+
    MODES
-   • Supabase mode: fill in supabaseUrl + supabaseAnonKey below. Login uses
-     Supabase Auth (email + password); products live in your database and
-     images are uploaded to a Supabase Storage bucket. See the SQL at the bottom.
-   • Local mode (keys left blank): login with `localPin`; products and images
-     are stored in this browser only. A PIN in front-end code is NOT real
-     security — it is for testing. Use Supabase mode for production.
+   • Supabase mode (config.js has url + anonKey): sign in with a Supabase Auth
+     account. ONLY emails listed in the `admins` table get in — customers who
+     registered on register.html are rejected. Run the SQL at the bottom once.
+   • Local test mode (config.js keys empty): PIN login, products stored in this
+     browser only. A PIN in front-end code is NOT real security.
    ========================================================================== */
 (function () {
   "use strict";
 
   /* ------------------------------ CONFIG ------------------------------ */
   var CONFIG = {
-    supabaseUrl: "",          // e.g. "https://abcdxyz.supabase.co"
-    supabaseAnonKey: "",      // Project Settings → API → anon public key
     productsTable: "products",
-    imageBucket: "product-images",   // public Storage bucket
-    localPin: "change-me-123",
-    currency: "₹",
-    categories: ["Pickles", "Peanuts", "Rice", "Red Chilli"],   // suggestions only; any text allowed
+    imageBucket: "product-images",      // public Storage bucket
+    localPin: "change-me-123",          // local test mode only
+    currency: (window.BT_CONFIG && window.BT_CONFIG.currencySymbol) || "₹",
+    categories: ["Peanuts", "Mango Pickles", "Red Chilli", "Rice"],   // suggestions only; any text allowed
     maxImageMB: 5,
     loginPage: "admin-login.html",
     dashboardPage: "admin.html"
   };
-  try {   // optional: reuse keys from an existing js/config.js that defines window.SITE_CONFIG.supabase
-    var ext = window.SITE_CONFIG && window.SITE_CONFIG.supabase;
-    if (!CONFIG.supabaseUrl && ext && ext.url) { CONFIG.supabaseUrl = ext.url; CONFIG.supabaseAnonKey = ext.anonKey || ""; }
-  } catch (e) { /* ignore */ }
 
-  var SB_ON = !!(CONFIG.supabaseUrl && CONFIG.supabaseAnonKey && !/YOUR-/i.test(CONFIG.supabaseUrl + CONFIG.supabaseAnonKey));
-  var KEY_SESSION = "admin_session";
+  var SB_ON = !!(window.BTSupabase && window.BTSupabase.isConfigured && window.BTSupabase.isConfigured());
+  var KEY_LOCAL_SESSION = "bt_admin_local_session";
   var KEY_PRODUCTS = "brittuna_products";
+  var client = null;
 
   /* ------------------------------ helpers ------------------------------ */
   function $(s, r) { return (r || document).querySelector(s); }
   function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
   function money(n) { return CONFIG.currency + Number(n || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 }); }
-  function enc(s) { return encodeURIComponent(s); }
   function jget(store, key, fb) { try { var v = store.getItem(key); return v == null ? fb : JSON.parse(v); } catch (e) { return fb; } }
   function jset(store, key, val) { try { store.setItem(key, JSON.stringify(val)); return true; } catch (e) { return false; } }
   function newId() { return "p-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
   function safeUrl(u) { return /^https?:\/\//i.test(String(u || "").trim()) ? String(u).trim() : ""; }
   function safeImg(u) { u = String(u || "").trim(); return /^(https?:\/\/|data:image\/(jpeg|png|webp|gif);base64,|[\w\-./]+$)/i.test(u) ? u : ""; }
 
-  function getSession() {
-    var s = jget(sessionStorage, KEY_SESSION, null);
-    if (!s) return null;
-    if (s.exp && Date.now() > s.exp) { clearSession(); return null; }
+  function localSession() {
+    var s = jget(sessionStorage, KEY_LOCAL_SESSION, null);
+    if (s && s.exp && Date.now() > s.exp) { try { sessionStorage.removeItem(KEY_LOCAL_SESSION); } catch (e) { /* ignore */ } return null; }
     return s;
   }
-  function setSession(s) { jset(sessionStorage, KEY_SESSION, s); }
-  function clearSession() { try { sessionStorage.removeItem(KEY_SESSION); } catch (e) { /* ignore */ } }
   function goLogin(msg) {
-    clearSession();
-    if (msg) { try { sessionStorage.setItem("admin_msg", msg); } catch (e) { /* ignore */ } }
+    if (msg) { try { sessionStorage.setItem("bt_admin_msg", msg); } catch (e) { /* ignore */ } }
     location.replace(CONFIG.loginPage);
+  }
+  function signOutThen(fn) {
+    try { sessionStorage.removeItem(KEY_LOCAL_SESSION); } catch (e) { /* ignore */ }
+    if (SB_ON) { BTSupabase.getClient().then(function (c) { return c.auth.signOut(); }).then(fn, fn); } else fn();
   }
   function toast(msg, type) {
     var wrap = $("#toasts");
@@ -69,61 +67,48 @@
     setTimeout(function () { t.remove(); }, 3200);
   }
 
-  /* ------------------------------ Supabase REST ------------------------------ */
-  function authHeaders(extra) {
-    var s = getSession();
-    var h = { apikey: CONFIG.supabaseAnonKey, Authorization: "Bearer " + ((s && s.token) || CONFIG.supabaseAnonKey) };
-    for (var k in extra) h[k] = extra[k];
-    return h;
-  }
-  function parseRes(res) {
-    return res.text().then(function (text) {
-      var data = null;
-      try { data = text ? JSON.parse(text) : null; } catch (e) { data = text; }
-      if (!res.ok) {
-        var err = new Error((data && (data.message || data.error || data.hint)) || res.statusText || "Request failed");
-        err.status = res.status || (data && Number(data.statusCode)) || 0; throw err;
-      }
-      return data;
-    });
-  }
-  function sb(path, opts) {
-    opts = opts || {};
-    var h = authHeaders({ "Content-Type": "application/json" });
-    if (opts.prefer) h.Prefer = opts.prefer;
-    return fetch(CONFIG.supabaseUrl.replace(/\/+$/, "") + "/rest/v1/" + path, { method: opts.method || "GET", headers: h, body: opts.body === undefined ? undefined : JSON.stringify(opts.body) }).then(parseRes);
-  }
-  function uploadToStorage(file) {
-    var ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 5) || "jpg";
-    var path = Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8) + "." + ext;
-    var base = CONFIG.supabaseUrl.replace(/\/+$/, "");
-    return fetch(base + "/storage/v1/object/" + CONFIG.imageBucket + "/" + path, {
-      method: "POST", headers: authHeaders({ "Content-Type": file.type || "application/octet-stream", "x-upsert": "false" }), body: file
-    }).then(parseRes).then(function () { return base + "/storage/v1/object/public/" + CONFIG.imageBucket + "/" + path; });
+  /* supabase-js returns {data, error}; turn errors into thrown Errors */
+  function un(res) {
+    if (res && res.error) { var e = new Error(res.error.message || "Request failed"); e.status = res.status || res.error.status || 0; e.code = res.error.code; throw e; }
+    return res ? res.data : null;
   }
   function onErr(err, what) {
-    if (err && (err.status === 401 || /jwt/i.test(err.message || ""))) { goLogin("Your session expired. Please sign in again."); return; }
-    if (err && (err.status === 403 || /row-level security|policy/i.test(err.message || ""))) { toast("Not allowed — this account lacks admin permission (check RLS policies).", "error"); return; }
-    toast((what || "Something went wrong") + (err && err.message ? ": " + err.message : ""), "error");
+    var m = (err && err.message) || "";
+    if (err && (err.status === 401 || /jwt|not authenticated/i.test(m))) { signOutThen(function () { goLogin("Your session expired. Please sign in again."); }); return; }
+    if (err && (err.status === 403 || err.code === "42501" || /row-level security|policy|permission/i.test(m))) { toast("Not allowed — this account is not an admin (check the admins table and RLS policies).", "error"); return; }
+    toast((what || "Something went wrong") + (m ? ": " + m : ""), "error");
+  }
+  function checkAdmin(c) {
+    return c.rpc("is_admin").then(function (r) {
+      if (r.error) { var e = new Error("Admin check failed: " + r.error.message + " (run the SQL setup at the bottom of admin.js)"); throw e; }
+      return r.data === true;
+    });
   }
 
   /* ============================== LOGIN PAGE ============================== */
   function initLogin() {
-    if (getSession()) { location.replace(CONFIG.dashboardPage); return; }
     var form = $("#loginForm"), alertBox = $("#loginAlert"), email = $("#email"), pass = $("#password"), btn = $("#loginBtn");
+    function showAlert(m) { alertBox.textContent = m; alertBox.classList.remove("hidden"); }
+    function setInvalid(input, bad) { input.closest(".field").classList.toggle("invalid", bad); }
+
+    var pending = null;
+    try { pending = sessionStorage.getItem("bt_admin_msg"); sessionStorage.removeItem("bt_admin_msg"); } catch (e) { /* ignore */ }
+    if (pending) showAlert(pending);
 
     if (!SB_ON) {
       $("#emailField").classList.add("hidden");
       $("#passLabel").innerHTML = 'PIN <span class="req">*</span>';
       pass.autocomplete = "off";
-      $("#loginHint").textContent = "Local test mode — enter the admin PIN from admin.js.";
+      $("#loginHint").textContent = "Local test mode — Supabase is not set up in config.js. Enter the admin PIN from admin.js.";
+      if (localSession()) { location.replace(CONFIG.dashboardPage); return; }
+    } else {
+      // already signed in as an admin? skip the form
+      BTSupabase.getClient().then(function (c) {
+        return c.auth.getSession().then(function (r) {
+          if (r.data && r.data.session) return checkAdmin(c).then(function (ok) { if (ok) location.replace(CONFIG.dashboardPage); });
+        });
+      }).catch(function () { /* show the form */ });
     }
-    var pending = null;
-    try { pending = sessionStorage.getItem("admin_msg"); sessionStorage.removeItem("admin_msg"); } catch (e) { /* ignore */ }
-    if (pending) showAlert(pending);
-
-    function showAlert(m) { alertBox.textContent = m; alertBox.classList.remove("hidden"); }
-    function setInvalid(input, bad) { input.closest(".field").classList.toggle("invalid", bad); }
 
     $("#pwToggle").addEventListener("click", function () {
       var show = pass.type === "password";
@@ -135,32 +120,32 @@
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       alertBox.classList.add("hidden");
-      var bad = false;
-      if (SB_ON) {
-        var okEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim());
-        setInvalid(email, !okEmail); if (!okEmail) bad = true;
-      }
-      setInvalid(pass, !pass.value); if (!pass.value) bad = true;
-      if (bad) { (SB_ON && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim()) ? email : pass).focus(); return; }
+      var okEmail = !SB_ON || /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim());
+      setInvalid(email, !okEmail); setInvalid(pass, !pass.value);
+      if (!okEmail) { email.focus(); return; }
+      if (!pass.value) { pass.focus(); return; }
 
       btn.disabled = true; var label = btn.textContent; btn.innerHTML = '<span class="spinner"></span> Signing in…';
       function done() { btn.disabled = false; btn.textContent = label; }
 
       if (!SB_ON) {
-        if (pass.value === CONFIG.localPin) { setSession({ mode: "local", email: "Local admin", exp: Date.now() + 8 * 3600e3 }); location.replace(CONFIG.dashboardPage); }
+        if (pass.value === CONFIG.localPin) { jset(sessionStorage, KEY_LOCAL_SESSION, { email: "Local admin", exp: Date.now() + 8 * 3600e3 }); location.replace(CONFIG.dashboardPage); }
         else { done(); showAlert("Incorrect PIN."); }
         return;
       }
-      fetch(CONFIG.supabaseUrl.replace(/\/+$/, "") + "/auth/v1/token?grant_type=password", {
-        method: "POST", headers: { apikey: CONFIG.supabaseAnonKey, "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.value.trim(), password: pass.value })
-      }).then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
-        .then(function (res) {
-          if (!res.ok) throw new Error(res.d.error_description || res.d.msg || res.d.message || "Login failed");
-          setSession({ mode: "supabase", token: res.d.access_token, email: (res.d.user && res.d.user.email) || email.value.trim(), exp: Date.now() + ((res.d.expires_in || 3600) - 60) * 1000 });
+      var c;
+      BTSupabase.getClient().then(function (cl) {
+        c = cl;
+        return c.auth.signInWithPassword({ email: email.value.trim(), password: pass.value });
+      }).then(function (r) {
+        if (r.error) throw new Error(/invalid login/i.test(r.error.message) ? "Incorrect email or password." : r.error.message);
+        return checkAdmin(c).then(function (ok) {
+          if (!ok) return c.auth.signOut().then(function () { throw new Error("This account does not have admin access."); });
           location.replace(CONFIG.dashboardPage);
-        })
-        .catch(function (err) { done(); showAlert(err.message === "Failed to fetch" ? "Cannot reach the server. Check your connection." : (err.message || "Login failed")); });
+        });
+      }).catch(function (err) {
+        done(); showAlert(err.message === "Failed to fetch" ? "Cannot reach the server. Check your connection." : (err.message || "Login failed"));
+      });
     });
     (SB_ON ? email : pass).focus();
   }
@@ -169,10 +154,29 @@
   var state = { products: [], editingId: null, imageFile: null, imageData: "", imageUrl: "" };
 
   function initDashboard() {
-    var session = getSession();
-    if (!session) { goLogin(); return; }
-    $("#whoami").textContent = session.email || "";
-    $("#logoutBtn").addEventListener("click", function () { goLogin(); });
+    $("#logoutBtn").addEventListener("click", function () { signOutThen(function () { goLogin(); }); });
+    if (!SB_ON) {
+      var ls = localSession();
+      if (!ls) { goLogin(); return; }
+      start(ls.email);
+      return;
+    }
+    BTSupabase.getClient().then(function (c) {
+      client = c;
+      return c.auth.getSession().then(function (r) {
+        var s = r.data && r.data.session;
+        if (!s) { goLogin(); return; }
+        return checkAdmin(c).then(function (ok) {
+          if (!ok) return c.auth.signOut().then(function () { goLogin("This account does not have admin access."); });
+          start(s.user && s.user.email);
+        });
+      });
+    }).catch(function (err) {
+      $("#app").innerHTML = '<div class="alert alert-error">' + esc(err.message || "Could not connect to Supabase.") + '</div><a class="btn btn-outline" href="' + CONFIG.loginPage + '">Back to login</a>';
+    });
+  }
+  function start(who) {
+    $("#whoami").textContent = who || "";
     renderShell();
     loadProducts();
   }
@@ -186,7 +190,7 @@
   }
   function loadProducts() {
     var p = SB_ON
-      ? sb(CONFIG.productsTable + "?select=*&order=name.asc").then(function (r) { return (r || []).map(normProduct); })
+      ? client.from(CONFIG.productsTable).select("*").order("name", { ascending: true }).then(function (r) { return (un(r) || []).map(normProduct); })
       : Promise.resolve((jget(localStorage, KEY_PRODUCTS, []) || []).map(normProduct));
     p.then(function (list) { state.products = list; renderList(); })
       .catch(function (err) {
@@ -197,7 +201,7 @@
 
   function renderShell() {
     var warn = "";
-    if (!SB_ON) warn = '<div class="alert alert-warn"><strong>Local test mode.</strong> Products are saved only in this browser and the PIN is visible in <code>admin.js</code>. Add your Supabase URL and anon key in <code>admin.js</code> for shared, secure admin.</div>' +
+    if (!SB_ON) warn = '<div class="alert alert-warn"><strong>Local test mode.</strong> Supabase is not set up in <code>config.js</code>, so products are saved only in this browser and the PIN is visible in <code>admin.js</code>. Add your Supabase URL and anon key to <code>config.js</code> for shared, secure admin.</div>' +
       (CONFIG.localPin === "change-me-123" ? '<div class="alert alert-warn">You are using the default PIN — change <code>localPin</code> in <code>admin.js</code>.</div>' : "");
 
     $("#app").innerHTML = warn +
@@ -253,18 +257,25 @@
     reader.onerror = function () { setFieldError(input, "Could not read that image."); };
     reader.readAsDataURL(file);
   }
-  // Local mode: shrink to max 800px JPEG so it fits in browser storage
-  function shrinkImage(dataUrl) {
+  function shrinkImage(dataUrl) {   // local mode: max 800px JPEG so it fits in browser storage
     return new Promise(function (resolve) {
       var img = new Image();
       img.onload = function () {
-        var max = 800, w = img.width, h = img.height, r = Math.min(1, max / Math.max(w, h));
-        var c = document.createElement("canvas"); c.width = Math.round(w * r); c.height = Math.round(h * r);
+        var max = 800, r = Math.min(1, max / Math.max(img.width, img.height));
+        var c = document.createElement("canvas"); c.width = Math.round(img.width * r); c.height = Math.round(img.height * r);
         var ctx = c.getContext("2d"); ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, c.width, c.height); ctx.drawImage(img, 0, 0, c.width, c.height);
         resolve(c.toDataURL("image/jpeg", 0.82));
       };
       img.onerror = function () { resolve(dataUrl); };
       img.src = dataUrl;
+    });
+  }
+  function uploadImage(file) {
+    var ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 5) || "jpg";
+    var path = Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8) + "." + ext;
+    return client.storage.from(CONFIG.imageBucket).upload(path, file, { contentType: file.type, upsert: false }).then(function (r) {
+      un(r);
+      return client.storage.from(CONFIG.imageBucket).getPublicUrl(path).data.publicUrl;
     });
   }
 
@@ -304,33 +315,29 @@
     chk($("#plink"), link && !safeUrl(link) ? "Link must start with http:// or https://" : "");
     if (bad) { bad.focus(); return; }
 
-    var btn = $("#save"), label = btn.textContent;
+    var btn = $("#save");
     btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Saving…';
     var editing = state.editingId;
     var prod = { id: editing || newId(), name: name, category: cat, price: Number(price), image: state.imageUrl || "", affiliate_link: link, description: $("#pdesc").value.trim(), status: $("#pstatus").value };
 
     var step = Promise.resolve();
     if (state.imageFile) {
-      step = SB_ON
-        ? uploadToStorage(state.imageFile).then(function (url) { prod.image = url; })
-        : shrinkImage(state.imageData).then(function (d) { prod.image = d; });
+      step = SB_ON ? uploadImage(state.imageFile).then(function (url) { prod.image = url; })
+                   : shrinkImage(state.imageData).then(function (d) { prod.image = d; });
     }
     step.then(function () {
-      if (SB_ON) return sb(CONFIG.productsTable + "?on_conflict=id", { method: "POST", prefer: "resolution=merge-duplicates,return=minimal", body: [prod] });
+      if (SB_ON) return client.from(CONFIG.productsTable).upsert(prod, { onConflict: "id" }).then(un);
     }).then(function () {
       var i = state.products.findIndex(function (x) { return x.id === prod.id; });
+      var before = state.products.slice();
       if (i >= 0) state.products[i] = prod; else state.products.unshift(prod);
-      if (!SB_ON && !jset(localStorage, KEY_PRODUCTS, state.products)) {
-        if (i >= 0) state.products[i] = normProduct(state.products[i]); // keep memory consistent
-        throw new Error("Browser storage is full — use a smaller image");
-      }
+      if (!SB_ON && !jset(localStorage, KEY_PRODUCTS, state.products)) { state.products = before; throw new Error("Browser storage is full — use a smaller image"); }
       toast(editing ? "Product updated" : "Product added");
       resetForm(); renderList();
     }).catch(function (err) {
       if (err.status === 401) return onErr(err);
       box.textContent = (err.message || "Could not save") + (SB_ON && /bucket|storage/i.test(err.message || "") ? ' — check that the "' + CONFIG.imageBucket + '" bucket exists and is public.' : "");
       box.classList.remove("hidden");
-      if (!SB_ON) loadProducts();
     }).then(function () { btn.disabled = false; btn.textContent = state.editingId ? "UPDATE PRODUCT" : "ADD PRODUCT"; });
   }
 
@@ -352,7 +359,7 @@
   function removeProduct(id) {
     var p = state.products.find(function (x) { return x.id === id; });
     if (!confirm('Delete "' + (p ? p.name : id) + '"? This cannot be undone.')) return;
-    var done = SB_ON ? sb(CONFIG.productsTable + "?id=eq." + enc(id), { method: "DELETE", prefer: "return=minimal" }) : Promise.resolve();
+    var done = SB_ON ? client.from(CONFIG.productsTable).delete().eq("id", id).then(un) : Promise.resolve();
     done.then(function () {
       state.products = state.products.filter(function (x) { return x.id !== id; });
       if (!SB_ON) jset(localStorage, KEY_PRODUCTS, state.products);
@@ -368,7 +375,7 @@
 })();
 
 /* ==========================================================================
-   SUPABASE SETUP (run once in Supabase → SQL Editor) — for Supabase mode
+   SUPABASE SETUP — run once in Supabase → SQL Editor
    --------------------------------------------------------------------------
    create table if not exists public.products (
      id text primary key, name text not null, category text, price numeric default 0,
@@ -376,20 +383,26 @@
      status text not null default 'active' check (status in ('active','inactive')),
      created_at timestamptz default now()
    );
+
+   -- Who is an admin. Customers from register.html are NOT admins.
    create table if not exists public.admins (email text primary key);
-   insert into public.admins values ('you@example.com') on conflict do nothing;  -- YOUR admin email
-   create or replace function public.is_admin() returns boolean language sql stable security definer
-     set search_path = public as $$ select exists (select 1 from public.admins where lower(email) = lower(auth.jwt()->>'email')) $$;
+   insert into public.admins values ('you@example.com') on conflict do nothing;  -- << YOUR admin email
+
+   create or replace function public.is_admin() returns boolean
+     language sql stable security definer set search_path = public as
+     $$ select exists (select 1 from public.admins where lower(email) = lower(auth.jwt()->>'email')) $$;
+   grant execute on function public.is_admin() to authenticated;
+
    alter table public.products enable row level security;
-   alter table public.admins   enable row level security;
-   create policy "products read active" on public.products for select using (status = 'active' or public.is_admin());
+   alter table public.admins   enable row level security;   -- no policies = not readable from the browser
+   create policy "products read"        on public.products for select using (status = 'active' or public.is_admin());
    create policy "products admin write" on public.products for all using (public.is_admin()) with check (public.is_admin());
 
-   -- Image storage: create a PUBLIC bucket named product-images, then:
+   -- Image storage (public bucket)
    insert into storage.buckets (id, name, public) values ('product-images','product-images', true) on conflict do nothing;
-   create policy "images public read" on storage.objects for select using (bucket_id = 'product-images');
+   create policy "images read"         on storage.objects for select using (bucket_id = 'product-images');
    create policy "images admin upload" on storage.objects for insert with check (bucket_id = 'product-images' and public.is_admin());
    create policy "images admin delete" on storage.objects for delete using (bucket_id = 'product-images' and public.is_admin());
 
-   -- Then create the admin user in Authentication → Users (same email as above).
+   -- Then create the admin user: Authentication → Users → Add user (same email as above).
    ========================================================================== */
