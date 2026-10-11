@@ -6,6 +6,10 @@
   <title>Brit.Tuna Admin Dashboard</title>
   <meta name="description" content="Brit.Tuna admin dashboard: add, edit and delete products.">
   <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#1f5a3a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="admin.css">
 </head>
 <body data-page="dashboard">
@@ -28,6 +32,9 @@
   </main>
 
   <div class="toast-wrap" id="toasts"></div>
+  <!-- Load order matters: config → supabase → admin -->
+  <script src="config.js"></script>
+  <script src="supabase.js"></script>
   <script src="admin.js"></script>
 </body>
 </html>
