@@ -26,7 +26,7 @@ window.BT_CONFIG = {
   heroSlideInterval: 1000,   // milliseconds between slides (1000 = 1 second)
 
   // DEMO PLACEHOLDERS — leave empty until you have real details.
-  // WhatsApp numbers: digits only with country code, e.g. 91XXXXXXXXXX
+  // WhatsApp numbers: digits only with country code, e.g. 9082844086
   contact: {
     phone1: '',
     phone2: '',
@@ -39,8 +39,8 @@ window.BT_CONFIG = {
 
   // Supabase (public/publishable key only). Leave empty until configured.
   supabase: {
-    url: '',      // e.g. https://xxxxxxxx.supabase.co
-    anonKey: ''   // the public anon / publishable key
+    url: '',      // https://supabase.com/dashboard/project/wrzxlmviwpeiggzgycpl/settings/api-keys
+    anonKey: ''   // sb_publishable_js68PKxlcJMbq_BqBRHrpQ_cgCig1es
   }
 };
 
