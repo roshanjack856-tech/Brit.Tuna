@@ -3,21 +3,281 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>Sign In | Brit.Tuna</title>
+
   <meta name="robots" content="noindex">
   <meta name="theme-color" content="#1f5a3a">
+
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <!-- Your CSS -->
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="responsive.css">
 </head>
+
 <body data-page="login">
 
-  <!-- Header, mobile menu and WhatsApp button are built by script.js -->
+  <!-- Website Header -->
   <div id="site-header"></div>
 
   <main id="main">
 
+    <!-- PAGE HERO -->
     <section class="page-hero">
       <div class="container">
+        <h1>Welcome Back</h1>
+        <p>Sign in to your Brit.Tuna account.</p>
+      </div>
+    </section>
+
+
+    <!-- LOGIN SECTION -->
+    <section class="auth-section">
+
+      <div class="container">
+
+        <div class="auth-card">
+
+          <h2>Sign In</h2>
+
+          <p>
+            Enter your email and password to continue.
+          </p>
+
+
+          <form id="login-form">
+
+            <!-- EMAIL -->
+
+            <div class="form-group">
+
+              <label for="email">
+                Email Address
+              </label>
+
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Enter your email"
+                autocomplete="email"
+                required
+              >
+
+            </div>
+
+
+            <!-- PASSWORD -->
+
+            <div class="form-group">
+
+              <label for="password">
+                Password
+              </label>
+
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                required
+              >
+
+            </div>
+
+
+            <!-- LOGIN BUTTON -->
+
+            <button
+              type="submit"
+              id="login-button"
+              class="btn btn-primary"
+            >
+              Sign In
+            </button>
+
+
+            <!-- LOGIN MESSAGE -->
+
+            <p
+              id="login-message"
+              role="status"
+              aria-live="polite"
+            ></p>
+
+          </form>
+
+
+          <!-- REGISTER -->
+
+          <div class="auth-footer">
+
+            <p>
+              Don't have an account?
+
+              <a href="register.html">
+                Create Account
+              </a>
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- Footer -->
+  <div id="site-footer"></div>
+
+
+  <!--
+    Supabase JavaScript Library
+  -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
+
+  <!--
+    Your Supabase configuration
+
+    config.js:
+    SUPABASE_URL
+    SUPABASE_KEY
+  -->
+  <script src="config.js"></script>
+
+
+  <!--
+    Creates supabaseClient
+  -->
+  <script src="supabase.js"></script>
+
+
+  <!--
+    Your normal website JS
+  -->
+  <script src="script.js"></script>
+
+
+  <!-- CUSTOMER LOGIN -->
+  <script>
+
+    const loginForm =
+      document.getElementById("login-form");
+
+    const loginMessage =
+      document.getElementById("login-message");
+
+    const loginButton =
+      document.getElementById("login-button");
+
+
+    loginForm.addEventListener(
+      "submit",
+      async function(event) {
+
+        event.preventDefault();
+
+
+        const email =
+          document
+            .getElementById("email")
+            .value
+            .trim();
+
+
+        const password =
+          document
+            .getElementById("password")
+            .value;
+
+
+        loginMessage.textContent =
+          "Signing in...";
+
+
+        loginButton.disabled = true;
+
+
+        try {
+
+          const { data, error } =
+            await supabaseClient.auth.signInWithPassword({
+
+              email: email,
+
+              password: password
+
+            });
+
+
+          if (error) {
+
+            console.error(
+              "Login error:",
+              error
+            );
+
+
+            loginMessage.textContent =
+              "Incorrect email or password.";
+
+
+            loginButton.disabled = false;
+
+            return;
+          }
+
+
+          if (data.user) {
+
+            loginMessage.textContent =
+              "Login successful!";
+
+
+            /*
+              Normal customer goes to
+              account.html
+            */
+
+            window.location.href =
+              "account.html";
+
+          }
+
+
+        } catch (error) {
+
+          console.error(error);
+
+
+          loginMessage.textContent =
+            "Something went wrong. Please try again.";
+
+
+          loginButton.disabled = false;
+
+        }
+
+      }
+    );
+
+  </script>
+
+</body>
+</html>
