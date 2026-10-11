@@ -3,123 +3,398 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Refund and Return Policy | Brit.Tuna</title>
-  <meta name="description" content="Brit.Tuna refund and return policy (starter draft).">
+
+  <title>Create Account | Brit.Tuna</title>
+
+  <meta
+    name="description"
+    content="Create your Brit.Tuna customer account."
+  >
+
+  <meta name="robots" content="noindex">
   <meta name="theme-color" content="#1f5a3a">
+
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <!-- Website CSS -->
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="responsive.css">
-</head>
-<body data-page="refund-policy">
 
-  <!-- Header, mobile menu and WhatsApp button are built by script.js -->
+</head>
+
+<body data-page="register">
+
+  <!-- Header -->
   <div id="site-header"></div>
+
 
   <main id="main">
 
+    <!-- HERO -->
     <section class="page-hero">
+
       <div class="container">
-        <h1>Refund and Return Policy</h1>
-        <p>What to do if there is a problem with your order.</p>
+
+        <h1>Create Account</h1>
+
+        <p>
+          Create your Brit.Tuna customer account.
+        </p>
+
       </div>
+
     </section>
 
-    <div class="container page-body">
-      <div class="prose">
 
-        <p class="notice">
-          <strong>Starter draft, not final.</strong> This page does not promise any refund terms yet.
-          The business owner must decide the real terms (time limits, conditions, refund method) and replace every
-          item marked <strong>(Editable)</strong> before publishing. Have it reviewed by a qualified professional.
-        </p>
+    <!-- REGISTER -->
+    <section class="auth-section">
 
-        <p><strong>Last updated:</strong> (Editable: add the date)</p>
+      <div class="container">
 
-        <h2>1. Overview</h2>
-        <p>
-          We want you to be happy with your Brit.Tuna order. If something is wrong, please contact us and we will
-          look into it. The terms below describe how returns and refunds are handled.
-          (Editable: replace with your real policy.)
-        </p>
+        <div class="auth-card">
 
-        <h2>2. Food products</h2>
-        <p>
-          Peanuts, pickles, chilli and rice are food items. Many food products cannot be returned once delivered
-          for hygiene and safety reasons, unless there is a problem with the order.
-          (Editable: confirm which products, if any, can be returned.)
-        </p>
+          <h2>Register</h2>
 
-        <h2>3. Problems we will review</h2>
-        <p>Please contact us if your order arrives:</p>
-        <ul>
-          <li>Damaged or leaking.</li>
-          <li>Different from what you ordered (wrong product or pack size).</li>
-          <li>Missing items.</li>
-          <li>With a quality concern.</li>
-        </ul>
-        <p>(Editable: add the exact time limit, for example "within X days of delivery", only once decided.)</p>
+          <p>
+            Enter your details to create your account.
+          </p>
 
-        <h2>4. What to send us</h2>
-        <ul>
-          <li>Your order number and the name used on the order.</li>
-          <li>A short description of the problem.</li>
-          <li>Clear photos of the product and its packaging, where possible.</li>
-        </ul>
 
-        <h2>5. How we resolve it</h2>
-        <p>
-          After reviewing your request we may offer a replacement, a refund or another solution.
-          The outcome depends on the situation. (Editable: describe your real options.)
-        </p>
+          <form id="register-form">
 
-        <h2>6. Refund method and timing</h2>
-        <p>
-          (Editable: state how refunds are paid, for example back to the original payment method, and how long they
-          usually take. Do not state a timeline you cannot meet.)
-        </p>
 
-        <h2>7. Cancellations</h2>
-        <p>
-          (Editable: state whether and until when an order can be cancelled, and how to request it.)
-        </p>
+            <!-- NAME -->
 
-        <h2>8. Wholesale and bulk orders</h2>
-        <p>
-          Wholesale and bulk orders may follow different terms, agreed with you at the time of the order.
-          (Editable.)
-        </p>
+            <div class="form-group">
 
-        <h2>9. Failed or duplicate payments</h2>
-        <p>
-          If money was taken but your order was not confirmed, or you were charged twice, please contact us with
-          your payment details. Payment status is confirmed only by our secure backend, not by a message on your screen.
-          (Editable: confirm how these cases are handled.)
-        </p>
+              <label for="name">
+                Full Name
+              </label>
 
-        <h2>10. Contact us</h2>
-        <p>
-          To raise a problem, use the <a href="contact.html"><u>Contact page</u></a> or message us on WhatsApp.
-          A WhatsApp message is a request for help and is not a confirmed refund.
-        </p>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                placeholder="Enter your full name"
+                autocomplete="name"
+                required
+              >
 
-        <div class="hero-actions" style="margin-top:24px">
-          <a class="btn btn-primary" href="contact.html">Contact us</a>
-          <a class="btn btn-whatsapp" data-whatsapp data-message="Hello Brit.Tuna, I need help with my order." href="#">Message on WhatsApp</a>
+            </div>
+
+
+            <!-- EMAIL -->
+
+            <div class="form-group">
+
+              <label for="email">
+                Email Address
+              </label>
+
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Enter your email"
+                autocomplete="email"
+                required
+              >
+
+            </div>
+
+
+            <!-- PASSWORD -->
+
+            <div class="form-group">
+
+              <label for="password">
+                Password
+              </label>
+
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Create a password"
+                autocomplete="new-password"
+                minlength="6"
+                required
+              >
+
+            </div>
+
+
+            <!-- CONFIRM PASSWORD -->
+
+            <div class="form-group">
+
+              <label for="confirm-password">
+                Confirm Password
+              </label>
+
+              <input
+                type="password"
+                id="confirm-password"
+                name="confirm-password"
+                placeholder="Enter password again"
+                autocomplete="new-password"
+                minlength="6"
+                required
+              >
+
+            </div>
+
+
+            <!-- REGISTER BUTTON -->
+
+            <button
+              type="submit"
+              id="register-button"
+              class="btn btn-primary"
+            >
+              Create Account
+            </button>
+
+
+            <!-- STATUS -->
+
+            <p
+              id="register-message"
+              role="status"
+              aria-live="polite"
+            ></p>
+
+          </form>
+
+
+          <!-- LOGIN LINK -->
+
+          <div class="auth-footer">
+
+            <p>
+              Already have an account?
+
+              <a href="login.html">
+                Sign In
+              </a>
+
+            </p>
+
+          </div>
+
         </div>
 
       </div>
-    </div>
+
+    </section>
+
   </main>
 
+
+  <!-- Footer -->
   <div id="site-footer"></div>
 
-  <!-- Load order matters: config → products → cart → supabase → script -->
+
+  <!-- SUPABASE JS LIBRARY -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+  <!-- Your Supabase configuration -->
   <script src="config.js"></script>
-  <script src="products.js"></script>
-  <script src="cart.js"></script>
+
+
+  <!-- Creates supabaseClient -->
   <script src="supabase.js"></script>
+
+
+  <!-- Your normal website script -->
   <script src="script.js"></script>
+
+
+  <!-- CUSTOMER REGISTRATION -->
+  <script>
+
+    const registerForm =
+      document.getElementById("register-form");
+
+    const registerMessage =
+      document.getElementById("register-message");
+
+    const registerButton =
+      document.getElementById("register-button");
+
+
+    registerForm.addEventListener(
+      "submit",
+      async function(event) {
+
+        event.preventDefault();
+
+
+        const name =
+          document
+            .getElementById("name")
+            .value
+            .trim();
+
+
+        const email =
+          document
+            .getElementById("email")
+            .value
+            .trim();
+
+
+        const password =
+          document
+            .getElementById("password")
+            .value;
+
+
+        const confirmPassword =
+          document
+            .getElementById("confirm-password")
+            .value;
+
+
+        /* CHECK PASSWORD */
+
+        if (password !== confirmPassword) {
+
+          registerMessage.textContent =
+            "Passwords do not match.";
+
+          return;
+
+        }
+
+
+        if (password.length < 6) {
+
+          registerMessage.textContent =
+            "Password must contain at least 6 characters.";
+
+          return;
+
+        }
+
+
+        registerButton.disabled = true;
+
+        registerMessage.textContent =
+          "Creating your account...";
+
+
+        try {
+
+          const { data, error } =
+            await supabaseClient.auth.signUp({
+
+              email: email,
+
+              password: password,
+
+              options: {
+
+                data: {
+                  full_name: name
+                }
+
+              }
+
+            });
+
+
+          /* ERROR */
+
+          if (error) {
+
+            console.error(
+              "Registration error:",
+              error
+            );
+
+            registerMessage.textContent =
+              error.message;
+
+            registerButton.disabled = false;
+
+            return;
+
+          }
+
+
+          /* SUCCESS */
+
+          if (data.user) {
+
+            /*
+              If Supabase email confirmation
+              is enabled, session will normally
+              be null until email confirmation.
+            */
+
+            if (!data.session) {
+
+              registerMessage.textContent =
+                "Account created! Please check your email and confirm your account before signing in.";
+
+              registerForm.reset();
+
+              registerButton.disabled = false;
+
+              return;
+
+            }
+
+
+            /*
+              If email confirmation is disabled,
+              the customer may already have
+              a valid session.
+            */
+
+            registerMessage.textContent =
+              "Account created successfully! Redirecting...";
+
+
+            setTimeout(function() {
+
+              window.location.href =
+                "account.html";
+
+            }, 1200);
+
+          }
+
+
+        } catch (error) {
+
+          console.error(
+            "Unexpected registration error:",
+            error
+          );
+
+
+          registerMessage.textContent =
+            "Something went wrong. Please try again.";
+
+
+          registerButton.disabled = false;
+
+        }
+
+      }
+    );
+
+  </script>
+
 </body>
 </html>
