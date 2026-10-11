@@ -28,7 +28,7 @@ window.BT_CONFIG = {
   // DEMO PLACEHOLDERS — leave empty until you have real details.
   // WhatsApp numbers: digits only with country code, e.g. 9082844086
   contact: {
-    phone1: '',
+    phone1: '9082844086',
     phone2: '',
     whatsapp1: '',
     whatsapp2: '',
@@ -39,8 +39,8 @@ window.BT_CONFIG = {
 
   // Supabase (public/publishable key only). Leave empty until configured.
   supabase: {
-    url: '',      // https://supabase.com/dashboard/project/wrzxlmviwpeiggzgycpl/settings/api-keys
-    anonKey: ''   // sb_publishable_js68PKxlcJMbq_BqBRHrpQ_cgCig1es
+    url: 'https://supabase.com/dashboard/project/wrzxlmviwpeiggzgycpl/settings/api-keys',      // https://supabase.com/dashboard/project/wrzxlmviwpeiggzgycpl/settings/api-keys
+    anonKey: 'sb_publishable_js68PKxlcJMbq_BqBRHrpQ_cgCig1es'   // sb_publishable_js68PKxlcJMbq_BqBRHrpQ_cgCig1es
   }
 };
 
