@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
 
   <title>Create Account | Brit.Tuna</title>
 
@@ -12,32 +17,72 @@
   >
 
   <meta name="robots" content="noindex">
-  <meta name="theme-color" content="#1f5a3a">
 
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <meta
+    name="theme-color"
+    content="#1f5a3a"
+  >
+
+
+  <!-- =========================
+       GOOGLE FONTS
+  ========================== -->
+
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  >
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  >
 
   <link
     href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap"
     rel="stylesheet"
   >
 
-  <!-- Website CSS -->
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="responsive.css">
+
+  <!-- =========================
+       WEBSITE CSS
+  ========================== -->
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="responsive.css"
+  >
 
 </head>
 
+
 <body data-page="register">
 
-  <!-- Header -->
+
+  <!-- =========================
+       HEADER
+  ========================== -->
+
   <div id="site-header"></div>
 
 
+  <!-- =========================
+       MAIN
+  ========================== -->
+
   <main id="main">
 
-    <!-- HERO -->
+
+    <!-- =========================
+         PAGE HERO
+    ========================== -->
+
     <section class="page-hero">
 
       <div class="container">
@@ -53,12 +98,17 @@
     </section>
 
 
-    <!-- REGISTER -->
+
+    <!-- =========================
+         REGISTER SECTION
+    ========================== -->
+
     <section class="auth-section">
 
       <div class="container">
 
         <div class="auth-card">
+
 
           <h2>Register</h2>
 
@@ -67,10 +117,15 @@
           </p>
 
 
+
+          <!-- =========================
+               REGISTER FORM
+          ========================== -->
+
           <form id="register-form">
 
 
-            <!-- NAME -->
+            <!-- FULL NAME -->
 
             <div class="form-group">
 
@@ -84,10 +139,12 @@
                 name="name"
                 placeholder="Enter your full name"
                 autocomplete="name"
+                maxlength="100"
                 required
               >
 
             </div>
+
 
 
             <!-- EMAIL -->
@@ -108,6 +165,7 @@
               >
 
             </div>
+
 
 
             <!-- PASSWORD -->
@@ -131,6 +189,7 @@
             </div>
 
 
+
             <!-- CONFIRM PASSWORD -->
 
             <div class="form-group">
@@ -152,6 +211,7 @@
             </div>
 
 
+
             <!-- REGISTER BUTTON -->
 
             <button
@@ -163,7 +223,8 @@
             </button>
 
 
-            <!-- STATUS -->
+
+            <!-- STATUS MESSAGE -->
 
             <p
               id="register-message"
@@ -171,14 +232,19 @@
               aria-live="polite"
             ></p>
 
+
           </form>
 
 
-          <!-- LOGIN LINK -->
+
+          <!-- =========================
+               LOGIN LINK
+          ========================== -->
 
           <div class="auth-footer">
 
             <p>
+
               Already have an account?
 
               <a href="login.html">
@@ -189,56 +255,114 @@
 
           </div>
 
+
         </div>
 
       </div>
 
     </section>
 
+
   </main>
 
 
-  <!-- Footer -->
+
+  <!-- =========================
+       FOOTER
+  ========================== -->
+
   <div id="site-footer"></div>
 
 
-  <!-- SUPABASE JS LIBRARY -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- ==================================================
+       SUPABASE JAVASCRIPT LIBRARY
+  =================================================== -->
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
 
 
-  <!-- Your Supabase configuration -->
+
+  <!-- ==================================================
+       SUPABASE CONFIG
+
+       config.js should contain:
+
+       const SUPABASE_URL = "...";
+       const SUPABASE_KEY = "sb_publishable_...";
+
+       NEVER use sb_secret / service_role here.
+  =================================================== -->
+
   <script src="config.js"></script>
 
 
-  <!-- Creates supabaseClient -->
+
+  <!-- ==================================================
+       CREATE SUPABASE CLIENT
+  =================================================== -->
+
   <script src="supabase.js"></script>
 
 
-  <!-- Your normal website script -->
+
+  <!-- ==================================================
+       NORMAL WEBSITE JAVASCRIPT
+  =================================================== -->
+
   <script src="script.js"></script>
 
 
-  <!-- CUSTOMER REGISTRATION -->
+
+  <!-- ==================================================
+       CUSTOMER REGISTRATION
+  =================================================== -->
+
   <script>
+
+    /* ==============================================
+       GET HTML ELEMENTS
+    ============================================== */
 
     const registerForm =
       document.getElementById("register-form");
 
+
     const registerMessage =
       document.getElementById("register-message");
+
 
     const registerButton =
       document.getElementById("register-button");
 
 
+
+    /* ==============================================
+       REGISTER FORM SUBMIT
+    ============================================== */
+
     registerForm.addEventListener(
       "submit",
-      async function(event) {
+      async function (event) {
 
         event.preventDefault();
 
 
-        const name =
+        /* ------------------------------------------
+           CLEAR OLD MESSAGE
+        ------------------------------------------ */
+
+        registerMessage.textContent = "";
+
+
+
+        /* ------------------------------------------
+           GET FORM VALUES
+        ------------------------------------------ */
+
+        const fullName =
           document
             .getElementById("name")
             .value
@@ -249,7 +373,8 @@
           document
             .getElementById("email")
             .value
-            .trim();
+            .trim()
+            .toLowerCase();
 
 
         const password =
@@ -264,17 +389,39 @@
             .value;
 
 
-        /* CHECK PASSWORD */
 
-        if (password !== confirmPassword) {
+        /* ==========================================
+           VALIDATION
+        ========================================== */
+
+
+        /* FULL NAME */
+
+        if (!fullName) {
 
           registerMessage.textContent =
-            "Passwords do not match.";
+            "Please enter your full name.";
 
           return;
 
         }
 
+
+
+        /* EMAIL */
+
+        if (!email) {
+
+          registerMessage.textContent =
+            "Please enter your email address.";
+
+          return;
+
+        }
+
+
+
+        /* PASSWORD LENGTH */
 
         if (password.length < 6) {
 
@@ -286,13 +433,41 @@
         }
 
 
+
+        /* PASSWORD MATCH */
+
+        if (password !== confirmPassword) {
+
+          registerMessage.textContent =
+            "Passwords do not match.";
+
+          return;
+
+        }
+
+
+
+        /* ==========================================
+           LOADING STATE
+        ========================================== */
+
         registerButton.disabled = true;
+
+        registerButton.textContent =
+          "Creating Account...";
+
 
         registerMessage.textContent =
           "Creating your account...";
 
 
+
         try {
+
+
+          /* ========================================
+             SUPABASE SIGN UP
+          ======================================== */
 
           const { data, error } =
             await supabaseClient.auth.signUp({
@@ -304,7 +479,9 @@
               options: {
 
                 data: {
-                  full_name: name
+
+                  full_name: fullName
+
                 }
 
               }
@@ -312,70 +489,120 @@
             });
 
 
-          /* ERROR */
+
+          /* ========================================
+             SUPABASE ERROR
+          ======================================== */
 
           if (error) {
 
             console.error(
-              "Registration error:",
+              "Supabase registration error:",
               error
             );
+
 
             registerMessage.textContent =
               error.message;
 
+
             registerButton.disabled = false;
+
+            registerButton.textContent =
+              "Create Account";
+
 
             return;
 
           }
 
 
-          /* SUCCESS */
 
-          if (data.user) {
+          /* ========================================
+             CHECK USER
+          ======================================== */
 
-            /*
-              If Supabase email confirmation
-              is enabled, session will normally
-              be null until email confirmation.
-            */
-
-            if (!data.session) {
-
-              registerMessage.textContent =
-                "Account created! Please check your email and confirm your account before signing in.";
-
-              registerForm.reset();
-
-              registerButton.disabled = false;
-
-              return;
-
-            }
-
-
-            /*
-              If email confirmation is disabled,
-              the customer may already have
-              a valid session.
-            */
+          if (!data || !data.user) {
 
             registerMessage.textContent =
-              "Account created successfully! Redirecting...";
+              "Account could not be created. Please try again.";
 
 
-            setTimeout(function() {
+            registerButton.disabled = false;
 
-              window.location.href =
-                "account.html";
+            registerButton.textContent =
+              "Create Account";
 
-            }, 1200);
+
+            return;
 
           }
 
 
-        } catch (error) {
+
+          /* ========================================
+             EMAIL CONFIRMATION ENABLED
+          ======================================== */
+
+          if (!data.session) {
+
+            registerMessage.textContent =
+              "Account created successfully! Please check your email and confirm your account before signing in.";
+
+
+            registerForm.reset();
+
+
+            registerButton.disabled = false;
+
+            registerButton.textContent =
+              "Create Account";
+
+
+            return;
+
+          }
+
+
+
+          /* ========================================
+             EMAIL CONFIRMATION DISABLED
+
+             User already has a session.
+          ======================================== */
+
+          registerMessage.textContent =
+            "Account created successfully! Redirecting to your account...";
+
+
+          registerForm.reset();
+
+
+
+          /* ========================================
+             REDIRECT
+          ======================================== */
+
+          setTimeout(
+            function () {
+
+              window.location.href =
+                "account.html";
+
+            },
+
+            1200
+          );
+
+
+        }
+
+        catch (error) {
+
+
+          /* ========================================
+             UNEXPECTED ERROR
+          ======================================== */
 
           console.error(
             "Unexpected registration error:",
@@ -389,6 +616,9 @@
 
           registerButton.disabled = false;
 
+          registerButton.textContent =
+            "Create Account";
+
         }
 
       }
@@ -396,5 +626,7 @@
 
   </script>
 
+
 </body>
+
 </html>
