@@ -10,23 +10,17 @@
     content="width=device-width, initial-scale=1"
   >
 
-
-  <title>
-    Create Account | Brit.Tuna
-  </title>
-
+  <title>Create Account | Brit.Tuna</title>
 
   <meta
     name="description"
     content="Create your Brit.Tuna customer account."
   >
 
-
   <meta
     name="robots"
     content="noindex"
   >
-
 
   <meta
     name="theme-color"
@@ -34,16 +28,12 @@
   >
 
 
-
-  <!-- ============================================
-       GOOGLE FONTS
-  ============================================= -->
+  <!-- GOOGLE FONTS -->
 
   <link
     rel="preconnect"
     href="https://fonts.googleapis.com"
   >
-
 
   <link
     rel="preconnect"
@@ -51,23 +41,18 @@
     crossorigin
   >
 
-
   <link
     href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap"
     rel="stylesheet"
   >
 
 
-
-  <!-- ============================================
-       WEBSITE CSS
-  ============================================= -->
+  <!-- WEBSITE CSS -->
 
   <link
     rel="stylesheet"
     href="style.css"
   >
-
 
   <link
     rel="stylesheet"
@@ -75,24 +60,99 @@
   >
 
 
-</head>
+  <!-- GOOGLE REGISTER BUTTON STYLE -->
 
+  <style>
+
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin: 22px 0;
+      color: #777;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .auth-divider::before,
+    .auth-divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: #dddddd;
+    }
+
+
+    .google-auth-button {
+      width: 100%;
+      min-height: 48px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+
+      padding: 12px 18px;
+
+      background: #ffffff;
+      color: #202124;
+
+      border: 1px solid #dadce0;
+      border-radius: 8px;
+
+      font-family: "DM Sans", sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+
+      cursor: pointer;
+
+      transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+
+
+    .google-auth-button:hover {
+      background: #f8f9fa;
+      border-color: #c7c7c7;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+
+    .google-auth-button:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+
+    .google-icon {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+
+    #register-message {
+      margin-top: 14px;
+      text-align: center;
+    }
+
+  </style>
+
+</head>
 
 
 <body data-page="register">
 
 
-  <!-- ============================================
-       HEADER
-  ============================================= -->
+  <!-- HEADER -->
 
   <div id="site-header"></div>
 
 
 
-  <!-- ============================================
-       MAIN
-  ============================================= -->
+  <!-- MAIN -->
 
   <main id="main">
 
@@ -101,36 +161,27 @@
 
     <section class="page-hero">
 
-
       <div class="container">
-
 
         <h1>
           Create Account
         </h1>
 
-
         <p>
           Create your Brit.Tuna customer account.
         </p>
 
-
       </div>
-
 
     </section>
 
 
 
-    <!-- ============================================
-         REGISTER SECTION
-    ============================================= -->
+    <!-- REGISTER SECTION -->
 
     <section class="auth-section">
 
-
       <div class="container">
-
 
         <div class="auth-card">
 
@@ -146,9 +197,7 @@
 
 
 
-          <!-- ======================================
-               REGISTER FORM
-          ======================================= -->
+          <!-- REGISTER FORM -->
 
           <form id="register-form">
 
@@ -157,11 +206,9 @@
 
             <div class="form-group">
 
-
               <label for="name">
                 Full Name
               </label>
-
 
               <input
                 type="text"
@@ -173,7 +220,6 @@
                 required
               >
 
-
             </div>
 
 
@@ -182,11 +228,9 @@
 
             <div class="form-group">
 
-
               <label for="email">
                 Email Address
               </label>
-
 
               <input
                 type="email"
@@ -197,7 +241,6 @@
                 required
               >
 
-
             </div>
 
 
@@ -206,11 +249,9 @@
 
             <div class="form-group">
 
-
               <label for="password">
                 Password
               </label>
-
 
               <input
                 type="password"
@@ -222,7 +263,6 @@
                 required
               >
 
-
             </div>
 
 
@@ -231,11 +271,9 @@
 
             <div class="form-group">
 
-
               <label for="confirm-password">
                 Confirm Password
               </label>
-
 
               <input
                 type="password"
@@ -246,7 +284,6 @@
                 minlength="6"
                 required
               >
-
 
             </div>
 
@@ -259,30 +296,85 @@
               id="register-button"
               class="btn btn-primary"
             >
-
               Create Account
-
             </button>
 
-
-
-            <!-- MESSAGE -->
-
-            <p
-              id="register-message"
-              role="status"
-              aria-live="polite"
-            ></p>
-
-
           </form>
+
+
+
+          <!-- OR -->
+
+          <div class="auth-divider">
+
+            <span>
+              OR
+            </span>
+
+          </div>
+
+
+
+          <!-- GOOGLE REGISTER -->
+
+          <button
+            type="button"
+            id="google-register-button"
+            class="google-auth-button"
+          >
+
+            <!-- GOOGLE LOGO -->
+
+            <svg
+              class="google-icon"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+
+              <path
+                fill="#4285F4"
+                d="M21.35 12.27c0-.79-.07-1.55-.2-2.27H12v4.3h5.23a4.47 4.47 0 0 1-1.94 2.93v2.79h3.14c1.84-1.69 2.92-4.18 2.92-7.75z"
+              />
+
+              <path
+                fill="#34A853"
+                d="M12 21.75c2.63 0 4.84-.87 6.45-2.36l-3.14-2.43c-.87.58-1.98.92-3.31.92-2.54 0-4.69-1.72-5.46-4.03H3.3v2.51A9.75 9.75 0 0 0 12 21.75z"
+              />
+
+              <path
+                fill="#FBBC05"
+                d="M6.54 13.85A5.86 5.86 0 0 1 6.23 12c0-.64.11-1.27.31-1.85V7.64H3.3A9.75 9.75 0 0 0 2.25 12c0 1.57.38 3.06 1.05 4.36l3.24-2.51z"
+              />
+
+              <path
+                fill="#EA4335"
+                d="M12 6.12c1.43 0 2.71.49 3.72 1.45l2.79-2.79C16.83 3.22 14.63 2.25 12 2.25A9.75 9.75 0 0 0 3.3 7.64l3.24 2.51C7.31 7.84 9.46 6.12 12 6.12z"
+              />
+
+            </svg>
+
+
+            <span id="google-register-text">
+              Continue with Google
+            </span>
+
+          </button>
+
+
+
+          <!-- MESSAGE -->
+
+          <p
+            id="register-message"
+            role="status"
+            aria-live="polite"
+          ></p>
 
 
 
           <!-- LOGIN LINK -->
 
           <div class="auth-footer">
-
 
             <p>
 
@@ -294,15 +386,12 @@
 
             </p>
 
-
           </div>
 
 
         </div>
 
-
       </div>
-
 
     </section>
 
@@ -311,9 +400,7 @@
 
 
 
-  <!-- ============================================
-       FOOTER
-  ============================================= -->
+  <!-- FOOTER -->
 
   <div id="site-footer"></div>
 
@@ -321,8 +408,6 @@
 
   <!-- ============================================
        1. SUPABASE LIBRARY
-
-       MUST load first
   ============================================= -->
 
   <script
@@ -332,9 +417,7 @@
 
 
   <!-- ============================================
-       2. BRIT.TUNA CONFIG
-
-       MUST load before supabase.js
+       2. CONFIG
   ============================================= -->
 
   <script src="config.js"></script>
@@ -342,7 +425,7 @@
 
 
   <!-- ============================================
-       3. CREATE SUPABASE CLIENT
+       3. SUPABASE CLIENT
   ============================================= -->
 
   <script src="supabase.js"></script>
@@ -358,7 +441,7 @@
 
 
   <!-- ============================================
-       5. CUSTOMER REGISTRATION
+       5. REGISTER + GOOGLE AUTH
   ============================================= -->
 
   <script>
@@ -389,9 +472,21 @@
       );
 
 
+    const googleRegisterButton =
+      document.getElementById(
+        'google-register-button'
+      );
+
+
+    const googleRegisterText =
+      document.getElementById(
+        'google-register-text'
+      );
+
+
 
     /* ==========================================
-       FORM SUBMIT
+       EMAIL + PASSWORD REGISTRATION
     ========================================== */
 
     registerForm.addEventListener(
@@ -405,11 +500,10 @@
 
 
 
-        /* ----------------------------------------
-           CHECK SUPABASE CONNECTION
-        ----------------------------------------- */
+        /* CHECK SUPABASE */
 
         if (!window.supabaseClient) {
+
 
           console.error(
             'Brit.Tuna: supabaseClient is not available.'
@@ -426,9 +520,7 @@
 
 
 
-        /* ----------------------------------------
-           GET VALUES
-        ----------------------------------------- */
+        /* GET VALUES */
 
         const fullName =
           document
@@ -453,21 +545,19 @@
 
         const confirmPassword =
           document
-            .getElementById(
-              'confirm-password'
-            )
+            .getElementById('confirm-password')
             .value;
 
 
 
-        /* ========================================
-           VALIDATION
-        ======================================== */
+        /* VALIDATION */
 
         if (!fullName) {
 
+
           registerMessage.textContent =
             'Please enter your full name.';
+
 
           return;
 
@@ -477,8 +567,10 @@
 
         if (!email) {
 
+
           registerMessage.textContent =
             'Please enter your email address.';
+
 
           return;
 
@@ -488,8 +580,10 @@
 
         if (password.length < 6) {
 
+
           registerMessage.textContent =
             'Password must contain at least 6 characters.';
+
 
           return;
 
@@ -497,24 +591,23 @@
 
 
 
-        if (
-          password !== confirmPassword
-        ) {
+        if (password !== confirmPassword) {
+
 
           registerMessage.textContent =
             'Passwords do not match.';
 
+
           return;
 
         }
 
 
 
-        /* ========================================
-           LOADING
-        ======================================== */
+        /* LOADING */
 
-        registerButton.disabled = true;
+        registerButton.disabled =
+          true;
 
 
         registerButton.textContent =
@@ -529,9 +622,7 @@
         try {
 
 
-          /* ======================================
-             CREATE CUSTOMER IN SUPABASE AUTH
-          ======================================= */
+          /* CREATE CUSTOMER */
 
           const {
             data,
@@ -561,9 +652,7 @@
 
 
 
-          /* ======================================
-             ERROR
-          ======================================= */
+          /* ERROR */
 
           if (error) {
 
@@ -592,14 +681,9 @@
 
 
 
-          /* ======================================
-             CHECK USER
-          ======================================= */
+          /* CHECK USER */
 
-          if (
-            !data ||
-            !data.user
-          ) {
+          if (!data || !data.user) {
 
 
             registerMessage.textContent =
@@ -627,9 +711,7 @@
 
 
 
-          /* ======================================
-             EMAIL CONFIRMATION REQUIRED
-          ======================================= */
+          /* EMAIL CONFIRMATION */
 
           if (!data.session) {
 
@@ -655,9 +737,7 @@
 
 
 
-          /* ======================================
-             CUSTOMER ALREADY LOGGED IN
-          ======================================= */
+          /* SUCCESS */
 
           registerMessage.textContent =
             'Account created successfully! Redirecting...';
@@ -666,10 +746,6 @@
           registerForm.reset();
 
 
-
-          /* ======================================
-             REDIRECT
-          ======================================= */
 
           setTimeout(
 
@@ -682,7 +758,7 @@
 
             },
 
-            1200
+            1000
 
           );
 
@@ -709,6 +785,172 @@
           registerButton.textContent =
             'Create Account';
 
+        }
+
+
+      }
+
+    );
+
+
+
+    /* ==========================================
+       GOOGLE REGISTER / LOGIN
+    ========================================== */
+
+    googleRegisterButton.addEventListener(
+
+      'click',
+
+      async function () {
+
+
+        /* CHECK SUPABASE */
+
+        if (!window.supabaseClient) {
+
+
+          console.error(
+            'Brit.Tuna: supabaseClient is not available.'
+          );
+
+
+          registerMessage.textContent =
+            'Google Sign In is not ready. Please refresh the page.';
+
+
+          return;
+
+        }
+
+
+
+        /* LOADING */
+
+        googleRegisterButton.disabled =
+          true;
+
+
+        googleRegisterText.textContent =
+          'Connecting to Google...';
+
+
+        registerMessage.textContent =
+          'Opening Google Sign In...';
+
+
+
+        try {
+
+
+          /*
+            IMPORTANT:
+
+            Google OAuth automatically handles
+            BOTH registration and login.
+
+            New Google user:
+            -> Supabase creates account.
+
+            Existing Google user:
+            -> Supabase logs them in.
+          */
+
+
+          const redirectURL =
+            window.location.origin +
+            '/account.html';
+
+
+
+          const {
+            data,
+            error
+          } =
+
+            await window.supabaseClient
+              .auth
+              .signInWithOAuth({
+
+                provider: 'google',
+
+                options: {
+
+                  redirectTo:
+                    redirectURL,
+
+                  queryParams: {
+
+                    access_type:
+                      'offline',
+
+                    prompt:
+                      'select_account'
+
+                  }
+
+                }
+
+              });
+
+
+
+          /* ERROR */
+
+          if (error) {
+
+
+            console.error(
+              'Google authentication error:',
+              error
+            );
+
+
+            registerMessage.textContent =
+              error.message;
+
+
+            googleRegisterButton.disabled =
+              false;
+
+
+            googleRegisterText.textContent =
+              'Continue with Google';
+
+
+            return;
+
+          }
+
+
+
+          console.log(
+            'Brit.Tuna: Redirecting to Google...',
+            data
+          );
+
+
+        }
+
+        catch (error) {
+
+
+          console.error(
+            'Unexpected Google authentication error:',
+            error
+          );
+
+
+          registerMessage.textContent =
+            'Google Sign In failed. Please try again.';
+
+
+          googleRegisterButton.disabled =
+            false;
+
+
+          googleRegisterText.textContent =
+            'Continue with Google';
 
         }
 
@@ -716,6 +958,7 @@
       }
 
     );
+
 
   </script>
 
