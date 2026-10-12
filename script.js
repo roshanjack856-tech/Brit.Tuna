@@ -56,7 +56,7 @@
 
     return '' +
       '<div class="topbar"><div class="container">' + U.escapeHtml(CFG.tagline || '') +
-        (CFG.demoMode ? ' · Demo mode: prices and stock are sample data' : '') + '</div></div>' +
+        ' · Up to 8% OFF on selected products' + '</div></div>' +
       '<div class="header-main container">' +
         '<a class="logo" href="index.html" aria-label="' + U.escapeHtml(CFG.brandName) + ' home">Brit<span>.</span>Tuna</a>' +
         '<form class="search-pill" role="search" action="shop.html" method="get">' +
@@ -308,6 +308,39 @@
     }).catch(function () { /* ignore: site works without Supabase */ });
   }
 
+  /* ---------- Photo slideshow: 5 free photos, changes every 1 second ---------- */
+  var SLIDES = [
+    'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=1600&q=70',
+    'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=1600&q=70',
+    'https://images.unsplash.com/photo-1567892320421-1c657571ea4a?auto=format&fit=crop&w=1600&q=70',
+    'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=1600&q=70',
+    'https://images.unsplash.com/photo-1532336414038-cf19250c5757?auto=format&fit=crop&w=1600&q=70'
+  ];
+  var SLIDE_MS = 1000;
+  function setupSlideshows() {
+    var hosts = document.querySelectorAll('.hero, .page-hero');
+    Array.prototype.forEach.call(hosts, function (host) {
+      host.classList.add('has-slides');
+      var box = document.createElement('div');
+      box.className = 'slideshow';
+      box.setAttribute('aria-hidden', 'true');
+      box.innerHTML = SLIDES.map(function (src, i) {
+        return '<img src="' + src + '" alt=""' + (i === 0 ? ' class="active"' : '') + '>';
+      }).join('');
+      host.insertBefore(box, host.firstChild);
+      var dots = document.createElement('div');
+      dots.className = 'slide-dots';
+      dots.innerHTML = SLIDES.map(function (_, i) { return '<i' + (i === 0 ? ' class="on"' : '') + '></i>'; }).join('');
+      host.appendChild(dots);
+      var imgs = box.querySelectorAll('img'), dd = dots.querySelectorAll('i'), cur = 0;
+      setInterval(function () {
+        imgs[cur].classList.remove('active'); dd[cur].classList.remove('on');
+        cur = (cur + 1) % imgs.length;
+        imgs[cur].classList.add('active'); dd[cur].classList.add('on');
+      }, SLIDE_MS);
+    });
+  }
+
   /* ---------- Boot ---------- */
   function boot() {
     var h = document.getElementById('site-header');
@@ -330,6 +363,7 @@
       el.textContent = new Date().getFullYear();
     });
 
+    setupSlideshows();
     setupMobileMenu();
     setupWhatsappLinks();
     setupFaq();
