@@ -1,9 +1,12 @@
 /* ==========================================================
-   products.js — DEMO product data + product page logic.
+   products.js — product catalogue + product page logic.
 
-   !! ALL PRICES, STOCK AND DESCRIPTIONS BELOW ARE DEMO DATA !!
-   Replace them with your real information (or load them from
-   Supabase later by changing load()).
+   Products are loaded from your Supabase table "products" when the
+   keys in supabase-config.js are filled in. The list below is the
+   built-in catalogue shown until then (and if Supabase is unreachable).
+   Table columns: slug, name, category, short, description, image,
+   discount, stock, featured, bestseller, wholesale, active,
+   ingredients, allergens, storage, packs (jsonb: [{"label":"1 kg","price":170}]).
 
    Element IDs used by the pages (keep them in your HTML):
    - index.html ........ #category-grid, #bestsellers-grid
@@ -22,10 +25,10 @@
 
   /* ---------- Categories ---------- */
   var CATEGORIES = [
-    { id: 'peanuts', name: 'Peanuts', icon: '🥜', color: '#f4e3c1', blurb: 'Raw, premium, roasted, skinless and wholesale peanuts.' },
-    { id: 'mango-pickles', name: 'Mango Pickles', icon: '🥭', color: '#fbe3a6', blurb: 'Five mango pickle styles.' },
-    { id: 'red-chilli', name: 'Red Chilli', icon: '🌶️', color: '#f6cbc4', blurb: 'Whole, dried, powder, premium and wholesale chilli.' },
-    { id: 'rice', name: 'Rice', icon: '🍚', color: '#edf0dc', blurb: 'Ponni, idli, basmati, sona masoori, raw and parboiled rice.' }
+    { id: 'peanuts', name: 'Peanuts', icon: '🥜', color: '#f4e3c1', photo: 'https://images.unsplash.com/photo-1567892320421-1c657571ea4a?auto=format&fit=crop&w=700&q=70', blurb: 'Raw, premium, roasted, skinless and wholesale peanuts.' },
+    { id: 'mango-pickles', name: 'Mango Pickles', icon: '🥭', color: '#fbe3a6', photo: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=700&q=70', blurb: 'Five mango pickle styles.' },
+    { id: 'red-chilli', name: 'Red Chilli', icon: '🌶️', color: '#f6cbc4', photo: 'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=700&q=70', blurb: 'Whole, dried, powder, premium and wholesale chilli.' },
+    { id: 'rice', name: 'Rice', icon: '🍚', color: '#edf0dc', photo: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=700&q=70', blurb: 'Ponni, idli, basmati, sona masoori, raw and parboiled rice.' }
   ];
 
   var STOCK_LABELS = {
@@ -68,7 +71,7 @@
     return String(t).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
   }
 
-  /* Builds one product record. packs = [['label', demoPriceInINR], ...]
+  /* Builds one product record. packs = [['label', priceInINR], ...]
      IDs are stable: product id "p-<slug>", variant id "<product id>-<pack slug>". */
   function P(category, name, short, description, packs, opts) {
     opts = opts || {};
@@ -81,7 +84,7 @@
       short: short,
       description: description + ((CAT_INFO[category] || {}).extra || ''),
       image: opts.image || catImage(category, name),
-      discount: opts.discount || EXTRA_DISC[name] || 0,     // demo discount percent
+      discount: opts.discount || EXTRA_DISC[name] || 0,     // discount percent
       stock: opts.stock || 'in_stock',  // in_stock | low_stock | out_of_stock
       featured: !!opts.featured,
       bestseller: !!opts.bestseller,
@@ -90,15 +93,14 @@
       ingredients: (CAT_INFO[category] || {}).ingredients || '',
       allergens: (CAT_INFO[category] || {}).allergens || '',
       storage: (CAT_INFO[category] || {}).storage || '',
-      isDemo: false,
       packs: packs.map(function (p) {
         return { id: id + '-' + slugify(p[0]), label: p[0], price: p[1] };
       })
     };
   }
 
-  /* ---------- DEMO PRODUCTS ---------- */
-  var DEMO_PRODUCTS = [
+  /* ---------- Built-in catalogue ---------- */
+  var DEFAULT_PRODUCTS = [
     // Peanuts
     P('peanuts', 'Raw Peanuts', 'Raw peanut kernels for everyday cooking.',
       'Raw peanut kernels that can be used for cooking, chutneys or roasting at home.',
@@ -171,11 +173,42 @@
       [['5 kg', 290], ['10 kg', 560], ['25 kg', 1350]], {})
   ];
 
-  /* ---------- Data access (replace load() with Supabase later) ---------- */
-  var cache = DEMO_PRODUCTS.filter(function (p) { return p.active; });
+  /* ---------- Data access (Supabase REST, keys come from supabase-config.js) ---------- */
+  var cache = DEFAULT_PRODUCTS.filter(function (p) { return p.active; });
+
+  function fromRow(r) {
+    var slug = r.slug || slugify(r.name);
+    var id = r.id ? String(r.id) : 'p-' + slug;
+    var packs = r.packs;
+    if (typeof packs === 'string') { try { packs = JSON.parse(packs); } catch (e) { packs = []; } }
+    packs = packs || [];
+    return {
+      id: id, slug: slug, name: r.name, category: r.category,
+      short: r.short || '', description: r.description || '',
+      image: r.image || catImage(r.category, r.name),
+      discount: Number(r.discount) || 0, stock: r.stock || 'in_stock',
+      featured: !!r.featured, bestseller: !!r.bestseller, wholesale: !!r.wholesale,
+      active: r.active !== false,
+      ingredients: r.ingredients || '', allergens: r.allergens || '', storage: r.storage || '',
+      packs: packs.map(function (k) {
+        return { id: id + '-' + slugify(k.label), label: k.label, price: Number(k.price) };
+      })
+    };
+  }
 
   function load() {
-    return Promise.resolve(cache);
+    var sb = window.BT_SUPABASE || {};
+    if (!sb.url || !sb.anonKey || /PASTE_/.test(sb.url + sb.anonKey)) return Promise.resolve(cache);
+    return fetch(sb.url.replace(/\/$/, '') + '/rest/v1/products?select=*&active=eq.true', {
+      headers: { apikey: sb.anonKey, Authorization: 'Bearer ' + sb.anonKey }
+    }).then(function (res) {
+      if (!res.ok) throw new Error('Supabase ' + res.status);
+      return res.json();
+    }).then(function (rows) {
+      var list = (rows || []).map(fromRow).filter(function (x) { return x.active && x.packs.length; });
+      if (list.length) cache = list;
+      return cache;
+    }).catch(function () { return cache; });
   }
   function getAll() { return cache.slice(); }
   function getById(id) {
@@ -339,8 +372,7 @@
     if (cg) {
       cg.innerHTML = CATEGORIES.map(function (c) {
         var n = cache.filter(function (p) { return p.category === c.id; }).length;
-        return '<a class="cat-card" href="products.html?category=' + c.id + '" style="--cat-bg:' + c.color + '">' +
-          '<span class="cat-icon" aria-hidden="true">' + c.icon + '</span>' +
+        return '<a class="cat-card has-photo" href="products.html?category=' + c.id + '" style="--cat-bg:' + c.color + ';--cat-photo:url(\'' + c.photo + '\')">' +
           '<h3>' + c.name + '</h3><p>' + U.escapeHtml(c.blurb) + '</p>' +
           '<span class="cat-count">' + n + ' products</span></a>';
       }).join('');
