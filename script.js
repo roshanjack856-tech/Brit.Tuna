@@ -228,7 +228,7 @@
           '<div><h3>Contact</h3><ul>' + contact + '</ul></div>' +
         '</div>' +
         '<div class="footer-bottom"><div class="container">© <span data-year></span> ' + U.escapeHtml(CFG.brandName) +
-          '. Sample prices and stock on this site are demo data.</div></div>' +
+          '. All rights reserved.</div></div>' +
       '</footer>';
   }
 
@@ -341,6 +341,24 @@
     });
   }
 
+  /* ---------- Full-page background photos (all pages) ---------- */
+  function setupPageBackground() {
+    var box = document.createElement('div');
+    box.className = 'bg-slides';
+    box.setAttribute('aria-hidden', 'true');
+    var start = 2; // start on a different photo than the top banner
+    box.innerHTML = SLIDES.map(function (src, i) {
+      return '<img src="' + src + '" alt=""' + (i === start ? ' class="active"' : '') + '>';
+    }).join('');
+    document.body.insertBefore(box, document.body.firstChild);
+    var imgs = box.querySelectorAll('img'), cur = start;
+    setInterval(function () {
+      imgs[cur].classList.remove('active');
+      cur = (cur + 1) % imgs.length;
+      imgs[cur].classList.add('active');
+    }, SLIDE_MS);
+  }
+
   /* ---------- Boot ---------- */
   function boot() {
     var h = document.getElementById('site-header');
@@ -363,6 +381,7 @@
       el.textContent = new Date().getFullYear();
     });
 
+    setupPageBackground();
     setupSlideshows();
     setupMobileMenu();
     setupWhatsappLinks();
