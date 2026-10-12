@@ -32,10 +32,10 @@
           </div>
         </div>
         <div class="hero-tiles" aria-label="Product categories">
-          <a class="hero-tile" style="--tile:#f4e3c1" href="products.html?category=peanuts"><span>🥜</span>Peanuts</a>
-          <a class="hero-tile" style="--tile:#fbe3a6" href="products.html?category=mango-pickles"><span>🥭</span>Mango Pickles</a>
-          <a class="hero-tile" style="--tile:#f6cbc4" href="products.html?category=red-chilli"><span>🌶️</span>Red Chilli</a>
-          <a class="hero-tile" style="--tile:#edf0dc" href="products.html?category=rice"><span>🍚</span>Rice</a>
+          <a class="hero-tile" style="--photo:url('https://images.unsplash.com/photo-1567892320421-1c657571ea4a?auto=format&fit=crop&w=600&q=70')" href="products.html?category=peanuts">Peanuts</a>
+          <a class="hero-tile" style="--photo:url('https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=600&q=70')" href="products.html?category=mango-pickles">Mango Pickles</a>
+          <a class="hero-tile" style="--photo:url('https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=600&q=70')" href="products.html?category=red-chilli">Red Chilli</a>
+          <a class="hero-tile" style="--photo:url('https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=70')" href="products.html?category=rice">Rice</a>
         </div>
       </div>
     </section>
@@ -130,15 +130,15 @@
         <div class="prose">
           <div class="faq-item">
             <button type="button" class="faq-q" aria-expanded="false">How do I place an order?</button>
-            <div class="faq-a" hidden>Add products to your cart and go to checkout. Online ordering is not connected yet, so for now please use the WhatsApp button on any product to enquire.</div>
+            <div class="faq-a" hidden>Add products to your cart and go to checkout. You can also order directly on WhatsApp using the button on any product.</div>
           </div>
           <div class="faq-item">
             <button type="button" class="faq-q" aria-expanded="false">Do you accept bulk or wholesale orders?</button>
-            <div class="faq-a" hidden>Wholesale products are listed in the shop. Please contact us for current bulk rates and availability. (Editable: confirm minimum quantities.)</div>
+            <div class="faq-a" hidden>Wholesale products are listed in the shop. Contact us on WhatsApp or through the contact form for current bulk rates, minimum quantities and availability.</div>
           </div>
           <div class="faq-item">
             <button type="button" class="faq-q" aria-expanded="false">What are the shipping and delivery terms?</button>
-            <div class="faq-a" hidden>Shipping areas, charges and delivery times are not confirmed yet. (Editable: add your real shipping policy.)</div>
+            <div class="faq-a" hidden>Delivery charges and the estimated delivery time are shown at checkout before you pay. Message us on WhatsApp to check delivery to your area.</div>
           </div>
         </div>
       </div>
@@ -161,8 +161,9 @@
 
   <div id="site-footer"></div>
 
-  <!-- Load order matters: config → products → cart → supabase → script -->
+  <!-- Load order matters: config → supabase-config → products → cart → supabase → script -->
   <script src="config.js"></script>
+  <script src="supabase-config.js"></script>
   <script src="products.js"></script>
   <script src="cart.js"></script>
   <script src="supabase.js"></script>
