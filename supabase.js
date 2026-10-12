@@ -70,7 +70,7 @@
   ) {
 
     console.error(
-      "Brit.Tuna: Please add your Supabase Project URL."
+      "https://wrzxlmviwpeiggzgycpl.supabase.co"
     );
 
     return;
@@ -88,7 +88,7 @@
   ) {
 
     console.error(
-      "Brit.Tuna: Please add your Supabase Publishable Key."
+      "sb_publishable_js68PKxlcJMbq_BqBRHrpQ_cgCig1es"
     );
 
     return;
