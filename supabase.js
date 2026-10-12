@@ -1,14 +1,128 @@
 /* ==========================================================
-   supabase-config.js — PUT YOUR SUPABASE DETAILS HERE
-   Supabase dashboard -> Project Settings -> API
+   supabase.js — Brit.Tuna Supabase Connection
+   ==========================================================
+
+   Required before this file:
+
+   1. Supabase JavaScript library
+   2. config.js / supabase-config.js
+
+   IMPORTANT:
+   Frontend must use ONLY the publishable key.
+   NEVER use service_role or secret key here.
    ========================================================== */
-window.BT_SUPABASE = {
 
-  // >>>>>>>>>> FIX HERE 1: your Project URL <<<<<<<<<<
-  url: 'PASTE_YOUR_SUPABASE_PROJECT_URL_HERE',        // e.g. https://abcdxyz.supabase.co
 
-  // >>>>>>>>>> FIX HERE 2: your anon / public key <<<<<<<<<<
-  anonKey: 'PASTE_YOUR_SUPABASE_ANON_PUBLIC_KEY_HERE' // the "anon public" key ONLY
+(function () {
 
-  // NEVER paste the "service_role" key in this file. It must stay secret on a server.
-};
+  "use strict";
+
+
+  /* ========================================================
+     CHECK SUPABASE LIBRARY
+     ======================================================== */
+
+  if (!window.supabase) {
+
+    console.error(
+      "Brit.Tuna: Supabase JavaScript library is not loaded."
+    );
+
+    return;
+
+  }
+
+
+  /* ========================================================
+     CHECK CONFIG
+     ======================================================== */
+
+  if (!window.BT_SUPABASE) {
+
+    console.error(
+      "Brit.Tuna: Supabase configuration was not found."
+    );
+
+    return;
+
+  }
+
+
+  /* ========================================================
+     GET PROJECT URL AND PUBLISHABLE KEY
+     ======================================================== */
+
+  const supabaseUrl =
+    window.BT_SUPABASE.url;
+
+
+  const supabaseKey =
+    window.BT_SUPABASE.anonKey;
+
+
+  /* ========================================================
+     CHECK PROJECT URL
+     ======================================================== */
+
+  if (
+    !supabaseUrl ||
+    supabaseUrl.includes("PASTE_YOUR")
+  ) {
+
+    console.error(
+      "Brit.Tuna: Please add your Supabase Project URL."
+    );
+
+    return;
+
+  }
+
+
+  /* ========================================================
+     CHECK PUBLISHABLE KEY
+     ======================================================== */
+
+  if (
+    !supabaseKey ||
+    supabaseKey.includes("PASTE_YOUR")
+  ) {
+
+    console.error(
+      "Brit.Tuna: Please add your Supabase Publishable Key."
+    );
+
+    return;
+
+  }
+
+
+  /* ========================================================
+     CREATE SUPABASE CLIENT
+     ======================================================== */
+
+  try {
+
+    window.supabaseClient =
+      window.supabase.createClient(
+        supabaseUrl,
+        supabaseKey
+      );
+
+
+    console.log(
+      "Brit.Tuna: Supabase connected successfully."
+    );
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "Brit.Tuna: Supabase connection failed:",
+      error
+    );
+
+  }
+
+
+})();
