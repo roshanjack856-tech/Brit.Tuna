@@ -317,30 +317,6 @@
     'https://images.unsplash.com/photo-1532336414038-cf19250c5757?auto=format&fit=crop&w=1600&q=70'
   ];
   var SLIDE_MS = 1000;
-  function setupSlideshows() {
-    var hosts = document.querySelectorAll('.hero, .page-hero');
-    Array.prototype.forEach.call(hosts, function (host) {
-      host.classList.add('has-slides');
-      var box = document.createElement('div');
-      box.className = 'slideshow';
-      box.setAttribute('aria-hidden', 'true');
-      box.innerHTML = SLIDES.map(function (src, i) {
-        return '<img src="' + src + '" alt=""' + (i === 0 ? ' class="active"' : '') + '>';
-      }).join('');
-      host.insertBefore(box, host.firstChild);
-      var dots = document.createElement('div');
-      dots.className = 'slide-dots';
-      dots.innerHTML = SLIDES.map(function (_, i) { return '<i' + (i === 0 ? ' class="on"' : '') + '></i>'; }).join('');
-      host.appendChild(dots);
-      var imgs = box.querySelectorAll('img'), dd = dots.querySelectorAll('i'), cur = 0;
-      setInterval(function () {
-        imgs[cur].classList.remove('active'); dd[cur].classList.remove('on');
-        cur = (cur + 1) % imgs.length;
-        imgs[cur].classList.add('active'); dd[cur].classList.add('on');
-      }, SLIDE_MS);
-    });
-  }
-
   /* ---------- Full-page background photos (all pages) ---------- */
   function setupPageBackground() {
     var box = document.createElement('div');
@@ -382,7 +358,6 @@
     });
 
     setupPageBackground();
-    setupSlideshows();
     setupMobileMenu();
     setupWhatsappLinks();
     setupFaq();
