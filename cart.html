@@ -46,16 +46,33 @@
 
   <div id="site-footer"></div>
 
-  <script src="config.js"></script>
-  <script src="products.js"></script>
-  <script src="cart.js"></script>
-  <script src="supabase.js"></script>
-  <script src="script.js"></script>
-  <script>
-    // Clear-cart button (cart page only)
-    document.getElementById('clear-cart').addEventListener('click', function () {
-      if (window.confirm('Remove all items from your cart?')) window.BTCart.clear();
-    });
-  </script>
+  <!-- Supabase JavaScript Library -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- Brit.Tuna Configuration -->
+<script src="config.js"></script>
+
+<!-- Create Supabase Client -->
+<script src="supabase.js"></script>
+
+<!-- Product Data -->
+<script src="products.js"></script>
+
+<!-- Cart -->
+<script src="cart.js"></script>
+
+<!-- Shared Header / Footer / Authentication -->
+<script src="script.js"></script>
+
+<!-- Cart Page Only -->
+<script>
+  // Clear-cart button (cart page only)
+  document.getElementById('clear-cart').addEventListener('click', function () {
+    if (window.confirm('Remove all items from your cart?')) {
+      window.BTCart.clear();
+    }
+  });
+</script>
+
 </body>
 </html>
