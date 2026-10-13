@@ -123,11 +123,23 @@
 
   <div id="site-footer"></div>
 
-  <!-- Load order matters: config → products → cart → supabase → script -->
-  <script src="config.js"></script>
-  <script src="products.js"></script>
-  <script src="cart.js"></script>
-  <script src="supabase.js"></script>
-  <script src="script.js"></script>
+  <!-- Supabase JavaScript Library -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- Brit.Tuna Configuration -->
+<script src="config.js"></script>
+
+<!-- Create Supabase Client -->
+<script src="supabase.js"></script>
+
+<!-- Product Data -->
+<script src="products.js"></script>
+
+<!-- Cart -->
+<script src="cart.js"></script>
+
+<!-- Shared Header / Footer / Authentication -->
+<script src="script.js"></script>
+
 </body>
 </html>
