@@ -162,11 +162,25 @@
   <div id="site-footer"></div>
 
   <!-- Load order matters: config → supabase-config → products → cart → supabase → script -->
-  <script src="config.js"></script>
-  <script src="supabase-config.js"></script>
-  <script src="products.js"></script>
-  <script src="cart.js"></script>
-  <script src="supabase.js"></script>
-  <script src="script.js"></script>
+ <div id="site-footer"></div>
+
+<!-- 1. Supabase JavaScript Library -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- 2. Brit.Tuna Configuration -->
+<script src="config.js"></script>
+
+<!-- 3. Create Supabase Client -->
+<script src="supabase.js"></script>
+
+<!-- 4. Product Data -->
+<script src="products.js"></script>
+
+<!-- 5. Cart -->
+<script src="cart.js"></script>
+
+<!-- 6. Shared Website UI -->
+<script src="script.js"></script>
+
 </body>
 </html>
