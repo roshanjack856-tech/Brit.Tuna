@@ -1,89 +1,1563 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
   <title>My Account | Brit.Tuna</title>
-  <meta name="robots" content="noindex">
-  <meta name="theme-color" content="#1f5a3a">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="responsive.css">
+
+  <meta
+    name="robots"
+    content="noindex"
+  >
+
+  <meta
+    name="theme-color"
+    content="#1f5a3a"
+  >
+
+  <!-- GOOGLE FONTS -->
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  >
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  >
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <!-- WEBSITE CSS -->
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="responsive.css"
+  >
+
+  <style>
+    .account-user-box {
+      padding: 14px;
+      margin-bottom: 16px;
+      border-radius: 10px;
+      background: #f8f4eb;
+    }
+
+    .account-user-box p {
+      margin: 4px 0;
+    }
+
+    .account-status {
+      font-size: 14px;
+      color: #1f5a3a;
+      font-weight: 600;
+    }
+
+    #logout-button {
+      margin-top: 10px;
+    }
+
+    #profile-result {
+      margin-top: 14px;
+    }
+  </style>
+
 </head>
+
+
 <body data-page="account">
 
-  <!-- Header, mobile menu and WhatsApp button are built by script.js -->
+
+  <!-- HEADER -->
   <div id="site-header"></div>
+
 
   <main id="main">
 
+
+    <!-- PAGE HERO -->
     <section class="page-hero">
+
       <div class="container">
-        <h1>My Account</h1>
-        <p>Your profile and delivery details.</p>
+
+        <h1>
+          My Account
+        </h1>
+
+        <p>
+          Your profile and delivery details.
+        </p>
+
       </div>
+
     </section>
+
+
 
     <div class="container page-body">
 
-      <!-- Shown when Supabase is not configured, or the visitor is not signed in -->
-      <p class="notice notice-error" id="account-notice" role="status" hidden></p>
 
-      <div class="checkout-layout" style="margin-top:18px">
+      <!-- ACCOUNT NOTICE -->
+      <p
+        class="notice notice-error"
+        id="account-notice"
+        role="status"
+        hidden
+      ></p>
 
-        <!-- PROFILE FORM -->
-        <form class="form-card" id="profile-form" novalidate>
-          <h2>Profile</h2>
 
-          <div class="form-grid">
-            <div class="form-field full">
-              <label for="p-email">Email</label>
-              <input id="p-email" type="email" disabled placeholder="Sign in to see your email">
-            </div>
-            <div class="form-field">
-              <label for="p-name">Full name</label>
-              <input id="p-name" type="text" autocomplete="name" disabled>
-              <span class="error" id="err-p-name" aria-live="polite"></span>
-            </div>
-            <div class="form-field">
-              <label for="p-phone">Phone number</label>
-              <input id="p-phone" type="tel" autocomplete="tel" placeholder="10-digit mobile number" disabled>
-              <span class="error" id="err-p-phone" aria-live="polite"></span>
-            </div>
-            <div class="form-field full">
-              <label for="p-address">Delivery address</label>
-              <textarea id="p-address" rows="3" autocomplete="street-address" disabled></textarea>
-            </div>
-            <div class="form-field">
-              <label for="p-city">City</label>
-              <input id="p-city" type="text" autocomplete="address-level2" disabled>
-            </div>
-            <div class="form-field">
-              <label for="p-state">State</label>
-              <input id="p-state" type="text" autocomplete="address-level1" disabled>
-            </div>
-            <div class="form-field">
-              <label for="p-pin">PIN code</label>
-              <input id="p-pin" type="text" inputmode="numeric" maxlength="6" autocomplete="postal-code" disabled>
-              <span class="error" id="err-p-pin" aria-live="polite"></span>
-            </div>
+
+      <div
+        class="checkout-layout"
+        style="margin-top:18px"
+      >
+
+
+        <!-- =====================================
+             PROFILE FORM
+        ====================================== -->
+
+        <form
+          class="form-card"
+          id="profile-form"
+          novalidate
+        >
+
+          <h2>
+            Profile
+          </h2>
+
+
+          <!-- LOGGED-IN STATUS -->
+
+          <div
+            id="account-user-box"
+            class="account-user-box"
+            hidden
+          >
+
+            <p class="account-status">
+              Signed in
+            </p>
+
+            <p id="account-user-name"></p>
+
           </div>
 
-          <button type="submit" class="btn btn-primary btn-block" id="save-btn" disabled>Save profile</button>
-          <div class="notice notice-small" id="profile-result" role="status" hidden></div>
+
+
+          <div class="form-grid">
+
+
+            <!-- EMAIL -->
+
+            <div class="form-field full">
+
+              <label for="p-email">
+                Email
+              </label>
+
+              <input
+                id="p-email"
+                type="email"
+                disabled
+                placeholder="Sign in to see your email"
+              >
+
+            </div>
+
+
+
+            <!-- FULL NAME -->
+
+            <div class="form-field">
+
+              <label for="p-name">
+                Full name
+              </label>
+
+              <input
+                id="p-name"
+                type="text"
+                autocomplete="name"
+                disabled
+              >
+
+              <span
+                class="error"
+                id="err-p-name"
+                aria-live="polite"
+              ></span>
+
+            </div>
+
+
+
+            <!-- PHONE -->
+
+            <div class="form-field">
+
+              <label for="p-phone">
+                Phone number
+              </label>
+
+              <input
+                id="p-phone"
+                type="tel"
+                autocomplete="tel"
+                placeholder="10-digit mobile number"
+                maxlength="10"
+                inputmode="numeric"
+                disabled
+              >
+
+              <span
+                class="error"
+                id="err-p-phone"
+                aria-live="polite"
+              ></span>
+
+            </div>
+
+
+
+            <!-- DELIVERY ADDRESS -->
+
+            <div class="form-field full">
+
+              <label for="p-address">
+                Delivery address
+              </label>
+
+              <textarea
+                id="p-address"
+                rows="3"
+                autocomplete="street-address"
+                disabled
+              ></textarea>
+
+            </div>
+
+
+
+            <!-- CITY -->
+
+            <div class="form-field">
+
+              <label for="p-city">
+                City
+              </label>
+
+              <input
+                id="p-city"
+                type="text"
+                autocomplete="address-level2"
+                disabled
+              >
+
+            </div>
+
+
+
+            <!-- STATE -->
+
+            <div class="form-field">
+
+              <label for="p-state">
+                State
+              </label>
+
+              <input
+                id="p-state"
+                type="text"
+                autocomplete="address-level1"
+                disabled
+              >
+
+            </div>
+
+
+
+            <!-- PIN -->
+
+            <div class="form-field">
+
+              <label for="p-pin">
+                PIN code
+              </label>
+
+              <input
+                id="p-pin"
+                type="text"
+                inputmode="numeric"
+                maxlength="6"
+                autocomplete="postal-code"
+                disabled
+              >
+
+              <span
+                class="error"
+                id="err-p-pin"
+                aria-live="polite"
+              ></span>
+
+            </div>
+
+
+          </div>
+
+
+
+          <!-- SAVE -->
+
+          <button
+            type="submit"
+            class="btn btn-primary btn-block"
+            id="save-btn"
+            disabled
+          >
+            Save profile
+          </button>
+
+
+
+          <div
+            class="notice notice-small"
+            id="profile-result"
+            role="status"
+            hidden
+          ></div>
+
+
         </form>
 
-        <!-- ACCOUNT MENU -->
-        <aside class="summary-box" aria-label="Account menu">
-          <h2>Account</h2>
+
+
+        <!-- =====================================
+             ACCOUNT MENU
+        ====================================== -->
+
+        <aside
+          class="summary-box"
+          aria-label="Account menu"
+        >
+
+          <h2>
+            Account
+          </h2>
+
+
           <ul>
-            <li class="summary-row"><a href="account.html"><strong>Profile</strong></a></li>
-            <li class="summary-row"><a href="orders.html">My orders</a></li>
-            <li class="summary-row"><a href="cart.html">My cart</a></li>
+
+            <li class="summary-row">
+
+              <a href="account.html">
+                <strong>Profile</strong>
+              </a>
+
+            </li>
+
+
+            <li class="summary-row">
+
+              <a href="orders.html">
+                My orders
+              </a>
+
+            </li>
+
+
+            <li class="summary-row">
+
+              <a href="cart.html">
+                My cart
+              </a>
+
+            </li>
+
           </ul>
-          <div id="account-actions" style="margin-top:14px">
-            <a class="btn btn-primary btn-block" href="login.html" id="signin-link">Sign in</a>
-            <a class="btn btn-outline btn-block" href="register.html" id="register-link">Create account</a>
-            <button type="button" class="btn
+
+
+
+          <div
+            id="account-actions"
+            style="margin-top:14px"
+          >
+
+
+            <!-- SIGN IN -->
+
+            <a
+              class="btn btn-primary btn-block"
+              href="login.html"
+              id="signin-link"
+            >
+              Sign in
+            </a>
+
+
+
+            <!-- REGISTER -->
+
+            <a
+              class="btn btn-outline btn-block"
+              href="register.html"
+              id="register-link"
+            >
+              Create account
+            </a>
+
+
+
+            <!-- LOGOUT -->
+
+            <button
+              type="button"
+              class="btn btn-outline btn-block"
+              id="logout-button"
+              hidden
+            >
+              Sign out
+            </button>
+
+
+          </div>
+
+
+        </aside>
+
+
+      </div>
+
+
+    </div>
+
+
+  </main>
+
+
+
+  <!-- FOOTER -->
+  <div id="site-footer"></div>
+
+
+
+  <!-- ============================================
+       1. SUPABASE LIBRARY
+  ============================================= -->
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
+
+
+  <!-- ============================================
+       2. CONFIG
+  ============================================= -->
+
+  <script src="config.js"></script>
+
+
+
+  <!-- ============================================
+       3. SUPABASE CLIENT
+  ============================================= -->
+
+  <script src="supabase.js"></script>
+
+
+
+  <!-- ============================================
+       4. WEBSITE SCRIPT
+  ============================================= -->
+
+  <script src="script.js"></script>
+
+
+
+  <!-- ============================================
+       5. ACCOUNT LOGIC
+  ============================================= -->
+
+  <script>
+
+    'use strict';
+
+
+
+    /* ==========================================
+       ELEMENTS
+    ========================================== */
+
+    const accountNotice =
+      document.getElementById(
+        'account-notice'
+      );
+
+
+    const profileForm =
+      document.getElementById(
+        'profile-form'
+      );
+
+
+    const emailInput =
+      document.getElementById(
+        'p-email'
+      );
+
+
+    const nameInput =
+      document.getElementById(
+        'p-name'
+      );
+
+
+    const phoneInput =
+      document.getElementById(
+        'p-phone'
+      );
+
+
+    const addressInput =
+      document.getElementById(
+        'p-address'
+      );
+
+
+    const cityInput =
+      document.getElementById(
+        'p-city'
+      );
+
+
+    const stateInput =
+      document.getElementById(
+        'p-state'
+      );
+
+
+    const pinInput =
+      document.getElementById(
+        'p-pin'
+      );
+
+
+    const saveButton =
+      document.getElementById(
+        'save-btn'
+      );
+
+
+    const profileResult =
+      document.getElementById(
+        'profile-result'
+      );
+
+
+    const signInLink =
+      document.getElementById(
+        'signin-link'
+      );
+
+
+    const registerLink =
+      document.getElementById(
+        'register-link'
+      );
+
+
+    const logoutButton =
+      document.getElementById(
+        'logout-button'
+      );
+
+
+    const accountUserBox =
+      document.getElementById(
+        'account-user-box'
+      );
+
+
+    const accountUserName =
+      document.getElementById(
+        'account-user-name'
+      );
+
+
+
+    let currentUser = null;
+
+
+
+    /* ==========================================
+       SHOW MESSAGE
+    ========================================== */
+
+    function showNotice(message) {
+
+      accountNotice.textContent =
+        message;
+
+      accountNotice.hidden =
+        false;
+
+    }
+
+
+
+    function hideNotice() {
+
+      accountNotice.hidden =
+        true;
+
+      accountNotice.textContent =
+        '';
+
+    }
+
+
+
+    function showProfileMessage(
+      message,
+      isError = false
+    ) {
+
+      profileResult.hidden =
+        false;
+
+      profileResult.textContent =
+        message;
+
+
+      if (isError) {
+
+        profileResult.classList.add(
+          'notice-error'
+        );
+
+      } else {
+
+        profileResult.classList.remove(
+          'notice-error'
+        );
+
+      }
+
+    }
+
+
+
+    /* ==========================================
+       ENABLE PROFILE
+    ========================================== */
+
+    function enableProfileForm() {
+
+      nameInput.disabled =
+        false;
+
+      phoneInput.disabled =
+        false;
+
+      addressInput.disabled =
+        false;
+
+      cityInput.disabled =
+        false;
+
+      stateInput.disabled =
+        false;
+
+      pinInput.disabled =
+        false;
+
+      saveButton.disabled =
+        false;
+
+    }
+
+
+
+    /* ==========================================
+       LOGGED OUT UI
+    ========================================== */
+
+    function showLoggedOutUI() {
+
+      currentUser =
+        null;
+
+
+      emailInput.value =
+        '';
+
+      emailInput.placeholder =
+        'Sign in to see your email';
+
+
+      nameInput.value =
+        '';
+
+      phoneInput.value =
+        '';
+
+
+      nameInput.disabled =
+        true;
+
+      phoneInput.disabled =
+        true;
+
+      addressInput.disabled =
+        true;
+
+      cityInput.disabled =
+        true;
+
+      stateInput.disabled =
+        true;
+
+      pinInput.disabled =
+        true;
+
+      saveButton.disabled =
+        true;
+
+
+      signInLink.hidden =
+        false;
+
+      registerLink.hidden =
+        false;
+
+      logoutButton.hidden =
+        true;
+
+      accountUserBox.hidden =
+        true;
+
+
+      showNotice(
+        'Please sign in to view and manage your account.'
+      );
+
+    }
+
+
+
+    /* ==========================================
+       LOCAL DELIVERY DETAILS
+    ========================================== */
+
+    function loadLocalDeliveryDetails(userId) {
+
+      try {
+
+        const key =
+          'britTunaDelivery_' +
+          userId;
+
+
+        const saved =
+          localStorage.getItem(
+            key
+          );
+
+
+        if (!saved) {
+          return;
+        }
+
+
+        const details =
+          JSON.parse(saved);
+
+
+        addressInput.value =
+          details.address || '';
+
+
+        cityInput.value =
+          details.city || '';
+
+
+        stateInput.value =
+          details.state || '';
+
+
+        pinInput.value =
+          details.pin || '';
+
+      }
+
+      catch (error) {
+
+        console.error(
+          'Brit.Tuna: Could not load local delivery details:',
+          error
+        );
+
+      }
+
+    }
+
+
+
+    function saveLocalDeliveryDetails(userId) {
+
+      try {
+
+        const key =
+          'britTunaDelivery_' +
+          userId;
+
+
+        const details = {
+
+          address:
+            addressInput.value.trim(),
+
+          city:
+            cityInput.value.trim(),
+
+          state:
+            stateInput.value.trim(),
+
+          pin:
+            pinInput.value.trim()
+
+        };
+
+
+        localStorage.setItem(
+          key,
+          JSON.stringify(details)
+        );
+
+      }
+
+      catch (error) {
+
+        console.error(
+          'Brit.Tuna: Could not save local delivery details:',
+          error
+        );
+
+      }
+
+    }
+
+
+
+    /* ==========================================
+       LOAD PROFILE FROM SUPABASE
+    ========================================== */
+
+    async function loadProfile(user) {
+
+      currentUser =
+        user;
+
+
+      hideNotice();
+
+
+      /* EMAIL */
+
+      emailInput.value =
+        user.email || '';
+
+
+
+      /*
+        Google normally provides name
+        inside user_metadata.
+
+        Our profiles table also contains
+        full_name.
+      */
+
+      const googleName =
+        user.user_metadata?.full_name ||
+        user.user_metadata?.name ||
+        '';
+
+
+
+      /* SHOW LOGGED IN UI */
+
+      signInLink.hidden =
+        true;
+
+      registerLink.hidden =
+        true;
+
+      logoutButton.hidden =
+        false;
+
+      accountUserBox.hidden =
+        false;
+
+
+      accountUserName.textContent =
+        googleName ||
+        user.email ||
+        'Brit.Tuna Customer';
+
+
+
+      enableProfileForm();
+
+
+
+      try {
+
+
+        const {
+          data: profile,
+          error
+        } =
+
+          await window.supabaseClient
+            .from('profiles')
+            .select(
+              'id, full_name, phone, role'
+            )
+            .eq(
+              'id',
+              user.id
+            )
+            .maybeSingle();
+
+
+
+        if (error) {
+
+          console.error(
+            'Profile load error:',
+            error
+          );
+
+
+          /*
+            Auth still works even if
+            profile query has a problem.
+          */
+
+          nameInput.value =
+            googleName;
+
+
+          loadLocalDeliveryDetails(
+            user.id
+          );
+
+
+          return;
+
+        }
+
+
+
+        /* PROFILE EXISTS */
+
+        if (profile) {
+
+
+          nameInput.value =
+            profile.full_name ||
+            googleName ||
+            '';
+
+
+          phoneInput.value =
+            profile.phone ||
+            '';
+
+
+          accountUserName.textContent =
+            profile.full_name ||
+            googleName ||
+            user.email ||
+            'Brit.Tuna Customer';
+
+        }
+
+        else {
+
+
+          /*
+            In case profile trigger did not
+            create a row, still show Google
+            information.
+          */
+
+          nameInput.value =
+            googleName;
+
+        }
+
+
+
+        loadLocalDeliveryDetails(
+          user.id
+        );
+
+
+      }
+
+      catch (error) {
+
+
+        console.error(
+          'Unexpected profile load error:',
+          error
+        );
+
+
+        nameInput.value =
+          googleName;
+
+
+        loadLocalDeliveryDetails(
+          user.id
+        );
+
+      }
+
+    }
+
+
+
+    /* ==========================================
+       INITIAL ACCOUNT LOAD
+    ========================================== */
+
+    async function initialiseAccount() {
+
+
+      if (!window.supabaseClient) {
+
+
+        showNotice(
+          'Account service is not ready. Please refresh the page.'
+        );
+
+
+        return;
+
+      }
+
+
+
+      try {
+
+
+        /*
+          getSession() checks the Supabase
+          login session stored in browser.
+        */
+
+        const {
+          data,
+          error
+        } =
+
+          await window.supabaseClient
+            .auth
+            .getSession();
+
+
+
+        if (error) {
+
+
+          console.error(
+            'Session error:',
+            error
+          );
+
+
+          showLoggedOutUI();
+
+
+          return;
+
+        }
+
+
+
+        const session =
+          data?.session;
+
+
+
+        if (!session || !session.user) {
+
+
+          showLoggedOutUI();
+
+
+          return;
+
+        }
+
+
+
+        console.log(
+          'Brit.Tuna: Logged in user:',
+          session.user.id
+        );
+
+
+
+        await loadProfile(
+          session.user
+        );
+
+
+      }
+
+      catch (error) {
+
+
+        console.error(
+          'Account initialization error:',
+          error
+        );
+
+
+        showLoggedOutUI();
+
+      }
+
+    }
+
+
+
+    /* ==========================================
+       PROFILE SAVE
+    ========================================== */
+
+    profileForm.addEventListener(
+
+      'submit',
+
+      async function (event) {
+
+
+        event.preventDefault();
+
+
+
+        if (!currentUser) {
+
+
+          showProfileMessage(
+            'Please sign in first.',
+            true
+          );
+
+
+          return;
+
+        }
+
+
+
+        const fullName =
+          nameInput.value.trim();
+
+
+        const phone =
+          phoneInput.value
+            .replace(/\D/g, '');
+
+
+        const pin =
+          pinInput.value
+            .replace(/\D/g, '');
+
+
+
+        /* RESET ERRORS */
+
+        document.getElementById(
+          'err-p-name'
+        ).textContent = '';
+
+
+        document.getElementById(
+          'err-p-phone'
+        ).textContent = '';
+
+
+        document.getElementById(
+          'err-p-pin'
+        ).textContent = '';
+
+
+
+        /* VALIDATE NAME */
+
+        if (!fullName) {
+
+
+          document.getElementById(
+            'err-p-name'
+          ).textContent =
+            'Please enter your full name.';
+
+
+          return;
+
+        }
+
+
+
+        /* VALIDATE PHONE */
+
+        if (
+          phone &&
+          !/^[6-9][0-9]{9}$/.test(phone)
+        ) {
+
+
+          document.getElementById(
+            'err-p-phone'
+          ).textContent =
+            'Enter a valid 10-digit Indian mobile number.';
+
+
+          return;
+
+        }
+
+
+
+        /* VALIDATE PIN */
+
+        if (
+          pin &&
+          !/^[0-9]{6}$/.test(pin)
+        ) {
+
+
+          document.getElementById(
+            'err-p-pin'
+          ).textContent =
+            'Enter a valid 6-digit PIN code.';
+
+
+          return;
+
+        }
+
+
+
+        saveButton.disabled =
+          true;
+
+
+        saveButton.textContent =
+          'Saving...';
+
+
+
+        try {
+
+
+          /*
+            Only these columns currently
+            exist in profiles:
+
+            full_name
+            phone
+
+            Address fields are saved locally
+            until we add database columns.
+          */
+
+          const {
+            data,
+            error
+          } =
+
+            await window.supabaseClient
+              .from('profiles')
+              .update({
+
+                full_name:
+                  fullName,
+
+                phone:
+                  phone || null,
+
+                updated_at:
+                  new Date().toISOString()
+
+              })
+              .eq(
+                'id',
+                currentUser.id
+              )
+              .select(
+                'id, full_name, phone, role'
+              )
+              .single();
+
+
+
+          if (error) {
+
+
+            console.error(
+              'Profile update error:',
+              error
+            );
+
+
+            showProfileMessage(
+              error.message,
+              true
+            );
+
+
+            saveButton.disabled =
+              false;
+
+
+            saveButton.textContent =
+              'Save profile';
+
+
+            return;
+
+          }
+
+
+
+          /* SAVE ADDRESS LOCALLY */
+
+          saveLocalDeliveryDetails(
+            currentUser.id
+          );
+
+
+
+          accountUserName.textContent =
+            data.full_name ||
+            currentUser.email;
+
+
+
+          showProfileMessage(
+            'Profile saved successfully.'
+          );
+
+
+        }
+
+        catch (error) {
+
+
+          console.error(
+            'Unexpected profile save error:',
+            error
+          );
+
+
+          showProfileMessage(
+            'Could not save your profile. Please try again.',
+            true
+          );
+
+        }
+
+
+
+        saveButton.disabled =
+          false;
+
+
+        saveButton.textContent =
+          'Save profile';
+
+      }
+
+    );
+
+
+
+    /* ==========================================
+       LOGOUT
+    ========================================== */
+
+    logoutButton.addEventListener(
+
+      'click',
+
+      async function () {
+
+
+        if (!window.supabaseClient) {
+          return;
+        }
+
+
+        logoutButton.disabled =
+          true;
+
+
+        logoutButton.textContent =
+          'Signing out...';
+
+
+
+        try {
+
+
+          const {
+            error
+          } =
+
+            await window.supabaseClient
+              .auth
+              .signOut();
+
+
+
+          if (error) {
+
+
+            console.error(
+              'Logout error:',
+              error
+            );
+
+
+            logoutButton.disabled =
+              false;
+
+
+            logoutButton.textContent =
+              'Sign out';
+
+
+            return;
+
+          }
+
+
+
+          window.location.href =
+            'index.html';
+
+
+        }
+
+        catch (error) {
+
+
+          console.error(
+            'Unexpected logout error:',
+            error
+          );
+
+
+          logoutButton.disabled =
+            false;
+
+
+          logoutButton.textContent =
+            'Sign out';
+
+        }
+
+      }
+
+    );
+
+
+
+    /* ==========================================
+       AUTH STATE CHANGES
+    ========================================== */
+
+    if (window.supabaseClient) {
+
+
+      window.supabaseClient
+        .auth
+        .onAuthStateChange(
+
+          function (
+            event,
+            session
+          ) {
+
+
+            console.log(
+              'Brit.Tuna auth event:',
+              event
+            );
+
+
+            if (
+              event === 'SIGNED_OUT'
+            ) {
+
+
+              showLoggedOutUI();
+
+            }
+
+
+            if (
+              event === 'SIGNED_IN' &&
+              session?.user
+            ) {
+
+
+              loadProfile(
+                session.user
+              );
+
+            }
+
+          }
+
+        );
+
+    }
+
+
+
+    /* ==========================================
+       START
+    ========================================== */
+
+    initialiseAccount();
+
+  </script>
+
+
+</body>
+
+</html>
