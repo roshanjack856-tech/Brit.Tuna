@@ -358,400 +358,457 @@
   <!-- ==========================================
        1. SUPABASE LIBRARY
   =========================================== -->
+<!-- ==========================================
+     1. SUPABASE LIBRARY
+=========================================== -->
 
-  <script
-    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-  ></script>
-
-
-
-  <!-- ==========================================
-       2. BRIT.TUNA CONFIG
-  =========================================== -->
-
-  <script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
+<!-- ==========================================
+     2. BRIT.TUNA CONFIG
+=========================================== -->
 
-  <!-- ==========================================
-       3. CREATE SUPABASE CLIENT
-  =========================================== -->
-
-  <script src="supabase.js"></script>
-
+<script src="config.js"></script>
 
 
-  <!-- ==========================================
-       4. WEBSITE SCRIPT
-  =========================================== -->
+<!-- ==========================================
+     3. CREATE SUPABASE CLIENT
+=========================================== -->
 
-  <script src="script.js"></script>
-
-
-
-  <!-- ==========================================
-       5. CUSTOMER LOGIN + GOOGLE LOGIN
-  =========================================== -->
-
-  <script>
-
-    'use strict';
+<script src="supabase.js"></script>
 
 
-    /* ==========================================
-       ELEMENTS
-    ========================================== */
+<!-- ==========================================
+     4. PRODUCTS
+=========================================== -->
 
-    const loginForm =
-      document.getElementById(
-        'login-form'
+<script src="products.js"></script>
+
+
+<!-- ==========================================
+     5. CART
+=========================================== -->
+
+<script src="cart.js"></script>
+
+
+<!-- ==========================================
+     6. WEBSITE SCRIPT
+=========================================== -->
+
+<script src="script.js"></script>
+
+
+<!-- ==========================================
+     7. CUSTOMER LOGIN
+=========================================== -->
+
+<script>
+  'use strict';
+
+  const loginForm =
+    document.getElementById('login-form');
+
+  const loginMessage =
+    document.getElementById('login-message');
+
+  const loginButton =
+    document.getElementById('login-button');
+
+  const googleLoginButton =
+    document.getElementById('google-login-button');
+
+  const googleButtonText =
+    document.getElementById('google-button-text');
+
+
+  /* ==========================================
+     GET PAGE AFTER LOGIN
+  ========================================== */
+
+  function getAfterLoginPage() {
+
+    try {
+
+      const savedPage =
+        window.localStorage.getItem(
+          'britTunaAfterLogin'
+        );
+
+      if (savedPage) {
+        return savedPage;
+      }
+
+    } catch (error) {
+
+      console.error(
+        'Brit.Tuna: Could not read after-login page.',
+        error
       );
 
+    }
 
-    const loginMessage =
-      document.getElementById(
-        'login-message'
-      );
+    return 'account.html';
+  }
 
 
-    const loginButton =
-      document.getElementById(
-        'login-button'
-      );
+  /* ==========================================
+     FINISH LOGIN
 
+     If customer tried Add to Cart:
+     - restore product
+     - go to cart
 
-    const googleLoginButton =
-      document.getElementById(
-        'google-login-button'
-      );
+     Normal login:
+     - go to account
+  ========================================== */
 
+  async function finishLogin() {
 
-    const googleButtonText =
-      document.getElementById(
-        'google-button-text'
-      );
+    loginMessage.textContent =
+      'Login successful! Redirecting...';
 
 
+    try {
 
-    /* ==========================================
-       EMAIL + PASSWORD LOGIN
-    ========================================== */
+      if (
+        window.BTCart &&
+        typeof window.BTCart.restorePendingAction === 'function'
+      ) {
 
-    loginForm.addEventListener(
-
-      'submit',
-
-      async function (event) {
-
-
-        event.preventDefault();
-
-
-
-        /* CHECK SUPABASE */
-
-        if (!window.supabaseClient) {
-
-          console.error(
-            'Brit.Tuna: supabaseClient is not available.'
-          );
-
-
-          loginMessage.textContent =
-            'Login service is not ready. Please refresh the page.';
-
-
-          return;
-
-        }
-
-
-
-        /* GET EMAIL */
-
-        const email =
-          document
-            .getElementById('email')
-            .value
-            .trim()
-            .toLowerCase();
-
-
-
-        /* GET PASSWORD */
-
-        const password =
-          document
-            .getElementById('password')
-            .value;
-
-
-
-        /* LOADING */
-
-        loginMessage.textContent =
-          'Signing in...';
-
-
-        loginButton.disabled = true;
-
-
-        loginButton.textContent =
-          'Signing In...';
-
-
-
-        try {
-
-
-          const {
-            data,
-            error
-          } =
-
-            await window.supabaseClient
-              .auth
-              .signInWithPassword({
-
-                email: email,
-
-                password: password
-
-              });
-
-
-
-          /* LOGIN ERROR */
-
-          if (error) {
-
-
-            console.error(
-              'Login error:',
-              error
-            );
-
-
-            loginMessage.textContent =
-              error.message === 'Invalid login credentials'
-                ? 'Incorrect email or password.'
-                : error.message;
-
-
-            loginButton.disabled =
-              false;
-
-
-            loginButton.textContent =
-              'Sign In';
-
-
-            return;
-
-          }
-
-
-
-          /* LOGIN SUCCESS */
-
-          if (data && data.user) {
-
-
-            console.log(
-              'Brit.Tuna: Login successful:',
-              data.user.id
-            );
-
-
-            loginMessage.textContent =
-              'Login successful! Redirecting...';
-
-
-
-            window.location.href =
-              'account.html';
-
-
-            return;
-
-          }
-
-
-
-          loginMessage.textContent =
-            'Unable to sign in. Please try again.';
-
-
-          loginButton.disabled =
-            false;
-
-
-          loginButton.textContent =
-            'Sign In';
-
-
-        }
-
-        catch (error) {
-
-
-          console.error(
-            'Unexpected login error:',
-            error
-          );
-
-
-          loginMessage.textContent =
-            'Something went wrong. Please try again.';
-
-
-          loginButton.disabled =
-            false;
-
-
-          loginButton.textContent =
-            'Sign In';
-
-        }
-
+        await window.BTCart.restorePendingAction();
 
       }
 
-    );
+    } catch (error) {
+
+      console.error(
+        'Brit.Tuna: Could not restore pending cart action.',
+        error
+      );
+
+    }
 
 
-
-    /* ==========================================
-       GOOGLE LOGIN
-    ========================================== */
-
-    googleLoginButton.addEventListener(
-
-      'click',
-
-      async function () {
+    const nextPage =
+      getAfterLoginPage();
 
 
-        /* CHECK SUPABASE */
+    try {
 
-        if (!window.supabaseClient) {
+      window.localStorage.removeItem(
+        'britTunaAfterLogin'
+      );
 
+    } catch (error) {
+      // Ignore localStorage cleanup error
+    }
+
+
+    window.location.href =
+      nextPage;
+  }
+
+
+  /* ==========================================
+     ALREADY LOGGED IN
+
+     This is especially important after
+     Google OAuth redirects back to login.html.
+  ========================================== */
+
+  async function checkExistingLogin() {
+
+    if (!window.supabaseClient) {
+      return;
+    }
+
+
+    try {
+
+      const {
+        data,
+        error
+      } =
+        await window.supabaseClient
+          .auth
+          .getSession();
+
+
+      if (error) {
+
+        console.error(
+          'Brit.Tuna: Session check error:',
+          error
+        );
+
+        return;
+      }
+
+
+      if (
+        data &&
+        data.session &&
+        data.session.user
+      ) {
+
+        await finishLogin();
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        'Brit.Tuna: Unable to check existing login.',
+        error
+      );
+
+    }
+  }
+
+
+  /* ==========================================
+     EMAIL + PASSWORD LOGIN
+  ========================================== */
+
+  loginForm.addEventListener(
+    'submit',
+
+    async function (event) {
+
+      event.preventDefault();
+
+
+      if (!window.supabaseClient) {
+
+        console.error(
+          'Brit.Tuna: supabaseClient is not available.'
+        );
+
+        loginMessage.textContent =
+          'Login service is not ready. Please refresh the page.';
+
+        return;
+      }
+
+
+      const email =
+        document
+          .getElementById('email')
+          .value
+          .trim()
+          .toLowerCase();
+
+
+      const password =
+        document
+          .getElementById('password')
+          .value;
+
+
+      loginMessage.textContent =
+        'Signing in...';
+
+
+      loginButton.disabled =
+        true;
+
+
+      loginButton.textContent =
+        'Signing In...';
+
+
+      try {
+
+        const {
+          data,
+          error
+        } =
+          await window.supabaseClient
+            .auth
+            .signInWithPassword({
+
+              email: email,
+
+              password: password
+
+            });
+
+
+        if (error) {
 
           console.error(
-            'Brit.Tuna: supabaseClient is not available.'
+            'Login error:',
+            error
           );
 
 
           loginMessage.textContent =
-            'Google login is not ready. Please refresh the page.';
+            error.message ===
+            'Invalid login credentials'
+              ? 'Incorrect email or password.'
+              : error.message;
+
+
+          loginButton.disabled =
+            false;
+
+
+          loginButton.textContent =
+            'Sign In';
 
 
           return;
-
         }
 
 
-
-        /* LOADING */
-
-        googleLoginButton.disabled =
-          true;
-
-
-        googleButtonText.textContent =
-          'Connecting to Google...';
-
-
-        loginMessage.textContent =
-          'Opening Google Sign In...';
-
-
-
-        try {
-
-
-          /*
-            After Google login succeeds,
-            Supabase sends the customer
-            back to account.html.
-          */
-
-          const redirectURL =
-            window.location.origin +
-            '/account.html';
-
-
-
-          const {
-            data,
-            error
-          } =
-
-            await window.supabaseClient
-              .auth
-              .signInWithOAuth({
-
-                provider: 'google',
-
-                options: {
-
-                  redirectTo:
-                    redirectURL
-
-                }
-
-              });
-
-
-
-          /* GOOGLE LOGIN ERROR */
-
-          if (error) {
-
-
-            console.error(
-              'Google login error:',
-              error
-            );
-
-
-            loginMessage.textContent =
-              error.message;
-
-
-            googleLoginButton.disabled =
-              false;
-
-
-            googleButtonText.textContent =
-              'Continue with Google';
-
-
-            return;
-
-          }
-
-
+        if (
+          data &&
+          data.user
+        ) {
 
           console.log(
-            'Brit.Tuna: Redirecting to Google...',
-            data
+            'Brit.Tuna: Login successful:',
+            data.user.id
           );
 
 
+          await finishLogin();
+
+          return;
         }
 
-        catch (error) {
 
+        loginMessage.textContent =
+          'Unable to sign in. Please try again.';
+
+
+        loginButton.disabled =
+          false;
+
+
+        loginButton.textContent =
+          'Sign In';
+
+      } catch (error) {
+
+        console.error(
+          'Unexpected login error:',
+          error
+        );
+
+
+        loginMessage.textContent =
+          'Something went wrong. Please try again.';
+
+
+        loginButton.disabled =
+          false;
+
+
+        loginButton.textContent =
+          'Sign In';
+
+      }
+
+    }
+  );
+
+
+  /* ==========================================
+     GOOGLE LOGIN
+  ========================================== */
+
+  googleLoginButton.addEventListener(
+    'click',
+
+    async function () {
+
+      if (!window.supabaseClient) {
+
+        console.error(
+          'Brit.Tuna: supabaseClient is not available.'
+        );
+
+
+        loginMessage.textContent =
+          'Google login is not ready. Please refresh the page.';
+
+
+        return;
+      }
+
+
+      googleLoginButton.disabled =
+        true;
+
+
+      googleButtonText.textContent =
+        'Connecting to Google...';
+
+
+      loginMessage.textContent =
+        'Opening Google Sign In...';
+
+
+      try {
+
+        /*
+          IMPORTANT:
+
+          Google returns to login.html.
+
+          login.html then detects the new session,
+          restores the pending cart product,
+          and redirects to cart.html.
+
+          Normal Google login without a pending
+          shopping action goes to account.html.
+        */
+
+        const redirectURL =
+          window.location.origin +
+          '/login.html';
+
+
+        const {
+          data,
+          error
+        } =
+          await window.supabaseClient
+            .auth
+            .signInWithOAuth({
+
+              provider: 'google',
+
+              options: {
+
+                redirectTo:
+                  redirectURL,
+
+                queryParams: {
+
+                  prompt:
+                    'select_account'
+
+                }
+
+              }
+
+            });
+
+
+        if (error) {
 
           console.error(
-            'Unexpected Google login error:',
+            'Google login error:',
             error
           );
 
 
           loginMessage.textContent =
-            'Google Sign In failed. Please try again.';
+            error.message;
 
 
           googleLoginButton.disabled =
@@ -761,14 +818,48 @@
           googleButtonText.textContent =
             'Continue with Google';
 
+
+          return;
         }
 
 
+        console.log(
+          'Brit.Tuna: Redirecting to Google...',
+          data
+        );
+
+      } catch (error) {
+
+        console.error(
+          'Unexpected Google login error:',
+          error
+        );
+
+
+        loginMessage.textContent =
+          'Google Sign In failed. Please try again.';
+
+
+        googleLoginButton.disabled =
+          false;
+
+
+        googleButtonText.textContent =
+          'Continue with Google';
+
       }
 
-    );
+    }
+  );
 
-  </script>
+
+  /* ==========================================
+     CHECK SESSION WHEN PAGE LOADS
+  ========================================== */
+
+  checkExistingLogin();
+
+</script>
 
 
 </body>
