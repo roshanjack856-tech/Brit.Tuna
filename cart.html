@@ -1,78 +1,724 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
   <title>Your Cart | Brit.Tuna</title>
-  <meta name="theme-color" content="#1f5a3a">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="responsive.css">
+
+  <meta
+    name="description"
+    content="Review your Brit.Tuna shopping cart."
+  >
+
+  <meta
+    name="theme-color"
+    content="#1f5a3a"
+  >
+
+
+  <!-- Google Fonts -->
+
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  >
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  >
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap"
+    rel="stylesheet"
+  >
+
+
+  <!-- Website CSS -->
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="responsive.css"
+  >
+
 </head>
+
+
 <body data-page="cart">
+
+
+  <!-- ============================================
+       HEADER
+  ============================================= -->
 
   <div id="site-header"></div>
 
+
+
+  <!-- ============================================
+       MAIN
+  ============================================= -->
+
   <main id="main">
+
+
+    <!-- PAGE HERO -->
+
     <section class="page-hero">
+
       <div class="container">
-        <h1>Your Cart</h1>
-        <p>Review your items, pack sizes and quantities.</p>
+
+        <h1>
+          Your Cart
+        </h1>
+
+        <p>
+          Review your items, pack sizes and quantities.
+        </p>
+
       </div>
+
     </section>
 
+
+
+    <!-- ============================================
+         CART
+    ============================================= -->
+
     <div class="container page-body">
-      <p class="notice">Demo mode: this cart is saved only in your browser. Prices are sample data, and no order is placed from this page.</p>
 
-      <!-- Shown when the cart has no items -->
-      <div class="empty-state" id="cart-empty" style="margin-top:18px" hidden>
-        <h2>Your cart is empty</h2>
-        <p>Add some products to get started.</p>
-        <a class="btn btn-primary" href="shop.html">Start Shopping</a>
+
+      <!-- DEMO NOTICE -->
+
+      <p class="notice">
+
+        Demo mode: this cart is saved only in your browser.
+        Prices are sample data, and no order or payment is
+        processed until the backend is connected.
+
+      </p>
+
+
+
+      <!-- ============================================
+           EMPTY CART
+      ============================================= -->
+
+      <div
+        class="empty-state"
+        id="cart-empty"
+        style="margin-top:18px"
+        hidden
+      >
+
+        <h2>
+          Your cart is empty
+        </h2>
+
+        <p>
+          Add some products to get started.
+        </p>
+
+        <a
+          class="btn btn-primary"
+          href="shop.html"
+        >
+          Start Shopping
+        </a>
+
       </div>
 
-      <!-- Shown when the cart has items (filled by cart.js) -->
-      <div class="cart-layout" id="cart-content" style="margin-top:18px" hidden>
+
+
+      <!-- ============================================
+           CART CONTENT
+      ============================================= -->
+
+      <div
+        class="cart-layout"
+        id="cart-content"
+        style="margin-top:18px"
+        hidden
+      >
+
+
+        <!-- CART ITEMS -->
+
         <div>
+
           <div id="cart-items"></div>
-          <button type="button" class="link-btn" id="clear-cart">Clear cart</button>
+
+
+          <button
+            type="button"
+            class="link-btn"
+            id="clear-cart"
+          >
+            Clear cart
+          </button>
+
         </div>
-        <aside class="cart-summary" id="cart-summary" aria-label="Order summary"></aside>
+
+
+
+        <!-- ============================================
+             CART SUMMARY
+
+             cart.js will render:
+             subtotal
+             total
+             checkout button/link
+        ============================================= -->
+
+        <aside
+          class="cart-summary"
+          id="cart-summary"
+          aria-label="Order summary"
+        ></aside>
+
+
       </div>
+
+
     </div>
+
+
   </main>
+
+
+
+  <!-- ============================================
+       FOOTER
+  ============================================= -->
 
   <div id="site-footer"></div>
 
-  <!-- Supabase JavaScript Library -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- Brit.Tuna Configuration -->
-<script src="config.js"></script>
 
-<!-- Create Supabase Client -->
-<script src="supabase.js"></script>
+  <!-- ============================================
+       1. SUPABASE JAVASCRIPT LIBRARY
+  ============================================= -->
 
-<!-- Product Data -->
-<script src="products.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
 
-<!-- Cart -->
-<script src="cart.js"></script>
 
-<!-- Shared Header / Footer / Authentication -->
-<script src="script.js"></script>
 
-<!-- Cart Page Only -->
-<script>
-  // Clear-cart button (cart page only)
-  document.getElementById('clear-cart').addEventListener('click', function () {
-    if (window.confirm('Remove all items from your cart?')) {
-      window.BTCart.clear();
+  <!-- ============================================
+       2. CONFIGURATION
+  ============================================= -->
+
+  <script src="config.js"></script>
+
+
+
+  <!-- ============================================
+       3. CREATE SUPABASE CLIENT
+  ============================================= -->
+
+  <script src="supabase.js"></script>
+
+
+
+  <!-- ============================================
+       4. PRODUCT DATA
+  ============================================= -->
+
+  <script src="products.js"></script>
+
+
+
+  <!-- ============================================
+       5. CART LOGIC
+  ============================================= -->
+
+  <script src="cart.js"></script>
+
+
+
+  <!-- ============================================
+       6. SHARED WEBSITE UI
+  ============================================= -->
+
+  <script src="script.js"></script>
+
+
+
+  <!-- ============================================
+       7. CART PAGE AUTHENTICATION
+  ============================================= -->
+
+  <script>
+
+    'use strict';
+
+
+
+    /* ==========================================
+       CLEAR CART
+    ========================================== */
+
+    var clearCartButton =
+      document.getElementById(
+        'clear-cart'
+      );
+
+
+    if (clearCartButton) {
+
+      clearCartButton.addEventListener(
+
+        'click',
+
+        function () {
+
+
+          if (!window.BTCart) {
+
+            console.error(
+              'Brit.Tuna: Cart is not available.'
+            );
+
+            return;
+
+          }
+
+
+          var confirmed =
+            window.confirm(
+              'Remove all items from your cart?'
+            );
+
+
+          if (confirmed) {
+
+            window.BTCart.clear();
+
+          }
+
+
+        }
+
+      );
+
     }
-  });
-</script>
+
+
+
+    /* ==========================================
+       SAVE CHECKOUT DESTINATION
+    ========================================== */
+
+    function saveCheckoutDestination() {
+
+      try {
+
+        window.localStorage.setItem(
+          'britTunaAfterLogin',
+          'checkout.html'
+        );
+
+      } catch (error) {
+
+        console.error(
+          'Brit.Tuna: Could not save checkout destination.',
+          error
+        );
+
+      }
+
+    }
+
+
+
+    /* ==========================================
+       CHECK CUSTOMER LOGIN
+    ========================================== */
+
+    async function customerIsLoggedIn() {
+
+
+      if (!window.supabaseClient) {
+
+        console.error(
+          'Brit.Tuna: Supabase client is not available.'
+        );
+
+        return false;
+
+      }
+
+
+      try {
+
+
+        var result =
+          await window.supabaseClient
+            .auth
+            .getSession();
+
+
+        if (result.error) {
+
+          console.error(
+            'Brit.Tuna: Session check failed.',
+            result.error
+          );
+
+          return false;
+
+        }
+
+
+        return !!(
+          result.data &&
+          result.data.session &&
+          result.data.session.user
+        );
+
+
+      } catch (error) {
+
+
+        console.error(
+          'Brit.Tuna: Could not check customer session.',
+          error
+        );
+
+
+        return false;
+
+      }
+
+    }
+
+
+
+    /* ==========================================
+       GO TO CHECKOUT
+
+       Logged in:
+       cart.html -> checkout.html
+
+       Logged out:
+       cart.html -> login.html
+                 -> authentication
+                 -> checkout.html
+    ========================================== */
+
+    async function goToCheckout() {
+
+
+      /*
+        Prevent checkout when cart
+        is empty.
+      */
+
+      if (
+        !window.BTCart ||
+        typeof window.BTCart.count !== 'function'
+      ) {
+
+        console.error(
+          'Brit.Tuna: Cart system is not ready.'
+        );
+
+        return;
+
+      }
+
+
+      var cartCount =
+        window.BTCart.count();
+
+
+      if (
+        !cartCount ||
+        cartCount < 1
+      ) {
+
+
+        if (
+          window.BTUI &&
+          typeof window.BTUI.toast === 'function'
+        ) {
+
+          window.BTUI.toast(
+            'Your cart is empty.'
+          );
+
+        }
+
+
+        return;
+
+      }
+
+
+
+      /*
+        Check Supabase login.
+      */
+
+      var loggedIn =
+        await customerIsLoggedIn();
+
+
+
+      /* ========================================
+         CUSTOMER LOGGED IN
+      ======================================== */
+
+      if (loggedIn) {
+
+
+        /*
+          Remove old redirect value,
+          if one exists.
+        */
+
+        try {
+
+          window.localStorage.removeItem(
+            'britTunaAfterLogin'
+          );
+
+        } catch (error) {
+
+          console.error(
+            'Brit.Tuna: Could not clear previous destination.',
+            error
+          );
+
+        }
+
+
+        window.location.href =
+          'checkout.html';
+
+
+        return;
+
+      }
+
+
+
+      /* ========================================
+         CUSTOMER NOT LOGGED IN
+      ======================================== */
+
+      saveCheckoutDestination();
+
+
+
+      /*
+        Redirect to Sign In.
+
+        login.html already supports:
+
+        - Email/password
+        - Google
+        - Create Account link
+
+        After successful authentication
+        it reads britTunaAfterLogin and
+        returns customer to checkout.html.
+      */
+
+      window.location.href =
+        'login.html';
+
+    }
+
+
+
+    /* ==========================================
+       CHECKOUT BUTTON CLICK
+
+       cart.js creates the cart summary
+       dynamically.
+
+       Event delegation is used because the
+       checkout button may not exist when this
+       script first loads.
+    ========================================== */
+
+    document.addEventListener(
+
+      'click',
+
+      async function (event) {
+
+
+        /*
+          Find clicked link/button.
+      */
+
+        var checkoutButton =
+          event.target.closest(
+            'a[href="checkout.html"], ' +
+            'button[data-checkout], ' +
+            '.js-checkout'
+          );
+
+
+        if (!checkoutButton) {
+
+          return;
+
+        }
+
+
+
+        /*
+          Prevent normal browser navigation.
+      */
+
+        event.preventDefault();
+
+
+
+        /*
+          Prevent double clicks.
+      */
+
+        if (
+          checkoutButton.dataset.loading ===
+          'true'
+        ) {
+
+          return;
+
+        }
+
+
+        checkoutButton.dataset.loading =
+          'true';
+
+
+
+        var originalText =
+          checkoutButton.textContent;
+
+
+        checkoutButton.textContent =
+          'Checking...';
+
+
+
+        if (
+          checkoutButton.tagName ===
+          'BUTTON'
+        ) {
+
+          checkoutButton.disabled =
+            true;
+
+        }
+
+
+
+        try {
+
+
+          await goToCheckout();
+
+
+        } catch (error) {
+
+
+          console.error(
+            'Brit.Tuna: Checkout navigation failed.',
+            error
+          );
+
+
+          if (
+            window.BTUI &&
+            typeof window.BTUI.toast === 'function'
+          ) {
+
+            window.BTUI.toast(
+              'Unable to continue to checkout. Please try again.'
+            );
+
+          }
+
+
+        } finally {
+
+
+          /*
+            If redirect happens, page unloads.
+
+            If redirect fails, restore button.
+          */
+
+          checkoutButton.dataset.loading =
+            'false';
+
+
+          checkoutButton.textContent =
+            originalText;
+
+
+          if (
+            checkoutButton.tagName ===
+            'BUTTON'
+          ) {
+
+            checkoutButton.disabled =
+              false;
+
+          }
+
+
+        }
+
+
+      }
+
+    );
+
+
+
+    /* ==========================================
+       OPTIONAL SECURITY CHECK
+
+       If a user somehow manually opens:
+       cart.html
+
+       we DO NOT require login.
+
+       Customers are allowed to view their
+       local cart without signing in.
+
+       Login is required only when proceeding
+       to checkout.
+    ========================================== */
+
+    console.log(
+      'Brit.Tuna: Cart page ready.'
+    );
+
+  </script>
+
 
 </body>
+
 </html>
