@@ -407,7 +407,7 @@
 
 
   <!-- ============================================
-       1. SUPABASE LIBRARY
+       1. SUPABASE JAVASCRIPT LIBRARY
   ============================================= -->
 
   <script
@@ -433,7 +433,23 @@
 
 
   <!-- ============================================
-       4. WEBSITE SCRIPT
+       4. PRODUCTS
+  ============================================= -->
+
+  <script src="products.js"></script>
+
+
+
+  <!-- ============================================
+       5. CART
+  ============================================= -->
+
+  <script src="cart.js"></script>
+
+
+
+  <!-- ============================================
+       6. WEBSITE SCRIPT
   ============================================= -->
 
   <script src="script.js"></script>
@@ -441,7 +457,7 @@
 
 
   <!-- ============================================
-       5. REGISTER + GOOGLE AUTH
+       7. REGISTER + GOOGLE AUTH
   ============================================= -->
 
   <script>
@@ -482,6 +498,177 @@
       document.getElementById(
         'google-register-text'
       );
+
+
+
+    /* ==========================================
+       GET PAGE AFTER LOGIN
+    ========================================== */
+
+    function getAfterLoginPage() {
+
+      try {
+
+        const savedPage =
+          window.localStorage.getItem(
+            'britTunaAfterLogin'
+          );
+
+
+        if (savedPage) {
+
+          return savedPage;
+
+        }
+
+      } catch (error) {
+
+        console.error(
+          'Brit.Tuna: Could not read after-login page.',
+          error
+        );
+
+      }
+
+
+      /*
+        Normal registration/login:
+        go to account page.
+      */
+
+      return 'account.html';
+
+    }
+
+
+
+    /* ==========================================
+       FINISH AUTHENTICATION
+
+       Shopping login:
+       restore product -> cart.html
+
+       Normal registration:
+       account.html
+    ========================================== */
+
+    async function finishAuthentication() {
+
+      registerMessage.textContent =
+        'Account ready! Redirecting...';
+
+
+      try {
+
+        if (
+          window.BTCart &&
+          typeof window.BTCart.restorePendingAction === 'function'
+        ) {
+
+          await window.BTCart
+            .restorePendingAction();
+
+        }
+
+      } catch (error) {
+
+        console.error(
+          'Brit.Tuna: Could not restore pending cart action.',
+          error
+        );
+
+      }
+
+
+      const nextPage =
+        getAfterLoginPage();
+
+
+      try {
+
+        window.localStorage.removeItem(
+          'britTunaAfterLogin'
+        );
+
+      } catch (error) {
+
+        console.error(
+          'Brit.Tuna: Could not clear after-login page.',
+          error
+        );
+
+      }
+
+
+      window.location.href =
+        nextPage;
+
+    }
+
+
+
+    /* ==========================================
+       CHECK EXISTING SESSION
+
+       Important for Google OAuth.
+
+       Google returns to register.html.
+       Supabase restores the session.
+       Then we continue the customer's action.
+    ========================================== */
+
+    async function checkExistingSession() {
+
+      if (!window.supabaseClient) {
+
+        return;
+
+      }
+
+
+      try {
+
+        const {
+          data,
+          error
+        } =
+          await window.supabaseClient
+            .auth
+            .getSession();
+
+
+        if (error) {
+
+          console.error(
+            'Brit.Tuna: Session check error:',
+            error
+          );
+
+          return;
+
+        }
+
+
+        if (
+          data &&
+          data.session &&
+          data.session.user
+        ) {
+
+          await finishAuthentication();
+
+        }
+
+      } catch (error) {
+
+        console.error(
+          'Brit.Tuna: Could not check existing session.',
+          error
+        );
+
+      }
+
+    }
 
 
 
@@ -683,7 +870,10 @@
 
           /* CHECK USER */
 
-          if (!data || !data.user) {
+          if (
+            !data ||
+            !data.user
+          ) {
 
 
             registerMessage.textContent =
@@ -711,13 +901,15 @@
 
 
 
-          /* EMAIL CONFIRMATION */
+          /* ==========================================
+             EMAIL CONFIRMATION REQUIRED
+          ========================================== */
 
           if (!data.session) {
 
 
             registerMessage.textContent =
-              'Account created successfully! Please check your email and confirm your account before signing in.';
+              'Account created successfully! Please check your email and confirm your account. After confirmation, sign in to continue.';
 
 
             registerForm.reset();
@@ -737,35 +929,18 @@
 
 
 
-          /* SUCCESS */
-
-          registerMessage.textContent =
-            'Account created successfully! Redirecting...';
-
+          /* ==========================================
+             REGISTRATION SUCCESS
+             SESSION EXISTS
+          ========================================== */
 
           registerForm.reset();
 
 
-
-          setTimeout(
-
-            function () {
+          await finishAuthentication();
 
 
-              window.location.href =
-                'account.html';
-
-
-            },
-
-            1000
-
-          );
-
-
-        }
-
-        catch (error) {
+        } catch (error) {
 
 
           console.error(
@@ -844,22 +1019,25 @@
 
 
           /*
-            IMPORTANT:
-
             Google OAuth automatically handles
             BOTH registration and login.
 
             New Google user:
-            -> Supabase creates account.
+            -> Supabase creates customer account.
 
             Existing Google user:
-            -> Supabase logs them in.
+            -> Supabase logs customer in.
+
+            Google returns to register.html.
+
+            register.html then restores the
+            pending shopping action if one exists.
           */
 
 
           const redirectURL =
             window.location.origin +
-            '/account.html';
+            '/register.html';
 
 
 
@@ -930,9 +1108,7 @@
           );
 
 
-        }
-
-        catch (error) {
+        } catch (error) {
 
 
           console.error(
@@ -959,6 +1135,13 @@
 
     );
 
+
+
+    /* ==========================================
+       CHECK SESSION WHEN PAGE LOADS
+    ========================================== */
+
+    checkExistingSession();
 
   </script>
 
