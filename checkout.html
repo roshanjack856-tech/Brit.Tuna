@@ -1,150 +1,1776 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
   <title>Checkout | Brit.Tuna</title>
-  <meta name="theme-color" content="#1f5a3a">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="responsive.css">
+
+  <meta
+    name="description"
+    content="Brit.Tuna secure customer checkout."
+  >
+
+  <meta
+    name="theme-color"
+    content="#1f5a3a"
+  >
+
+  <!-- Google Fonts -->
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  >
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  >
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <!-- Website CSS -->
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="responsive.css"
+  >
 </head>
+
+
 <body data-page="checkout">
+
+
+  <!-- ============================================
+       HEADER
+  ============================================= -->
 
   <div id="site-header"></div>
 
+
+
+  <!-- ============================================
+       MAIN
+  ============================================= -->
+
   <main id="main">
+
+
+    <!-- PAGE HERO -->
+
     <section class="page-hero">
+
       <div class="container">
-        <h1>Checkout</h1>
-        <p>Enter your delivery details.</p>
+
+        <h1>
+          Checkout
+        </h1>
+
+        <p>
+          Enter your delivery details.
+        </p>
+
       </div>
+
     </section>
 
+
+
+    <!-- ============================================
+         CHECKOUT PAGE
+    ============================================= -->
+
     <div class="container page-body">
-      <p class="notice">
-        Demo mode: checkout is a layout only. No order is saved and no payment is taken.
-        Orders and Razorpay payments will work only after a secure backend is connected.
-      </p>
 
-      <div class="checkout-layout" style="margin-top:18px">
-        <form class="form-card" id="checkout-form" novalidate>
-          <h2>Delivery details</h2>
-          <div class="form-grid">
-            <div class="form-field">
-              <label for="name">Full name</label>
-              <input id="name" name="name" type="text" autocomplete="name" required>
-              <span class="error" id="err-name" aria-live="polite"></span>
-            </div>
-            <div class="form-field">
-              <label for="phone">Phone number</label>
-              <input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="10-digit mobile number" required>
-              <span class="error" id="err-phone" aria-live="polite"></span>
-            </div>
-            <div class="form-field full">
-              <label for="email">Email</label>
-              <input id="email" name="email" type="email" autocomplete="email" required>
-              <span class="error" id="err-email" aria-live="polite"></span>
-            </div>
-            <div class="form-field full">
-              <label for="address">Delivery address</label>
-              <textarea id="address" name="address" rows="3" autocomplete="street-address" required></textarea>
-              <span class="error" id="err-address" aria-live="polite"></span>
-            </div>
-            <div class="form-field">
-              <label for="city">City</label>
-              <input id="city" name="city" type="text" autocomplete="address-level2" required>
-              <span class="error" id="err-city" aria-live="polite"></span>
-            </div>
-            <div class="form-field">
-              <label for="state">State</label>
-              <input id="state" name="state" type="text" autocomplete="address-level1" required>
-              <span class="error" id="err-state" aria-live="polite"></span>
-            </div>
-            <div class="form-field">
-              <label for="pin">PIN code</label>
-              <input id="pin" name="pin" type="text" inputmode="numeric" maxlength="6" autocomplete="postal-code" required>
-              <span class="error" id="err-pin" aria-live="polite"></span>
-            </div>
-          </div>
 
-          <p class="form-note" style="margin-top:14px">Do not enter card details on this page. Online payment will be handled by Razorpay's secure checkout once the backend is connected.</p>
+      <!-- AUTH LOADING MESSAGE -->
 
-          <button type="submit" class="btn btn-primary btn-block">Place Order (Demo)</button>
-          <div class="notice notice-small" id="demo-result" role="status" hidden></div>
-        </form>
-
-        <!-- Filled by cart.js -->
-        <aside class="checkout-summary" id="checkout-summary" aria-label="Order summary"></aside>
+      <div
+        class="notice"
+        id="checkout-loading"
+        role="status"
+      >
+        Checking your account...
       </div>
+
+
+
+      <!-- LOGIN REQUIRED MESSAGE -->
+
+      <div
+        class="empty-state"
+        id="checkout-login-required"
+        style="margin-top:18px"
+        hidden
+      >
+
+        <h2>
+          Sign in required
+        </h2>
+
+        <p>
+          Please sign in or create an account before continuing
+          to checkout.
+        </p>
+
+        <div
+          style="
+            display:flex;
+            gap:10px;
+            justify-content:center;
+            flex-wrap:wrap;
+          "
+        >
+
+          <a
+            class="btn btn-primary"
+            href="login.html"
+          >
+            Sign In
+          </a>
+
+          <a
+            class="btn btn-secondary"
+            href="register.html"
+          >
+            Create Account
+          </a>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- EMPTY CART MESSAGE -->
+
+      <div
+        class="empty-state"
+        id="checkout-empty"
+        style="margin-top:18px"
+        hidden
+      >
+
+        <h2>
+          Your cart is empty
+        </h2>
+
+        <p>
+          Add some products before continuing to checkout.
+        </p>
+
+        <a
+          class="btn btn-primary"
+          href="shop.html"
+        >
+          Start Shopping
+        </a>
+
+      </div>
+
+
+
+      <!-- ============================================
+           REAL CHECKOUT CONTENT
+      ============================================= -->
+
+      <div
+        id="checkout-content"
+        hidden
+      >
+
+
+        <!-- DEMO NOTICE -->
+
+        <p class="notice">
+
+          Demo mode: no real order is saved and no payment is
+          taken. Real orders and Razorpay payments will be
+          connected later through a secure backend.
+
+        </p>
+
+
+
+        <div
+          class="checkout-layout"
+          style="margin-top:18px"
+        >
+
+
+          <!-- ======================================
+               DELIVERY FORM
+          ======================================= -->
+
+          <form
+            class="form-card"
+            id="checkout-form"
+            novalidate
+          >
+
+
+            <h2>
+              Delivery details
+            </h2>
+
+
+            <p class="form-note">
+
+              Signed in as
+
+              <strong id="checkout-user-email">
+                Customer
+              </strong>
+
+            </p>
+
+
+
+            <div class="form-grid">
+
+
+              <!-- FULL NAME -->
+
+              <div class="form-field">
+
+                <label for="name">
+                  Full name
+                </label>
+
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  autocomplete="name"
+                  required
+                >
+
+                <span
+                  class="error"
+                  id="err-name"
+                  aria-live="polite"
+                ></span>
+
+              </div>
+
+
+
+              <!-- PHONE -->
+
+              <div class="form-field">
+
+                <label for="phone">
+                  Phone number
+                </label>
+
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  autocomplete="tel"
+                  inputmode="tel"
+                  placeholder="10-digit mobile number"
+                  required
+                >
+
+                <span
+                  class="error"
+                  id="err-phone"
+                  aria-live="polite"
+                ></span>
+
+              </div>
+
+
+
+              <!-- EMAIL -->
+
+              <div class="form-field full">
+
+                <label for="email">
+                  Email
+                </label>
+
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  required
+                  readonly
+                >
+
+                <span
+                  class="error"
+                  id="err-email"
+                  aria-live="polite"
+                ></span>
+
+              </div>
+
+
+
+              <!-- ADDRESS -->
+
+              <div class="form-field full">
+
+                <label for="address">
+                  Delivery address
+                </label>
+
+                <textarea
+                  id="address"
+                  name="address"
+                  rows="3"
+                  autocomplete="street-address"
+                  placeholder="House / Flat number, street, area"
+                  required
+                ></textarea>
+
+                <span
+                  class="error"
+                  id="err-address"
+                  aria-live="polite"
+                ></span>
+
+              </div>
+
+
+
+              <!-- CITY -->
+
+              <div class="form-field">
+
+                <label for="city">
+                  City
+                </label>
+
+                <input
+                  id="city"
+                  name="city"
+                  type="text"
+                  autocomplete="address-level2"
+                  required
+                >
+
+                <span
+                  class="error"
+                  id="err-city"
+                  aria-live="polite"
+                ></span>
+
+              </div>
+
+
+
+              <!-- STATE -->
+
+              <div class="form-field">
+
+                <label for="state">
+                  State
+                </label>
+
+                <input
+                  id="state"
+                  name="state"
+                  type="text"
+                  autocomplete="address-level1"
+                  required
+                >
+
+                <span
+                  class="error"
+                  id="err-state"
+                  aria-live="polite"
+                ></span>
+
+              </div>
+
+
+
+              <!-- PIN CODE -->
+
+              <div class="form-field">
+
+                <label for="pin">
+                  PIN code
+                </label>
+
+                <input
+                  id="pin"
+                  name="pin"
+                  type="text"
+                  inputmode="numeric"
+                  maxlength="6"
+                  autocomplete="postal-code"
+                  required
+                >
+
+                <span
+                  class="error"
+                  id="err-pin"
+                  aria-live="polite"
+                ></span>
+
+              </div>
+
+
+            </div>
+
+
+
+            <!-- PAYMENT WARNING -->
+
+            <p
+              class="form-note"
+              style="margin-top:14px"
+            >
+
+              Do not enter card, UPI PIN, CVV or banking
+              information on this page. Online payment will be
+              handled by the payment provider's secure checkout
+              after the backend is connected.
+
+            </p>
+
+
+
+            <!-- DEMO SUBMIT -->
+
+            <button
+              type="submit"
+              class="btn btn-primary btn-block"
+              id="place-order-button"
+            >
+              Place Order (Demo)
+            </button>
+
+
+
+            <!-- RESULT -->
+
+            <div
+              class="notice notice-small"
+              id="demo-result"
+              role="status"
+              hidden
+            ></div>
+
+
+          </form>
+
+
+
+          <!-- ======================================
+               ORDER SUMMARY
+               cart.js fills this automatically
+          ======================================= -->
+
+          <aside
+            class="checkout-summary"
+            id="checkout-summary"
+            aria-label="Order summary"
+          ></aside>
+
+
+        </div>
+
+      </div>
+
+
     </div>
+
+
   </main>
+
+
+
+  <!-- ============================================
+       FOOTER
+  ============================================= -->
 
   <div id="site-footer"></div>
 
+
+
+  <!-- ============================================
+       JAVASCRIPT
+
+       IMPORTANT LOAD ORDER
+  ============================================= -->
+
+
+  <!-- 1. Supabase Library -->
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
+
+  <!-- 2. Brit.Tuna Config -->
+
   <script src="config.js"></script>
-  <script src="products.js"></script>
-  <script src="cart.js"></script>
+
+
+  <!-- 3. Create Supabase Client -->
+
   <script src="supabase.js"></script>
+
+
+  <!-- 4. Products -->
+
+  <script src="products.js"></script>
+
+
+  <!-- 5. Cart -->
+
+  <script src="cart.js"></script>
+
+
+  <!-- 6. Shared Website UI -->
+
   <script src="script.js"></script>
+
+
+
+  <!-- ============================================
+       CHECKOUT PAGE LOGIC
+  ============================================= -->
+
   <script>
-    /* Checkout form validation (frontend demo only).
-       Nothing is sent anywhere. Real validation and order creation
-       must be repeated on the server when the backend is connected. */
+
     (function () {
-      var form = document.getElementById('checkout-form');
-      var result = document.getElementById('demo-result');
 
-      var rules = {
-        name: function (v) { return v.trim().length >= 2 ? '' : 'Please enter your full name.'; },
-        phone: function (v) {
-          var d = v.replace(/[\s-]/g, '');
-          return /^(\+?91)?[6-9]\d{9}$/.test(d) ? '' : 'Enter a valid 10-digit Indian mobile number.';
-        },
-        email: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) ? '' : 'Enter a valid email address.'; },
-        address: function (v) { return v.trim().length >= 10 ? '' : 'Please enter your full delivery address.'; },
-        city: function (v) { return v.trim().length >= 2 ? '' : 'Please enter your city.'; },
-        state: function (v) { return v.trim().length >= 2 ? '' : 'Please enter your state.'; },
-        pin: function (v) { return /^[1-9]\d{5}$/.test(v.trim()) ? '' : 'Enter a valid 6-digit PIN code.'; }
-      };
+      'use strict';
 
-      function check(field) {
-        var input = document.getElementById(field);
-        var msg = rules[field](input.value);
-        document.getElementById('err-' + field).textContent = msg;
-        input.classList.toggle('invalid', !!msg);
-        input.setAttribute('aria-invalid', msg ? 'true' : 'false');
-        return !msg;
+
+
+      /* ==========================================
+         ELEMENTS
+      ========================================== */
+
+      var loadingBox =
+        document.getElementById(
+          'checkout-loading'
+        );
+
+
+      var loginRequiredBox =
+        document.getElementById(
+          'checkout-login-required'
+        );
+
+
+      var emptyCartBox =
+        document.getElementById(
+          'checkout-empty'
+        );
+
+
+      var checkoutContent =
+        document.getElementById(
+          'checkout-content'
+        );
+
+
+      var form =
+        document.getElementById(
+          'checkout-form'
+        );
+
+
+      var result =
+        document.getElementById(
+          'demo-result'
+        );
+
+
+      var userEmailText =
+        document.getElementById(
+          'checkout-user-email'
+        );
+
+
+
+      /* ==========================================
+         SHOW / HIDE HELPERS
+      ========================================== */
+
+      function hideLoading() {
+
+        if (loadingBox) {
+
+          loadingBox.hidden =
+            true;
+
+        }
+
       }
 
-      Object.keys(rules).forEach(function (f) {
-        document.getElementById(f).addEventListener('blur', function () { check(f); });
-      });
 
-      form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        result.hidden = true;
-        var firstBad = null;
-        Object.keys(rules).forEach(function (f) {
-          if (!check(f) && !firstBad) firstBad = f;
-        });
-        if (firstBad) {
-          document.getElementById(firstBad).focus();
-          return;
+
+      function showLoginRequired() {
+
+        hideLoading();
+
+
+        if (checkoutContent) {
+
+          checkoutContent.hidden =
+            true;
+
         }
-        if (window.BTCart.count() === 0) {
-          result.textContent = 'Your cart is empty. Add products before checking out.';
-          result.hidden = false;
-          return;
+
+
+        if (emptyCartBox) {
+
+          emptyCartBox.hidden =
+            true;
+
         }
-        // Demo only: no order is created and no payment is made.
-        result.textContent = 'Demo mode: your details look valid, but no order was saved and no payment was taken. ' +
-          'This button will create a real order only after the backend is connected.';
-        result.hidden = false;
-      });
+
+
+        if (loginRequiredBox) {
+
+          loginRequiredBox.hidden =
+            false;
+
+        }
+
+      }
+
+
+
+      function showEmptyCart() {
+
+        hideLoading();
+
+
+        if (checkoutContent) {
+
+          checkoutContent.hidden =
+            true;
+
+        }
+
+
+        if (loginRequiredBox) {
+
+          loginRequiredBox.hidden =
+            true;
+
+        }
+
+
+        if (emptyCartBox) {
+
+          emptyCartBox.hidden =
+            false;
+
+        }
+
+      }
+
+
+
+      function showCheckout() {
+
+        hideLoading();
+
+
+        if (loginRequiredBox) {
+
+          loginRequiredBox.hidden =
+            true;
+
+        }
+
+
+        if (emptyCartBox) {
+
+          emptyCartBox.hidden =
+            true;
+
+        }
+
+
+        if (checkoutContent) {
+
+          checkoutContent.hidden =
+            false;
+
+        }
+
+      }
+
+
+
+      /* ==========================================
+         REDIRECT TO LOGIN
+      ========================================== */
+
+      function redirectToLogin() {
+
+        try {
+
+          window.localStorage.setItem(
+            'britTunaAfterLogin',
+            'checkout.html'
+          );
+
+        } catch (error) {
+
+          console.error(
+            'Brit.Tuna: Could not save login destination.',
+            error
+          );
+
+        }
+
+
+        window.location.replace(
+          'login.html'
+        );
+
+      }
+
+
+
+      /* ==========================================
+         CART CHECK
+      ========================================== */
+
+      function cartHasItems() {
+
+        if (
+          !window.BTCart ||
+          typeof window.BTCart.count !==
+            'function'
+        ) {
+
+          return false;
+
+        }
+
+
+        return (
+          window.BTCart.count() >
+          0
+        );
+
+      }
+
+
+
+      /* ==========================================
+         FILL AUTH USER INFORMATION
+      ========================================== */
+
+      function fillAuthUser(user) {
+
+        if (!user) {
+
+          return;
+
+        }
+
+
+        var emailInput =
+          document.getElementById(
+            'email'
+          );
+
+
+        var nameInput =
+          document.getElementById(
+            'name'
+          );
+
+
+        /*
+          Email comes from Supabase Auth.
+        */
+
+        if (emailInput) {
+
+          emailInput.value =
+            user.email ||
+            '';
+
+        }
+
+
+        if (userEmailText) {
+
+          userEmailText.textContent =
+            user.email ||
+            'Customer';
+
+        }
+
+
+
+        /*
+          Google OAuth / signup metadata
+          may already contain the name.
+        */
+
+        var metadata =
+          user.user_metadata ||
+          {};
+
+
+        var authName =
+
+          metadata.full_name ||
+
+          metadata.name ||
+
+          '';
+
+
+        if (
+          nameInput &&
+          authName &&
+          !nameInput.value
+        ) {
+
+          nameInput.value =
+            authName;
+
+        }
+
+      }
+
+
+
+      /* ==========================================
+         LOAD PROFILE FROM SUPABASE
+      ========================================== */
+
+      async function loadCustomerProfile(
+        user
+      ) {
+
+        if (
+          !user ||
+          !window.supabaseClient
+        ) {
+
+          return;
+
+        }
+
+
+        try {
+
+          var profileResult =
+            await window.supabaseClient
+
+              .from(
+                'profiles'
+              )
+
+              .select(
+                'full_name, phone'
+              )
+
+              .eq(
+                'id',
+                user.id
+              )
+
+              .maybeSingle();
+
+
+
+          if (profileResult.error) {
+
+            console.warn(
+              'Brit.Tuna: Profile could not be loaded.',
+              profileResult.error
+            );
+
+            return;
+
+          }
+
+
+
+          var profile =
+            profileResult.data;
+
+
+          if (!profile) {
+
+            return;
+
+          }
+
+
+
+          var nameInput =
+            document.getElementById(
+              'name'
+            );
+
+
+          var phoneInput =
+            document.getElementById(
+              'phone'
+            );
+
+
+
+          if (
+            nameInput &&
+            profile.full_name
+          ) {
+
+            nameInput.value =
+              profile.full_name;
+
+          }
+
+
+
+          if (
+            phoneInput &&
+            profile.phone
+          ) {
+
+            phoneInput.value =
+              profile.phone;
+
+          }
+
+
+        } catch (error) {
+
+          console.warn(
+            'Brit.Tuna: Profile loading failed.',
+            error
+          );
+
+        }
+
+      }
+
+
+
+      /* ==========================================
+         LOAD SAVED DELIVERY DETAILS
+
+         We currently keep address information
+         in localStorage.
+
+         Later these can be moved to Supabase.
+      ========================================== */
+
+      function loadSavedDeliveryDetails() {
+
+        try {
+
+          var saved =
+            window.localStorage.getItem(
+              'britTunaDeliveryDetails'
+            );
+
+
+          if (!saved) {
+
+            return;
+
+          }
+
+
+          var data =
+            JSON.parse(
+              saved
+            );
+
+
+          var fields = [
+            'phone',
+            'address',
+            'city',
+            'state',
+            'pin'
+          ];
+
+
+          fields.forEach(
+            function (field) {
+
+              var input =
+                document.getElementById(
+                  field
+                );
+
+
+              if (
+                input &&
+                !input.value &&
+                data[field]
+              ) {
+
+                input.value =
+                  data[field];
+
+              }
+
+            }
+          );
+
+
+        } catch (error) {
+
+          console.warn(
+            'Brit.Tuna: Saved delivery details could not be loaded.',
+            error
+          );
+
+        }
+
+      }
+
+
+
+      /* ==========================================
+         SAVE DELIVERY DETAILS
+
+         Browser-only convenience data.
+         This does NOT create an order.
+      ========================================== */
+
+      function saveDeliveryDetails() {
+
+        try {
+
+          var data = {
+
+            phone:
+              document
+                .getElementById(
+                  'phone'
+                )
+                .value
+                .trim(),
+
+            address:
+              document
+                .getElementById(
+                  'address'
+                )
+                .value
+                .trim(),
+
+            city:
+              document
+                .getElementById(
+                  'city'
+                )
+                .value
+                .trim(),
+
+            state:
+              document
+                .getElementById(
+                  'state'
+                )
+                .value
+                .trim(),
+
+            pin:
+              document
+                .getElementById(
+                  'pin'
+                )
+                .value
+                .trim()
+
+          };
+
+
+          window.localStorage.setItem(
+            'britTunaDeliveryDetails',
+            JSON.stringify(
+              data
+            )
+          );
+
+
+        } catch (error) {
+
+          console.warn(
+            'Brit.Tuna: Delivery details could not be saved.',
+            error
+          );
+
+        }
+
+      }
+
+
+
+      /* ==========================================
+         CHECKOUT AUTH GUARD
+      ========================================== */
+
+      async function initialiseCheckout() {
+
+        /*
+          Supabase client must exist.
+        */
+
+        if (
+          !window.supabaseClient
+        ) {
+
+          console.error(
+            'Brit.Tuna: Supabase client is unavailable.'
+          );
+
+
+          showLoginRequired();
+
+
+          return;
+
+        }
+
+
+        try {
+
+          /*
+            Get logged-in session.
+          */
+
+          var sessionResult =
+            await window.supabaseClient
+              .auth
+              .getSession();
+
+
+
+          if (sessionResult.error) {
+
+            console.error(
+              'Brit.Tuna: Session check failed.',
+              sessionResult.error
+            );
+
+
+            redirectToLogin();
+
+
+            return;
+
+          }
+
+
+
+          var session =
+
+            sessionResult.data
+              ? sessionResult.data.session
+              : null;
+
+
+
+          /*
+            NOT LOGGED IN
+          */
+
+          if (
+            !session ||
+            !session.user
+          ) {
+
+            redirectToLogin();
+
+            return;
+
+          }
+
+
+
+          /*
+            CUSTOMER IS LOGGED IN
+          */
+
+          var user =
+            session.user;
+
+
+
+          /*
+            First check cart.
+          */
+
+          if (
+            !cartHasItems()
+          ) {
+
+            showEmptyCart();
+
+            return;
+
+          }
+
+
+
+          /*
+            Fill email/name from Auth.
+          */
+
+          fillAuthUser(
+            user
+          );
+
+
+
+          /*
+            Load profile name + phone.
+          */
+
+          await loadCustomerProfile(
+            user
+          );
+
+
+
+          /*
+            Load previously typed address
+            from browser.
+          */
+
+          loadSavedDeliveryDetails();
+
+
+
+          /*
+            Show checkout.
+          */
+
+          showCheckout();
+
+
+
+          /*
+            Remove old login destination.
+          */
+
+          try {
+
+            window.localStorage.removeItem(
+              'britTunaAfterLogin'
+            );
+
+          } catch (error) {
+
+            console.warn(
+              'Brit.Tuna: Could not clear login destination.',
+              error
+            );
+
+          }
+
+
+        } catch (error) {
+
+          console.error(
+            'Brit.Tuna: Checkout authentication failed.',
+            error
+          );
+
+
+          redirectToLogin();
+
+        }
+
+      }
+
+
+
+      /* ==========================================
+         VALIDATION RULES
+      ========================================== */
+
+      var rules = {
+
+
+        name:
+          function (v) {
+
+            return (
+              v.trim().length >=
+              2
+            )
+              ? ''
+              : 'Please enter your full name.';
+
+          },
+
+
+        phone:
+          function (v) {
+
+            var d =
+              v.replace(
+                /[\s-]/g,
+                ''
+              );
+
+
+            return (
+              /^(\+?91)?[6-9]\d{9}$/
+                .test(d)
+            )
+              ? ''
+              : 'Enter a valid 10-digit Indian mobile number.';
+
+          },
+
+
+        email:
+          function (v) {
+
+            return (
+              /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+                .test(
+                  v.trim()
+                )
+            )
+              ? ''
+              : 'Enter a valid email address.';
+
+          },
+
+
+        address:
+          function (v) {
+
+            return (
+              v.trim().length >=
+              10
+            )
+              ? ''
+              : 'Please enter your full delivery address.';
+
+          },
+
+
+        city:
+          function (v) {
+
+            return (
+              v.trim().length >=
+              2
+            )
+              ? ''
+              : 'Please enter your city.';
+
+          },
+
+
+        state:
+          function (v) {
+
+            return (
+              v.trim().length >=
+              2
+            )
+              ? ''
+              : 'Please enter your state.';
+
+          },
+
+
+        pin:
+          function (v) {
+
+            return (
+              /^[1-9]\d{5}$/
+                .test(
+                  v.trim()
+                )
+            )
+              ? ''
+              : 'Enter a valid 6-digit PIN code.';
+
+          }
+
+      };
+
+
+
+      /* ==========================================
+         CHECK ONE FIELD
+      ========================================== */
+
+      function check(field) {
+
+        var input =
+          document.getElementById(
+            field
+          );
+
+
+        if (!input) {
+
+          return false;
+
+        }
+
+
+        var msg =
+          rules[field](
+            input.value
+          );
+
+
+        var errorBox =
+          document.getElementById(
+            'err-' +
+            field
+          );
+
+
+        if (errorBox) {
+
+          errorBox.textContent =
+            msg;
+
+        }
+
+
+        input.classList.toggle(
+          'invalid',
+          !!msg
+        );
+
+
+        input.setAttribute(
+          'aria-invalid',
+          msg
+            ? 'true'
+            : 'false'
+        );
+
+
+        return !msg;
+
+      }
+
+
+
+      /* ==========================================
+         FIELD BLUR VALIDATION
+      ========================================== */
+
+      Object.keys(
+        rules
+      ).forEach(
+
+        function (field) {
+
+          var input =
+            document.getElementById(
+              field
+            );
+
+
+          if (!input) {
+
+            return;
+
+          }
+
+
+          input.addEventListener(
+
+            'blur',
+
+            function () {
+
+              check(
+                field
+              );
+
+            }
+
+          );
+
+        }
+
+      );
+
+
+
+      /* ==========================================
+         FORM SUBMIT
+      ========================================== */
+
+      form.addEventListener(
+
+        'submit',
+
+        async function (event) {
+
+
+          event.preventDefault();
+
+
+          result.hidden =
+            true;
+
+
+          result.textContent =
+            '';
+
+
+
+          /* ======================================
+             VERIFY LOGIN AGAIN
+          ====================================== */
+
+          if (
+            !window.supabaseClient
+          ) {
+
+            redirectToLogin();
+
+            return;
+
+          }
+
+
+          try {
+
+            var sessionResult =
+              await window.supabaseClient
+                .auth
+                .getSession();
+
+
+            var session =
+
+              sessionResult.data
+                ? sessionResult.data.session
+                : null;
+
+
+            if (
+              !session ||
+              !session.user
+            ) {
+
+              redirectToLogin();
+
+              return;
+
+            }
+
+
+          } catch (error) {
+
+            redirectToLogin();
+
+            return;
+
+          }
+
+
+
+          /* ======================================
+             VALIDATE FORM
+          ====================================== */
+
+          var firstBad =
+            null;
+
+
+          Object.keys(
+            rules
+          ).forEach(
+
+            function (field) {
+
+              if (
+                !check(field) &&
+                !firstBad
+              ) {
+
+                firstBad =
+                  field;
+
+              }
+
+            }
+
+          );
+
+
+          if (firstBad) {
+
+            document
+              .getElementById(
+                firstBad
+              )
+              .focus();
+
+
+            return;
+
+          }
+
+
+
+          /* ======================================
+             CHECK CART AGAIN
+          ====================================== */
+
+          if (
+            !cartHasItems()
+          ) {
+
+            result.textContent =
+              'Your cart is empty. Add products before checking out.';
+
+
+            result.hidden =
+              false;
+
+
+            return;
+
+          }
+
+
+
+          /*
+            Save delivery details locally
+            for convenience.
+
+            This does NOT create an order.
+          */
+
+          saveDeliveryDetails();
+
+
+
+          /* ======================================
+             DEMO ONLY
+
+             IMPORTANT:
+             - No database order insert
+             - No payment
+             - No cart clear
+             - No fake confirmation
+          ====================================== */
+
+          result.textContent =
+            'Demo mode: your delivery details are valid, but no order has been created and no payment has been taken. Real order creation will be enabled after the secure backend and payment system are connected.';
+
+
+          result.hidden =
+            false;
+
+
+          result.scrollIntoView({
+            behavior:
+              'smooth',
+
+            block:
+              'nearest'
+          });
+
+
+        }
+
+      );
+
+
+
+      /* ==========================================
+         AUTH STATE CHANGE
+
+         If customer signs out in another tab
+         while checkout is open, protect page.
+      ========================================== */
+
+      if (
+        window.supabaseClient &&
+        window.supabaseClient.auth
+      ) {
+
+        window.supabaseClient
+          .auth
+          .onAuthStateChange(
+
+            function (
+              event,
+              session
+            ) {
+
+              if (
+                event ===
+                  'SIGNED_OUT' ||
+                !session
+              ) {
+
+                /*
+                  Do not immediately redirect during
+                  initial auth setup unless checkout
+                  has already been displayed.
+                */
+
+                if (
+                  checkoutContent &&
+                  !checkoutContent.hidden
+                ) {
+
+                  redirectToLogin();
+
+                }
+
+              }
+
+            }
+
+          );
+
+      }
+
+
+
+      /* ==========================================
+         START CHECKOUT
+      ========================================== */
+
+      initialiseCheckout();
+
+
     })();
+
   </script>
+
+
 </body>
+
 </html>
