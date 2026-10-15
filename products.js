@@ -1,23 +1,19 @@
 /* ==========================================================
-   products.js — Brit.Tuna product catalogue + page logic
+   products.js — Brit.Tuna
+   Product catalogue + Supabase products + product variants
    ========================================================== */
 
 (function () {
-
   'use strict';
-
 
   var U = window.BTUtil;
   var CFG = window.BT_CONFIG;
-
-
 
   /* ==========================================================
      CATEGORIES
   ========================================================== */
 
   var CATEGORIES = [
-
     {
       id: 'peanuts',
       name: 'Peanuts',
@@ -28,7 +24,6 @@
       blurb:
         'Raw, premium, roasted, skinless and wholesale peanuts.'
     },
-
     {
       id: 'mango-pickles',
       name: 'Mango Pickles',
@@ -39,7 +34,6 @@
       blurb:
         'Five mango pickle styles.'
     },
-
     {
       id: 'red-chilli',
       name: 'Red Chilli',
@@ -50,7 +44,6 @@
       blurb:
         'Whole, dried, powder, premium and wholesale chilli.'
     },
-
     {
       id: 'rice',
       name: 'Rice',
@@ -61,93 +54,69 @@
       blurb:
         'Ponni, idli, basmati, sona masoori, raw and parboiled rice.'
     }
-
   ];
-
-
 
   /* ==========================================================
      STOCK LABELS
   ========================================================== */
 
   var STOCK_LABELS = {
-
-    in_stock:
-      'In stock',
-
-    low_stock:
-      'Low stock',
-
-    out_of_stock:
-      'Out of stock'
-
+    in_stock: 'In stock',
+    low_stock: 'Low stock',
+    out_of_stock: 'Out of stock'
   };
-
-
 
   /* ==========================================================
      PRICE FILTERS
   ========================================================== */
 
   var PRICE_RANGES = [
-
     {
       id: 'all',
       label: 'All prices',
       min: 0,
       max: Infinity
     },
-
     {
       id: 'u200',
       label: 'Under ₹200',
       min: 0,
       max: 200
     },
-
     {
       id: '200-500',
       label: '₹200 – ₹500',
       min: 200,
       max: 500
     },
-
     {
       id: '500-1000',
       label: '₹500 – ₹1,000',
       min: 500,
       max: 1000
     },
-
     {
       id: 'o1000',
       label: 'Above ₹1,000',
       min: 1000,
       max: Infinity
     }
-
   ];
 
-
-
   /* ==========================================================
-     PRODUCT IMAGES
+     IMAGES
   ========================================================== */
 
   function ph(id) {
-
     return (
       'https://images.unsplash.com/photo-' +
       id +
       '?auto=format&fit=crop&w=800&q=70'
     );
-
   }
 
-
   var CAT_IMG = {
-
-    'peanuts': [
+    peanuts: [
       '1567892320421-1c657571ea4a',
       '1626082927389-6cd097cdc6ec'
     ],
@@ -162,227 +131,146 @@
       '1583119022894-919a68a3d0e3'
     ],
 
-    'rice': [
+    rice: [
       '1586201375761-83865001e31c',
       '1536304993881-ff6e9eefa2a6'
     ]
-
   };
 
-
-
   /* ==========================================================
-     CATEGORY INFORMATION
+     CATEGORY INFO
   ========================================================== */
 
   var CAT_INFO = {
-
-    'peanuts': {
-
+    peanuts: {
       extra:
         ' Packed fresh and sealed to keep the crunch. Available in retail and bulk sizes.',
-
-      ingredients:
-        'Peanuts',
-
-      allergens:
-        'Contains peanuts.',
-
+      ingredients: 'Peanuts',
+      allergens: 'Contains peanuts.',
       storage:
         'Store in a cool, dry place in an airtight container.'
-
     },
-
 
     'mango-pickles': {
-
       extra:
         ' Made with raw mangoes and traditional spices. Enjoy with curd rice, rotis and parathas.',
-
-      ingredients:
-        '',
-
-      allergens:
-        '',
-
+      ingredients: '',
+      allergens: '',
       storage:
         'Keep in a cool, dry place. Use a dry spoon and keep the jar closed after use.'
-
     },
-
 
     'red-chilli': {
-
       extra:
         ' Adds colour and heat to curries, chutneys and masalas. Sealed packs for freshness.',
-
-      ingredients:
-        'Red chilli',
-
-      allergens:
-        '',
-
+      ingredients: 'Red chilli',
+      allergens: '',
       storage:
         'Store in a cool, dry place in an airtight container away from moisture.'
-
     },
 
-
-    'rice': {
-
+    rice: {
       extra:
         ' Cleaned and packed for everyday kitchens, families, caterers and hotels.',
-
-      ingredients:
-        'Rice',
-
-      allergens:
-        '',
-
+      ingredients: 'Rice',
+      allergens: '',
       storage:
         'Store in a cool, dry place in a sealed container.'
-
     }
-
   };
-
-
 
   var EXTRA_DISC = {
-
     'Raw Peanuts': 5,
-
     'Roasted Peanuts': 7,
-
     'Traditional Mango Pickle': 5,
-
     'Red Chilli Powder': 8,
-
     'Ponni Rice': 5,
-
     'Sona Masoori Rice': 6
-
   };
 
-
-
   function catImage(cat, name) {
-
-    var list =
-      CAT_IMG[cat] || [];
-
+    var list = CAT_IMG[cat] || [];
 
     if (!list.length) {
-
       return '';
-
     }
-
 
     var h = 0;
 
-
-    for (
-      var i = 0;
-      i < name.length;
-      i++
-    ) {
-
-      h =
-        (
-          h +
-          name.charCodeAt(i)
-        ) % 97;
-
+    for (var i = 0; i < name.length; i++) {
+      h = (h + name.charCodeAt(i)) % 97;
     }
 
-
-    return ph(
-      list[
-        h % list.length
-      ]
-    );
-
+    return ph(list[h % list.length]);
   }
-
-
 
   /* ==========================================================
      SLUG
   ========================================================== */
 
-  function slugify(t) {
-
-    return String(t)
+  function slugify(text) {
+    return String(text || '')
       .toLowerCase()
-      .replace(
-        /[^a-z0-9]+/g,
-        '-'
-      )
-      .replace(
-        /^-+|-+$/g,
-        ''
-      );
-
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
   }
 
-
-
   /* ==========================================================
-     BUILD PRODUCT
+     NORMALIZE DATABASE CATEGORY
   ========================================================== */
 
-  function P(
-    category,
-    name,
-    short,
-    description,
-    packs,
-    opts
-  ) {
+  function normalizeCategory(value) {
+    var text = String(value || '')
+      .trim()
+      .toLowerCase();
 
-    opts =
-      opts || {};
+    var map = {
+      peanut: 'peanuts',
+      peanuts: 'peanuts',
 
+      'mango pickle': 'mango-pickles',
+      'mango pickles': 'mango-pickles',
+      'mango-pickle': 'mango-pickles',
+      'mango-pickles': 'mango-pickles',
 
-    var id =
-      'p-' +
-      slugify(name);
+      'red chilli': 'red-chilli',
+      'red chillies': 'red-chilli',
+      'red chili': 'red-chilli',
+      'red chilies': 'red-chilli',
+      'red-chilli': 'red-chilli',
 
+      rice: 'rice'
+    };
+
+    return map[text] || slugify(text);
+  }
+
+  /* ==========================================================
+     DEMO PRODUCT BUILDER
+  ========================================================== */
+
+  function P(category, name, short, description, packs, opts) {
+    opts = opts || {};
+
+    var id = 'p-' + slugify(name);
 
     return {
+      id: id,
+      databaseId: null,
+      source: 'demo',
 
-      id:
-        id,
-
-      slug:
-        slugify(name),
-
-      name:
-        name,
-
-      category:
-        category,
-
-      short:
-        short,
+      slug: slugify(name),
+      name: name,
+      category: category,
+      short: short,
 
       description:
         description +
-        (
-          (
-            CAT_INFO[category] ||
-            {}
-          ).extra ||
-          ''
-        ),
+        ((CAT_INFO[category] || {}).extra || ''),
 
       image:
         opts.image ||
-        catImage(
-          category,
-          name
-        ),
+        catImage(category, name),
 
       discount:
         opts.discount ||
@@ -402,70 +290,47 @@
       wholesale:
         !!opts.wholesale,
 
-      active:
-        true,
+      active: true,
+
+      productType: 'demo',
+      status: 'active',
+      brandId: null,
+      sellerId: null,
 
       ingredients:
-        (
-          CAT_INFO[category] ||
-          {}
-        ).ingredients ||
-        '',
+        (CAT_INFO[category] || {}).ingredients || '',
 
       allergens:
-        (
-          CAT_INFO[category] ||
-          {}
-        ).allergens ||
-        '',
+        (CAT_INFO[category] || {}).allergens || '',
 
       storage:
-        (
-          CAT_INFO[category] ||
-          {}
-        ).storage ||
-        '',
+        (CAT_INFO[category] || {}).storage || '',
 
       packs:
-        packs.map(
-          function (p) {
+        packs.map(function (p) {
+          return {
+            id:
+              id +
+              '-' +
+              slugify(p[0]),
 
-            return {
-
-              id:
-                id +
-                '-' +
-                slugify(
-                  p[0]
-                ),
-
-              label:
-                p[0],
-
-              price:
-                p[1]
-
-            };
-
-          }
-        )
-
+            variantId: null,
+            label: p[0],
+            price: Number(p[1]),
+            stockQuantity: null,
+            active: true
+          };
+        })
     };
-
   }
-
-
 
   /* ==========================================================
      DEMO PRODUCTS
+     Used only as fallback while database is being prepared.
   ========================================================== */
 
   var DEFAULT_PRODUCTS = [
-
-
-    /* ========================
-       PEANUTS
-    ======================== */
+    /* PEANUTS */
 
     P(
       'peanuts',
@@ -483,7 +348,6 @@
       }
     ),
 
-
     P(
       'peanuts',
       'Premium Peanuts',
@@ -500,7 +364,6 @@
       }
     ),
 
-
     P(
       'peanuts',
       'Roasted Peanuts',
@@ -516,7 +379,6 @@
       }
     ),
 
-
     P(
       'peanuts',
       'Skinless Peanuts',
@@ -528,7 +390,6 @@
       ],
       {}
     ),
-
 
     P(
       'peanuts',
@@ -544,11 +405,7 @@
       }
     ),
 
-
-
-    /* ========================
-       MANGO PICKLES
-    ======================== */
+    /* MANGO PICKLES */
 
     P(
       'mango-pickles',
@@ -566,7 +423,6 @@
       }
     ),
 
-
     P(
       'mango-pickles',
       'Spicy Mango Pickle',
@@ -581,7 +437,6 @@
         featured: true
       }
     ),
-
 
     P(
       'mango-pickles',
@@ -598,7 +453,6 @@
       }
     ),
 
-
     P(
       'mango-pickles',
       'Sweet Mango Pickle',
@@ -613,7 +467,6 @@
         stock: 'low_stock'
       }
     ),
-
 
     P(
       'mango-pickles',
@@ -630,11 +483,7 @@
       }
     ),
 
-
-
-    /* ========================
-       RED CHILLI
-    ======================== */
+    /* RED CHILLI */
 
     P(
       'red-chilli',
@@ -650,7 +499,6 @@
       {}
     ),
 
-
     P(
       'red-chilli',
       'Dried Red Chilli',
@@ -664,7 +512,6 @@
       ],
       {}
     ),
-
 
     P(
       'red-chilli',
@@ -683,7 +530,6 @@
       }
     ),
 
-
     P(
       'red-chilli',
       'Premium Red Chilli',
@@ -698,7 +544,6 @@
         discount: 10
       }
     ),
-
 
     P(
       'red-chilli',
@@ -715,11 +560,7 @@
       }
     ),
 
-
-
-    /* ========================
-       RICE
-    ======================== */
+    /* RICE */
 
     P(
       'rice',
@@ -737,7 +578,6 @@
       }
     ),
 
-
     P(
       'rice',
       'Idli Rice',
@@ -750,7 +590,6 @@
       ],
       {}
     ),
-
 
     P(
       'rice',
@@ -768,7 +607,6 @@
       }
     ),
 
-
     P(
       'rice',
       'Sona Masoori Rice',
@@ -784,7 +622,6 @@
       }
     ),
 
-
     P(
       'rice',
       'Raw Rice',
@@ -798,7 +635,6 @@
       {}
     ),
 
-
     P(
       'rice',
       'Parboiled Rice',
@@ -811,106 +647,131 @@
       ],
       {}
     )
-
   ];
-
-
 
   /* ==========================================================
      PRODUCT CACHE
   ========================================================== */
 
-  var cache =
-    DEFAULT_PRODUCTS.filter(
-      function (p) {
-
-        return p.active;
-
-      }
-    );
-
-
+  var cache = DEFAULT_PRODUCTS.filter(function (p) {
+    return p.active;
+  });
 
   /* ==========================================================
-     CONVERT SUPABASE ROW
+     CONVERT SUPABASE PRODUCT
   ========================================================== */
 
   function fromRow(r) {
-
     var slug =
       r.slug ||
       slugify(r.name);
 
-
     var id =
-      r.id
-        ? String(r.id)
-        : 'p-' + slug;
+      String(r.id);
 
+    var category =
+      normalizeCategory(r.category);
+
+    var variants =
+      Array.isArray(r.product_variants)
+        ? r.product_variants
+        : [];
+
+    variants =
+      variants.filter(function (variant) {
+        return variant.is_active !== false;
+      });
 
     var packs =
-      r.packs;
+      variants.map(function (variant) {
+        return {
+          /*
+            IMPORTANT:
+            This is the REAL Supabase
+            product_variants.id.
+          */
+          id: String(variant.id),
 
+          variantId:
+            Number(variant.id),
 
-    if (
-      typeof packs ===
-      'string'
-    ) {
+          productId:
+            Number(r.id),
 
-      try {
+          label:
+            String(variant.pack_size || ''),
 
-        packs =
-          JSON.parse(packs);
+          price:
+            Number(variant.price),
 
-      } catch (e) {
+          stockQuantity:
+            Number(variant.stock_quantity) || 0,
 
-        packs = [];
+          active:
+            variant.is_active !== false
+        };
+      });
 
-      }
+    packs.sort(function (a, b) {
+      return Number(a.variantId) - Number(b.variantId);
+    });
 
+    var totalStock =
+      packs.reduce(function (total, pack) {
+        return total + pack.stockQuantity;
+      }, 0);
+
+    var stock = 'in_stock';
+
+    if (totalStock <= 0) {
+      stock = 'out_of_stock';
+    } else if (totalStock <= 10) {
+      stock = 'low_stock';
     }
 
-
-    packs =
-      packs || [];
-
+    var info =
+      CAT_INFO[category] || {};
 
     return {
+      id: id,
 
-      id:
-        id,
+      databaseId:
+        Number(r.id),
+
+      source:
+        'supabase',
 
       slug:
         slug,
 
       name:
-        r.name,
+        r.name || 'Product',
 
       category:
-        r.category,
+        category,
 
       short:
-        r.short || '',
+        r.short ||
+        r.description ||
+        '',
 
       description:
-        r.description || '',
+        r.description ||
+        '',
 
       image:
-        r.image ||
         r.image_url ||
+        r.image ||
         catImage(
-          r.category,
-          r.name
+          category,
+          r.name || ''
         ),
 
       discount:
-        Number(
-          r.discount
-        ) || 0,
+        Number(r.discount) || 0,
 
       stock:
-        r.stock ||
-        'in_stock',
+        stock,
 
       featured:
         !!r.featured,
@@ -922,1350 +783,884 @@
         !!r.wholesale,
 
       active:
-        r.active !== false &&
         r.is_active !== false,
 
+      productType:
+        r.product_type ||
+        'own',
+
+      status:
+        r.status ||
+        '',
+
+      brandId:
+        r.brand_id ||
+        null,
+
+      sellerId:
+        r.seller_id ||
+        null,
+
       ingredients:
-        r.ingredients || '',
+        r.ingredients ||
+        info.ingredients ||
+        '',
 
       allergens:
-        r.allergens || '',
+        r.allergens ||
+        info.allergens ||
+        '',
 
       storage:
-        r.storage || '',
+        r.storage ||
+        info.storage ||
+        '',
 
       packs:
-        packs.map(
-          function (k) {
-
-            return {
-
-              id:
-                id +
-                '-' +
-                slugify(
-                  k.label
-                ),
-
-              label:
-                k.label,
-
-              price:
-                Number(
-                  k.price
-                )
-
-            };
-
-          }
-        )
-
+        packs
     };
-
   }
 
-
-
   /* ==========================================================
-     LOAD PRODUCTS
+     LOAD PRODUCTS FROM SUPABASE
 
-     Demo catalogue remains the fallback.
+     Supabase:
+       products
+          ↓
+       product_variants
+
+     Demo catalogue is fallback only.
   ========================================================== */
 
   async function load() {
-
-    /*
-      Use the existing Supabase client.
-
-      If it is unavailable, continue
-      using the demo catalogue.
-    */
-
-    if (
-      !window.supabaseClient
-    ) {
+    if (!window.supabaseClient) {
+      console.warn(
+        'Brit.Tuna: Supabase client unavailable. Using demo products.'
+      );
 
       return cache;
-
     }
 
-
     try {
-
       var result =
         await window.supabaseClient
           .from('products')
-          .select('*')
-          .eq(
-            'status',
-            'active'
+          .select(
+            [
+              'id',
+              'name',
+              'description',
+              'category',
+              'price',
+              'image_url',
+              'affiliate_url',
+              'is_active',
+              'brand_id',
+              'seller_id',
+              'product_type',
+              'status',
+              'created_at',
+              'updated_at',
+              'product_variants(',
+              'id,',
+              'product_id,',
+              'pack_size,',
+              'price,',
+              'stock_quantity,',
+              'is_active,',
+              'created_at,',
+              'updated_at',
+              ')'
+            ].join('')
           )
-          .eq(
-            'is_active',
-            true
-          );
-
+          .eq('status', 'active')
+          .eq('is_active', true)
+          .order('id', {
+            ascending: true
+          });
 
       if (result.error) {
-
         console.warn(
           'Brit.Tuna: Supabase products unavailable. Using demo products.',
           result.error
         );
 
         return cache;
-
       }
-
 
       var rows =
         result.data || [];
 
-
-      var list =
+      var databaseProducts =
         rows
           .map(fromRow)
-          .filter(
-            function (product) {
+          .filter(function (product) {
+            return (
+              product.active &&
+              product.status === 'active' &&
+              product.packs.length > 0
+            );
+          });
 
-              return (
-                product.active &&
-                product.packs.length
-              );
-
-            }
-          );
-
-
-      /*
-        If production products exist,
-        use them.
-
-        Otherwise continue using
-        demo catalogue.
-      */
-
-      if (list.length) {
-
+      if (databaseProducts.length > 0) {
         cache =
-          list;
+          databaseProducts;
 
+        console.log(
+          'Brit.Tuna: Loaded ' +
+          databaseProducts.length +
+          ' product(s) from Supabase.'
+        );
+
+        return cache;
       }
 
+      console.warn(
+        'Brit.Tuna: No active Supabase products with variants. Using demo catalogue.'
+      );
 
       return cache;
-
-
     } catch (error) {
-
       console.warn(
-        'Brit.Tuna: Product loading failed. Using demo products.',
+        'Brit.Tuna: Product loading failed. Using demo catalogue.',
         error
       );
 
-
       return cache;
-
     }
-
   }
-
-
 
   /* ==========================================================
      GET PRODUCTS
   ========================================================== */
 
   function getAll() {
-
     return cache.slice();
-
   }
-
-
 
   function getById(id) {
+    id = String(id);
 
-    id =
-      String(id);
-
-
-    for (
-      var i = 0;
-      i < cache.length;
-      i++
-    ) {
-
-      if (
-        String(
-          cache[i].id
-        ) === id
-      ) {
-
+    for (var i = 0; i < cache.length; i++) {
+      if (String(cache[i].id) === id) {
         return cache[i];
-
       }
-
     }
 
-
     return null;
-
   }
-
-
 
   function getBySlug(slug) {
+    slug = String(slug || '');
 
-    for (
-      var i = 0;
-      i < cache.length;
-      i++
-    ) {
-
-      if (
-        cache[i].slug ===
-        slug
-      ) {
-
+    for (var i = 0; i < cache.length; i++) {
+      if (cache[i].slug === slug) {
         return cache[i];
-
       }
-
     }
 
-
     return null;
-
   }
-
-
 
   function getCategory(id) {
-
-    for (
-      var i = 0;
-      i < CATEGORIES.length;
-      i++
-    ) {
-
-      if (
-        CATEGORIES[i].id ===
-        id
-      ) {
-
+    for (var i = 0; i < CATEGORIES.length; i++) {
+      if (CATEGORIES[i].id === id) {
         return CATEGORIES[i];
-
       }
-
     }
-
 
     return null;
-
   }
 
+  function getVariant(productId, packId) {
+    var product =
+      getById(productId);
 
-
-  function getVariant(
-    productId,
-    packId
-  ) {
-
-    var p =
-      getById(
-        productId
-      );
-
-
-    if (!p) {
-
+    if (!product) {
       return null;
-
     }
 
+    packId =
+      String(packId);
 
-    for (
-      var i = 0;
-      i < p.packs.length;
-      i++
-    ) {
-
+    for (var i = 0; i < product.packs.length; i++) {
       if (
-        p.packs[i].id ===
+        String(product.packs[i].id) ===
         packId
       ) {
-
         return {
-
-          product:
-            p,
-
-          pack:
-            p.packs[i]
-
+          product: product,
+          pack: product.packs[i]
         };
-
       }
-
     }
 
-
     return null;
-
   }
-
-
 
   /* ==========================================================
      PRICING
   ========================================================== */
 
-  function salePrice(
-    price,
-    discount
-  ) {
-
+  function salePrice(price, discount) {
     return Math.round(
-
-      price *
-      (
-        100 -
-        (
-          discount ||
-          0
-        )
-      ) /
-      100
-
+      Number(price) *
+        (100 - Number(discount || 0)) /
+        100
     );
-
   }
-
-
 
   function fromPrice(p) {
+    var min = Infinity;
 
-    var min =
-      Infinity;
+    p.packs.forEach(function (pack) {
+      var price =
+        salePrice(
+          pack.price,
+          p.discount
+        );
 
-
-    p.packs.forEach(
-      function (k) {
-
-        var s =
-          salePrice(
-            k.price,
-            p.discount
-          );
-
-
-        if (
-          s < min
-        ) {
-
-          min = s;
-
-        }
-
+      if (price < min) {
+        min = price;
       }
-    );
+    });
 
-
-    return min;
-
+    return min === Infinity
+      ? 0
+      : min;
   }
-
-
 
   function fromMrp(p) {
+    var min = Infinity;
 
-    var min =
-      Infinity;
-
-
-    p.packs.forEach(
-      function (k) {
-
-        if (
-          k.price <
-          min
-        ) {
-
-          min =
-            k.price;
-
-        }
-
+    p.packs.forEach(function (pack) {
+      if (Number(pack.price) < min) {
+        min =
+          Number(pack.price);
       }
-    );
+    });
 
-
-    return min;
-
+    return min === Infinity
+      ? 0
+      : min;
   }
-
-
 
   function stockLabel(p) {
-
     return (
-      STOCK_LABELS[
-        p.stock
-      ] ||
+      STOCK_LABELS[p.stock] ||
       'Stock unknown'
     );
-
   }
 
-
-
   /* ==========================================================
-     IMAGE
+     PRODUCT IMAGE
   ========================================================== */
 
   function xmlEscape(s) {
-
     return String(s)
-      .replace(
-        /&/g,
-        '&amp;'
-      )
-      .replace(
-        /</g,
-        '&lt;'
-      )
-      .replace(
-        />/g,
-        '&gt;'
-      );
-
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
   }
 
-
-
   function imageFor(p) {
-
-    if (
-      p.image
-    ) {
-
+    if (p.image) {
       return p.image;
-
     }
 
-
     var cat =
-      getCategory(
-        p.category
-      ) ||
-      {
+      getCategory(p.category) || {
         icon: '🛒',
         color: '#f3ead4'
       };
 
-
     var svg =
-
       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">' +
-
       '<rect width="400" height="300" fill="' +
       cat.color +
       '"/>' +
-
       '<text x="200" y="165" font-size="110" text-anchor="middle">' +
       cat.icon +
       '</text>' +
-
       '<text x="200" y="262" font-size="22" text-anchor="middle" fill="#7a1f2b" font-family="sans-serif">' +
-
-      xmlEscape(
-        p.name
-      ) +
-
-      '</text></svg>';
-
+      xmlEscape(p.name) +
+      '</text>' +
+      '</svg>';
 
     return (
       'data:image/svg+xml;charset=utf-8,' +
       encodeURIComponent(svg)
     );
-
   }
-
-
 
   /* ==========================================================
      FILTER / SEARCH / SORT
   ========================================================== */
 
   function filter(opts) {
-
-    opts =
-      opts || {};
-
+    opts = opts || {};
 
     var q =
-      String(
-        opts.q ||
-        ''
-      )
+      String(opts.q || '')
         .toLowerCase()
         .trim();
 
+    var range = null;
 
-    var range =
-      null;
-
-
-    PRICE_RANGES.forEach(
-      function (r) {
-
-        if (
-          r.id ===
-          opts.price
-        ) {
-
-          range = r;
-
-        }
-
+    PRICE_RANGES.forEach(function (r) {
+      if (r.id === opts.price) {
+        range = r;
       }
-    );
-
+    });
 
     var list =
-      cache.filter(
-        function (p) {
+      cache.filter(function (p) {
+        if (
+          opts.category &&
+          opts.category !== 'all' &&
+          p.category !== opts.category
+        ) {
+          return false;
+        }
 
+        if (q) {
+          var cat =
+            getCategory(p.category);
+
+          var hay =
+            (
+              p.name +
+              ' ' +
+              p.short +
+              ' ' +
+              (cat ? cat.name : '')
+            ).toLowerCase();
+
+          var ok =
+            q
+              .split(/\s+/)
+              .every(function (word) {
+                return (
+                  hay.indexOf(word) !== -1
+                );
+              });
+
+          if (!ok) {
+            return false;
+          }
+        }
+
+        if (range) {
+          var price =
+            fromPrice(p);
 
           if (
-            opts.category &&
-            opts.category !== 'all' &&
-            p.category !== opts.category
+            price < range.min ||
+            price > range.max
           ) {
-
             return false;
-
           }
-
-
-          if (q) {
-
-            var cat =
-              getCategory(
-                p.category
-              );
-
-
-            var hay =
-              (
-                p.name +
-                ' ' +
-                p.short +
-                ' ' +
-                (
-                  cat
-                    ? cat.name
-                    : ''
-                )
-              )
-                .toLowerCase();
-
-
-            var ok =
-              q
-                .split(/\s+/)
-                .every(
-                  function (w) {
-
-                    return (
-                      hay.indexOf(w) !==
-                      -1
-                    );
-
-                  }
-                );
-
-
-            if (!ok) {
-
-              return false;
-
-            }
-
-          }
-
-
-          if (range) {
-
-            var price =
-              fromPrice(p);
-
-
-            if (
-              price < range.min ||
-              price > range.max
-            ) {
-
-              return false;
-
-            }
-
-          }
-
-
-          return true;
-
         }
-      );
 
+        return true;
+      });
 
-    switch (
-      opts.sort
-    ) {
-
+    switch (opts.sort) {
       case 'price-asc':
-
-        list.sort(
-          function (a, b) {
-
-            return (
-              fromPrice(a) -
-              fromPrice(b)
-            );
-
-          }
-        );
-
+        list.sort(function (a, b) {
+          return (
+            fromPrice(a) -
+            fromPrice(b)
+          );
+        });
         break;
-
 
       case 'price-desc':
-
-        list.sort(
-          function (a, b) {
-
-            return (
-              fromPrice(b) -
-              fromPrice(a)
-            );
-
-          }
-        );
-
+        list.sort(function (a, b) {
+          return (
+            fromPrice(b) -
+            fromPrice(a)
+          );
+        });
         break;
-
 
       case 'name-asc':
-
-        list.sort(
-          function (a, b) {
-
-            return (
-              a.name.localeCompare(
-                b.name
-              )
-            );
-
-          }
-        );
-
+        list.sort(function (a, b) {
+          return a.name.localeCompare(b.name);
+        });
         break;
-
 
       case 'name-desc':
-
-        list.sort(
-          function (a, b) {
-
-            return (
-              b.name.localeCompare(
-                a.name
-              )
-            );
-
-          }
-        );
-
+        list.sort(function (a, b) {
+          return b.name.localeCompare(a.name);
+        });
         break;
-
 
       default:
-
         break;
-
     }
 
-
     return list;
-
   }
-
-
 
   /* ==========================================================
      URL HELPERS
   ========================================================== */
 
   function absoluteUrl(path) {
-
     try {
-
       return new URL(
         path,
         window.location.href
       ).href;
-
-    } catch (e) {
-
+    } catch (error) {
       return path;
-
     }
-
   }
-
-
 
   function productUrl(p) {
-
     return (
       'product-details.html?slug=' +
-      encodeURIComponent(
-        p.slug
-      )
+      encodeURIComponent(p.slug)
     );
-
   }
-
-
 
   /* ==========================================================
      PRODUCT CARD
   ========================================================== */
 
   function cardHTML(p) {
+    if (!p.packs.length) {
+      return '';
+    }
 
     var cat =
-      getCategory(
-        p.category
-      );
-
+      getCategory(p.category);
 
     var out =
       p.stock ===
       'out_of_stock';
 
-
     var first =
       p.packs[0];
 
-
     var msg =
-
       'Hello Brit.Tuna, I would like to order:\n' +
-
       'Product: ' +
       p.name +
-
       '\nPack size: ' +
       first.label +
-
       '\nQuantity: 1' +
-
       '\nLink: ' +
-      absoluteUrl(
-        productUrl(p)
-      );
-
+      absoluteUrl(productUrl(p));
 
     var mrp =
       fromMrp(p);
 
-
     var now =
       fromPrice(p);
 
-
-    return '' +
-
+    return (
       '<article class="product-card">' +
 
-        '<a class="pc-img" href="' +
-        productUrl(p) +
-        '">' +
+      '<a class="pc-img" href="' +
+      productUrl(p) +
+      '">' +
 
-          '<img src="' +
-          imageFor(p) +
-          '" alt="' +
-          U.escapeHtml(p.name) +
-          '" loading="lazy" width="400" height="300" data-pid="' +
-          p.id +
-          '">' +
+      '<img src="' +
+      imageFor(p) +
+      '" alt="' +
+      U.escapeHtml(p.name) +
+      '" loading="lazy" width="400" height="300" data-pid="' +
+      U.escapeHtml(String(p.id)) +
+      '">' +
 
-          (
-            p.discount
-              ?
-              '<span class="pc-badge">' +
-              p.discount +
-              '% OFF</span>'
-              :
-              ''
-          ) +
+      (
+        p.discount
+          ? '<span class="pc-badge">' +
+            p.discount +
+            '% OFF</span>'
+          : ''
+      ) +
 
-        '</a>' +
+      '</a>' +
 
+      '<div class="pc-body">' +
 
-        '<div class="pc-body">' +
+      '<p class="pc-cat">' +
+      U.escapeHtml(
+        cat ? cat.name : ''
+      ) +
+      '</p>' +
 
-          '<p class="pc-cat">' +
-          U.escapeHtml(
-            cat
-              ? cat.name
-              : ''
-          ) +
-          '</p>' +
+      '<h3 class="pc-name">' +
+      '<a href="' +
+      productUrl(p) +
+      '">' +
+      U.escapeHtml(p.name) +
+      '</a>' +
+      '</h3>' +
 
+      '<p class="pc-short">' +
+      U.escapeHtml(p.short) +
+      '</p>' +
 
-          '<h3 class="pc-name">' +
+      '<p class="pc-packs">Packs: ' +
+      p.packs
+        .map(function (pack) {
+          return U.escapeHtml(pack.label);
+        })
+        .join(' · ') +
+      '</p>' +
 
-            '<a href="' +
-            productUrl(p) +
-            '">' +
+      '<p class="pc-price">' +
+      '<span class="price-from">From</span> ' +
+      '<span class="price-now">' +
+      U.formatINR(now) +
+      '</span>' +
 
-              U.escapeHtml(
-                p.name
-              ) +
+      (
+        p.discount
+          ? ' <span class="price-old">' +
+            U.formatINR(mrp) +
+            '</span>'
+          : ''
+      ) +
 
-            '</a>' +
+      '</p>' +
 
-          '</h3>' +
+      '<p class="stock stock-' +
+      p.stock +
+      '">' +
+      stockLabel(p) +
+      '</p>' +
 
+      '<div class="pc-actions">' +
 
-          '<p class="pc-short">' +
-          U.escapeHtml(
-            p.short
-          ) +
-          '</p>' +
+      '<button type="button" class="btn btn-primary btn-sm js-add-card" data-product-id="' +
+      U.escapeHtml(String(p.id)) +
+      '"' +
+      (out ? ' disabled' : '') +
+      '>Add to Cart</button>' +
 
+      '<a class="btn btn-whatsapp btn-sm" href="' +
+      U.whatsappLink(msg) +
+      '" target="_blank" rel="noopener">WhatsApp</a>' +
 
-          '<p class="pc-packs">Packs: ' +
-
-          p.packs
-            .map(
-              function (k) {
-
-                return U.escapeHtml(
-                  k.label
-                );
-
-              }
-            )
-            .join(' · ') +
-
-          '</p>' +
-
-
-          '<p class="pc-price">' +
-
-            '<span class="price-from">From</span> ' +
-
-            '<span class="price-now">' +
-            U.formatINR(now) +
-            '</span>' +
-
-            (
-              p.discount
-                ?
-                ' <span class="price-old">' +
-                U.formatINR(mrp) +
-                '</span>'
-                :
-                ''
-            ) +
-
-          '</p>' +
-
-
-          '<p class="stock stock-' +
-          p.stock +
-          '">' +
-          stockLabel(p) +
-          '</p>' +
-
-
-          '<div class="pc-actions">' +
-
-            '<button type="button" class="btn btn-primary btn-sm js-add-card" data-product-id="' +
-            p.id +
-            '"' +
-            (
-              out
-                ? ' disabled'
-                : ''
-            ) +
-            '>Add to Cart</button>' +
-
-            '<a class="btn btn-whatsapp btn-sm" href="' +
-            U.whatsappLink(msg) +
-            '" target="_blank" rel="noopener">WhatsApp</a>' +
-
-          '</div>' +
-
-        '</div>' +
-
-      '</article>';
-
+      '</div>' +
+      '</div>' +
+      '</article>'
+    );
   }
-
-
 
   /* ==========================================================
      IMAGE FALLBACK
   ========================================================== */
 
   function placeholderFor(id) {
-
-    var q =
+    var product =
       getById(id);
 
-
-    if (!q) {
-
+    if (!product) {
       return '';
-
     }
 
+    var category =
+      getCategory(product.category);
 
-    var c =
-      getCategory(
-        q.category
-      );
-
-
-    if (!c) {
-
+    if (!category) {
       return '';
-
     }
-
 
     var svg =
-
       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">' +
-
       '<rect width="400" height="300" fill="' +
-      c.color +
+      category.color +
       '"/>' +
-
       '<text x="200" y="165" font-size="110" text-anchor="middle">' +
-      c.icon +
+      category.icon +
       '</text>' +
-
       '</svg>';
-
 
     return (
       'data:image/svg+xml;charset=utf-8,' +
       encodeURIComponent(svg)
     );
-
   }
-
-
 
   document.addEventListener(
     'error',
-
     function (e) {
-
-      var t =
+      var target =
         e.target;
 
-
       if (
-        t &&
-        t.tagName === 'IMG' &&
-        t.getAttribute(
-          'data-pid'
-        ) &&
-        !t.getAttribute(
-          'data-fb'
-        )
+        target &&
+        target.tagName === 'IMG' &&
+        target.getAttribute('data-pid') &&
+        !target.getAttribute('data-fb')
       ) {
-
-        t.setAttribute(
+        target.setAttribute(
           'data-fb',
           '1'
         );
 
-
-        t.src =
+        target.src =
           placeholderFor(
-            t.getAttribute(
-              'data-pid'
-            )
+            target.getAttribute('data-pid')
           );
-
       }
-
     },
-
     true
   );
-
-
 
   /* ==========================================================
      OFFERS
   ========================================================== */
 
   function offersHTML() {
-
     return cache
+      .filter(function (product) {
+        return product.discount > 0;
+      })
+      .slice(0, 8)
+      .map(function (product) {
+        return (
+          '<a class="offer-tile" href="' +
+          productUrl(product) +
+          '">' +
 
-      .filter(
-        function (q) {
+          '<img src="' +
+          imageFor(product) +
+          '" alt="" loading="lazy" data-pid="' +
+          product.id +
+          '">' +
 
-          return (
-            q.discount >
-            0
-          );
+          '<span class="offer-pct">' +
+          product.discount +
+          '% OFF</span>' +
 
-        }
-      )
+          '<h3>' +
+          U.escapeHtml(product.name) +
+          '</h3>' +
 
-      .slice(
-        0,
-        8
-      )
+          '<p>From ' +
+          U.formatINR(fromPrice(product)) +
+          ' <s>' +
+          U.formatINR(fromMrp(product)) +
+          '</s></p>' +
 
-      .map(
-        function (q) {
-
-          return (
-
-            '<a class="offer-tile" href="' +
-            productUrl(q) +
-            '">' +
-
-              '<img src="' +
-              imageFor(q) +
-              '" alt="" loading="lazy" data-pid="' +
-              q.id +
-              '">' +
-
-              '<span class="offer-pct">' +
-              q.discount +
-              '% OFF</span>' +
-
-              '<h3>' +
-              U.escapeHtml(
-                q.name
-              ) +
-              '</h3>' +
-
-              '<p>From ' +
-              U.formatINR(
-                fromPrice(q)
-              ) +
-              ' <s>' +
-              U.formatINR(
-                fromMrp(q)
-              ) +
-              '</s></p>' +
-
-            '</a>'
-
-          );
-
-        }
-      )
-
+          '</a>'
+        );
+      })
       .join('');
-
   }
 
-
-
   /* ==========================================================
-     RENDER GRID
+     GRID
   ========================================================== */
 
-  function renderGrid(
-    el,
-    list
-  ) {
-
+  function renderGrid(el, list) {
     if (!el) {
-
       return;
-
     }
-
 
     el.innerHTML =
       list
         .map(cardHTML)
         .join('');
-
   }
-
-
 
   /* ==========================================================
      TOAST
   ========================================================== */
 
-  function toast(msg) {
-
+  function toast(message) {
     if (
       window.BTUI &&
       window.BTUI.toast
     ) {
-
-      window.BTUI.toast(
-        msg
-      );
-
+      window.BTUI.toast(message);
     }
-
   }
-
-
 
   /* ==========================================================
      HOME PAGE
   ========================================================== */
 
   function initHome() {
-
-    var cg =
+    var categoryGrid =
       document.getElementById(
         'category-grid'
       );
 
-
-    if (cg) {
-
-      cg.innerHTML =
-        CATEGORIES
-          .map(
-            function (c) {
-
-              var n =
-                cache.filter(
-                  function (p) {
-
-                    return (
-                      p.category ===
-                      c.id
-                    );
-
-                  }
-                ).length;
-
-
+    if (categoryGrid) {
+      categoryGrid.innerHTML =
+        CATEGORIES.map(function (category) {
+          var count =
+            cache.filter(function (product) {
               return (
-
-                '<a class="cat-card has-photo" href="products.html?category=' +
-                c.id +
-                '" style="--cat-bg:' +
-                c.color +
-                ';--cat-photo:url(\'' +
-                c.photo +
-                '\')">' +
-
-                  '<h3>' +
-                  c.name +
-                  '</h3>' +
-
-                  '<p>' +
-                  U.escapeHtml(
-                    c.blurb
-                  ) +
-                  '</p>' +
-
-                  '<span class="cat-count">' +
-                  n +
-                  ' products</span>' +
-
-                '</a>'
-
+                product.category ===
+                category.id
               );
+            }).length;
 
-            }
-          )
-          .join('');
+          return (
+            '<a class="cat-card has-photo" href="products.html?category=' +
+            category.id +
+            '" style="--cat-bg:' +
+            category.color +
+            ';--cat-photo:url(\'' +
+            category.photo +
+            '\')">' +
 
+            '<h3>' +
+            category.name +
+            '</h3>' +
+
+            '<p>' +
+            U.escapeHtml(category.blurb) +
+            '</p>' +
+
+            '<span class="cat-count">' +
+            count +
+            ' products</span>' +
+
+            '</a>'
+          );
+        }).join('');
     }
 
-
-    var og =
+    var offersGrid =
       document.getElementById(
         'offers-grid'
       );
 
-
-    if (og) {
-
-      og.innerHTML =
+    if (offersGrid) {
+      offersGrid.innerHTML =
         offersHTML();
-
     }
 
-
-    var bg =
+    var bestGrid =
       document.getElementById(
         'bestsellers-grid'
       );
 
-
-    if (bg) {
-
+    if (bestGrid) {
       var best =
         cache
-          .filter(
-            function (p) {
+          .filter(function (product) {
+            return product.bestseller;
+          })
+          .slice(0, 4);
 
-              return p.bestseller;
+      /*
+        Database products currently do not
+        have bestseller metadata.
 
-            }
-          )
-          .slice(
-            0,
-            4
-          );
+        Show first products if necessary.
+      */
 
+      if (!best.length) {
+        best =
+          cache.slice(0, 4);
+      }
 
       renderGrid(
-        bg,
+        bestGrid,
         best
       );
-
     }
-
   }
-
-
 
   /* ==========================================================
      SELECT HELPER
   ========================================================== */
 
   function fillSelect(
-    sel,
+    select,
     items,
     valueKey,
     labelKey
   ) {
-
     if (
-      !sel ||
-      sel.options.length >
-      0
+      !select ||
+      select.options.length > 0
     ) {
-
       return;
-
     }
 
+    items.forEach(function (item) {
+      var option =
+        document.createElement(
+          'option'
+        );
 
-    items.forEach(
-      function (it) {
+      option.value =
+        item[valueKey];
 
-        var o =
-          document.createElement(
-            'option'
-          );
+      option.textContent =
+        item[labelKey];
 
-
-        o.value =
-          it[valueKey];
-
-
-        o.textContent =
-          it[labelKey];
-
-
-        sel.appendChild(o);
-
-      }
-    );
-
+      select.appendChild(option);
+    });
   }
-
-
 
   /* ==========================================================
      SHOP PAGE
   ========================================================== */
 
   function initShop() {
-
     var grid =
       document.getElementById(
         'product-grid'
       );
 
-
     if (!grid) {
-
       return;
-
     }
 
-
-    var qEl =
+    var searchEl =
       document.getElementById(
         'search-input'
       );
 
-
-    var catEl =
+    var categoryEl =
       document.getElementById(
         'category-filter'
       );
-
 
     var priceEl =
       document.getElementById(
         'price-filter'
       );
 
-
     var sortEl =
       document.getElementById(
         'sort-select'
       );
-
 
     var countEl =
       document.getElementById(
         'result-count'
       );
 
-
     var emptyEl =
       document.getElementById(
         'empty-state'
       );
 
-
     fillSelect(
-      catEl,
+      categoryEl,
       [
         {
           id: 'all',
           name: 'All categories'
         }
-      ].concat(
-        CATEGORIES
-      ),
+      ].concat(CATEGORIES),
       'id',
       'name'
     );
-
 
     fillSelect(
       priceEl,
@@ -2274,87 +1669,63 @@
       'label'
     );
 
-
     fillSelect(
       sortEl,
       [
-
         {
           id: 'default',
           name: 'Sort: Featured'
         },
-
         {
           id: 'price-asc',
           name: 'Price: Low to High'
         },
-
         {
           id: 'price-desc',
           name: 'Price: High to Low'
         },
-
         {
           id: 'name-asc',
           name: 'Name: A to Z'
         },
-
         {
           id: 'name-desc',
           name: 'Name: Z to A'
         }
-
       ],
       'id',
       'name'
     );
 
-
-    if (qEl) {
-
-      qEl.value =
-        U.getParam('q') ||
-        '';
-
+    if (searchEl) {
+      searchEl.value =
+        U.getParam('q') || '';
     }
 
-
-    var urlCat =
-      U.getParam(
-        'category'
-      );
-
+    var urlCategory =
+      U.getParam('category');
 
     if (
-      catEl &&
-      urlCat &&
-      getCategory(
-        urlCat
-      )
+      categoryEl &&
+      urlCategory &&
+      getCategory(urlCategory)
     ) {
-
-      catEl.value =
-        urlCat;
-
+      categoryEl.value =
+        urlCategory;
     }
 
-
-
     function render() {
-
       try {
-
         var list =
           filter({
-
             q:
-              qEl
-                ? qEl.value
+              searchEl
+                ? searchEl.value
                 : '',
 
             category:
-              catEl
-                ? catEl.value
+              categoryEl
+                ? categoryEl.value
                 : 'all',
 
             price:
@@ -2366,455 +1737,300 @@
               sortEl
                 ? sortEl.value
                 : 'default'
-
           });
-
 
         renderGrid(
           grid,
           list
         );
 
-
         if (countEl) {
-
           countEl.textContent =
             'Showing ' +
             list.length +
             ' of ' +
             cache.length +
             ' products';
-
         }
-
 
         if (emptyEl) {
-
           emptyEl.hidden =
-            list.length >
-            0;
-
+            list.length > 0;
         }
-
-      } catch (err) {
-
+      } catch (error) {
         console.error(
           'Brit.Tuna: Shop render error.',
-          err
+          error
         );
-
 
         grid.innerHTML =
           '<p class="state-error" role="alert">Sorry, products could not be loaded. Please refresh the page.</p>';
-
       }
-
     }
 
-
-
     [
-      qEl,
-      catEl,
+      searchEl,
+      categoryEl,
       priceEl,
       sortEl
-    ].forEach(
-      function (el) {
-
-        if (!el) {
-
-          return;
-
-        }
-
-
-        el.addEventListener(
-
-          el.tagName === 'INPUT'
-            ? 'input'
-            : 'change',
-
-          render
-
-        );
-
+    ].forEach(function (el) {
+      if (!el) {
+        return;
       }
-    );
 
+      el.addEventListener(
+        el.tagName === 'INPUT'
+          ? 'input'
+          : 'change',
+        render
+      );
+    });
 
     var resetBtn =
       document.getElementById(
         'reset-filters'
       );
 
-
     if (resetBtn) {
-
       resetBtn.addEventListener(
         'click',
-
         function () {
-
-          if (qEl) {
-
-            qEl.value =
-              '';
-
+          if (searchEl) {
+            searchEl.value = '';
           }
 
-
-          if (catEl) {
-
-            catEl.value =
-              'all';
-
+          if (categoryEl) {
+            categoryEl.value = 'all';
           }
-
 
           if (priceEl) {
-
-            priceEl.value =
-              'all';
-
+            priceEl.value = 'all';
           }
-
 
           if (sortEl) {
-
-            sortEl.value =
-              'default';
-
+            sortEl.value = 'default';
           }
 
-
           render();
-
         }
       );
-
     }
 
-
     render();
-
   }
-
-
 
   /* ==========================================================
      PRODUCTS PAGE
   ========================================================== */
 
   function initProducts() {
-
     var grid =
       document.getElementById(
         'product-grid'
       );
 
-
     if (!grid) {
-
       return;
-
     }
-
 
     var tabs =
       document.getElementById(
         'category-tabs'
       );
 
-
     var sortEl =
       document.getElementById(
         'sort-select'
       );
-
 
     var countEl =
       document.getElementById(
         'result-count'
       );
 
-
     var heading =
       document.getElementById(
         'products-heading'
       );
-
 
     var emptyEl =
       document.getElementById(
         'empty-state'
       );
 
-
     var current =
-      U.getParam(
-        'category'
-      );
+      U.getParam('category');
 
-
-    if (
-      !getCategory(
-        current
-      )
-    ) {
-
-      current =
-        'all';
-
+    if (!getCategory(current)) {
+      current = 'all';
     }
-
 
     fillSelect(
       sortEl,
       [
-
         {
           id: 'default',
           name: 'Sort: Featured'
         },
-
         {
           id: 'price-asc',
           name: 'Price: Low to High'
         },
-
         {
           id: 'price-desc',
           name: 'Price: High to Low'
         },
-
         {
           id: 'name-asc',
           name: 'Name: A to Z'
         },
-
         {
           id: 'name-desc',
           name: 'Name: Z to A'
         }
-
       ],
       'id',
       'name'
     );
 
-
-
     function drawTabs() {
-
       if (!tabs) {
-
         return;
-
       }
 
-
       var html =
-
         '<a class="chip' +
-        (
-          current === 'all'
-            ? ' active'
-            : ''
-        ) +
+        (current === 'all'
+          ? ' active'
+          : '') +
         '" href="products.html" data-cat="all">All</a>';
 
-
-      CATEGORIES.forEach(
-        function (c) {
-
-          html +=
-
-            '<a class="chip' +
-            (
-              current === c.id
-                ? ' active'
-                : ''
-            ) +
-            '" href="products.html?category=' +
-            c.id +
-            '" data-cat="' +
-            c.id +
-            '">' +
-            c.icon +
-            ' ' +
-            c.name +
-            '</a>';
-
-        }
-      );
-
+      CATEGORIES.forEach(function (category) {
+        html +=
+          '<a class="chip' +
+          (
+            current === category.id
+              ? ' active'
+              : ''
+          ) +
+          '" href="products.html?category=' +
+          category.id +
+          '" data-cat="' +
+          category.id +
+          '">' +
+          category.icon +
+          ' ' +
+          category.name +
+          '</a>';
+      });
 
       tabs.innerHTML =
         html;
-
     }
 
-
-
     function render() {
-
       var list =
         filter({
-
-          category:
-            current,
+          category: current,
 
           sort:
             sortEl
               ? sortEl.value
               : 'default'
-
         });
-
 
       renderGrid(
         grid,
         list
       );
 
-
-      var cat =
-        getCategory(
-          current
-        );
-
+      var category =
+        getCategory(current);
 
       if (heading) {
-
         heading.textContent =
-          cat
-            ? cat.name
+          category
+            ? category.name
             : 'All Products';
-
       }
 
-
       if (countEl) {
-
         countEl.textContent =
           list.length +
           ' products';
-
       }
-
 
       if (emptyEl) {
-
         emptyEl.hidden =
-          list.length >
-          0;
-
+          list.length > 0;
       }
 
-
       drawTabs();
-
     }
 
-
-
     if (tabs) {
-
       tabs.addEventListener(
         'click',
-
         function (e) {
-
-          var a =
+          var link =
             e.target.closest(
               'a[data-cat]'
             );
 
-
-          if (!a) {
-
+          if (!link) {
             return;
-
           }
-
 
           e.preventDefault();
 
-
           current =
-            a.getAttribute(
+            link.getAttribute(
               'data-cat'
             );
 
-
           history.replaceState(
-
             null,
-
             '',
-
             current === 'all'
               ? 'products.html'
               : 'products.html?category=' +
                 current
-
           );
 
-
           render();
-
         }
       );
-
     }
 
-
     if (sortEl) {
-
       sortEl.addEventListener(
         'change',
         render
       );
-
     }
 
-
     render();
-
   }
 
-
-
   /* ==========================================================
-     PRODUCT DETAILS PAGE
+     PRODUCT DETAILS
   ========================================================== */
 
   function initDetails() {
-
     var box =
       document.getElementById(
         'product-detail'
       );
 
-
     if (!box) {
-
       return;
-
     }
 
-
     var slug =
-      U.getParam(
-        'slug'
-      );
-
+      U.getParam('slug');
 
     var id =
-      U.getParam(
-        'id'
-      );
-
+      U.getParam('id');
 
     var p =
       slug
@@ -2825,26 +2041,19 @@
               : null
           );
 
-
-    if (!p) {
-
+    if (
+      !p ||
+      !p.packs.length
+    ) {
       box.innerHTML =
-
         '<div class="empty-state">' +
-
-          '<h2>Product not found</h2>' +
-
-          '<p>We could not find that product. It may have been removed.</p>' +
-
-          '<a class="btn btn-primary" href="shop.html">Browse all products</a>' +
-
+        '<h2>Product not found</h2>' +
+        '<p>We could not find that product. It may have been removed.</p>' +
+        '<a class="btn btn-primary" href="shop.html">Browse all products</a>' +
         '</div>';
 
-
       return;
-
     }
-
 
     document.title =
       p.name +
@@ -2856,393 +2065,273 @@
           : 'Brit.Tuna'
       );
 
-
     var cat =
-      getCategory(
-        p.category
-      );
-
+      getCategory(p.category);
 
     var out =
       p.stock ===
       'out_of_stock';
 
-
     var state = {
-
       packId:
         p.packs[0].id,
 
-      qty:
-        1
-
+      qty: 1
     };
-
 
     var NA =
       '<em>Not provided yet. To be confirmed by the business owner.</em>';
 
-
-
     var packsHTML =
       p.packs
-        .map(
-          function (k, i) {
+        .map(function (pack, index) {
+          return (
+            '<label class="pack-opt">' +
 
-            return (
-
-              '<label class="pack-opt">' +
-
-                '<input type="radio" name="pack" value="' +
-                k.id +
-                '"' +
-                (
-                  i === 0
-                    ? ' checked'
-                    : ''
-                ) +
-                '>' +
-
-                '<span>' +
-                U.escapeHtml(
-                  k.label
-                ) +
-                '</span>' +
-
-                '<small>' +
-                U.formatINR(
-                  salePrice(
-                    k.price,
-                    p.discount
-                  )
-                ) +
-                '</small>' +
-
-              '</label>'
-
-            );
-
-          }
-        )
-        .join('');
-
-
-
-    box.innerHTML =
-
-      '<nav class="breadcrumb" aria-label="Breadcrumb">' +
-
-        '<a href="index.html">Home</a> / ' +
-
-        '<a href="products.html?category=' +
-        p.category +
-        '">' +
-
-        U.escapeHtml(
-          cat
-            ? cat.name
-            : 'Products'
-        ) +
-
-        '</a> / ' +
-
-        '<span>' +
-        U.escapeHtml(
-          p.name
-        ) +
-        '</span>' +
-
-      '</nav>' +
-
-
-      '<div class="pd-grid">' +
-
-
-        '<div class="pd-image">' +
-
-          '<img src="' +
-          imageFor(p) +
-          '" alt="' +
-          U.escapeHtml(p.name) +
-          '" width="400" height="300" data-pid="' +
-          p.id +
-          '">' +
-
-          (
-            p.discount
-              ?
-              '<span class="pc-badge">' +
-              p.discount +
-              '% OFF</span>'
-              :
-              ''
-          ) +
-
-        '</div>' +
-
-
-        '<div class="pd-info">' +
-
-          '<p class="pc-cat">' +
-          U.escapeHtml(
-            cat
-              ? cat.name
-              : ''
-          ) +
-          '</p>' +
-
-          '<h1>' +
-          U.escapeHtml(
-            p.name
-          ) +
-          '</h1>' +
-
-          '<p class="pd-short">' +
-          U.escapeHtml(
-            p.short
-          ) +
-          '</p>' +
-
-          '<p class="pd-price">' +
-
-            '<span id="pd-price" class="price-now"></span> ' +
-
-            '<span id="pd-mrp" class="price-old"></span>' +
-
-          '</p>' +
-
-          '<p class="stock stock-' +
-          p.stock +
-          '">' +
-          stockLabel(p) +
-          '</p>' +
-
-          '<fieldset class="pack-options">' +
-
-            '<legend>Select pack size</legend>' +
-
-            packsHTML +
-
-          '</fieldset>' +
-
-          '<div class="pd-qty-row">' +
-
-            '<span class="label">Quantity</span>' +
-
-            '<div class="qty">' +
-
-              '<button type="button" id="qty-dec" aria-label="Decrease quantity">−</button>' +
-
-              '<input id="qty-input" type="number" min="1" max="99" value="1" aria-label="Quantity">' +
-
-              '<button type="button" id="qty-inc" aria-label="Increase quantity">+</button>' +
-
-            '</div>' +
-
-            '<span class="pd-line-total">Total: <strong id="pd-total"></strong></span>' +
-
-          '</div>' +
-
-          '<div class="pd-actions">' +
-
-            '<button type="button" id="pd-add" class="btn btn-primary"' +
+            '<input type="radio" name="pack" value="' +
+            U.escapeHtml(String(pack.id)) +
+            '"' +
             (
-              out
-                ? ' disabled'
+              index === 0
+                ? ' checked'
                 : ''
             ) +
             '>' +
-            (
-              out
-                ? 'Out of stock'
-                : 'Add to Cart'
+
+            '<span>' +
+            U.escapeHtml(pack.label) +
+            '</span>' +
+
+            '<small>' +
+            U.formatINR(
+              salePrice(
+                pack.price,
+                p.discount
+              )
             ) +
-            '</button>' +
+            '</small>' +
 
-            '<a id="pd-whatsapp" class="btn btn-whatsapp" href="#" target="_blank" rel="noopener">Order on WhatsApp</a>' +
+            '</label>'
+          );
+        })
+        .join('');
 
-          '</div>' +
+    box.innerHTML =
+      '<nav class="breadcrumb" aria-label="Breadcrumb">' +
 
-          '<p class="form-note">A WhatsApp message is an enquiry only. It is not a confirmed order or proof of payment.</p>' +
+      '<a href="index.html">Home</a> / ' +
 
-        '</div>' +
+      '<a href="products.html?category=' +
+      p.category +
+      '">' +
+
+      U.escapeHtml(
+        cat ? cat.name : 'Products'
+      ) +
+
+      '</a> / ' +
+
+      '<span>' +
+      U.escapeHtml(p.name) +
+      '</span>' +
+
+      '</nav>' +
+
+      '<div class="pd-grid">' +
+
+      '<div class="pd-image">' +
+
+      '<img src="' +
+      imageFor(p) +
+      '" alt="' +
+      U.escapeHtml(p.name) +
+      '" width="400" height="300" data-pid="' +
+      p.id +
+      '">' +
+
+      (
+        p.discount
+          ? '<span class="pc-badge">' +
+            p.discount +
+            '% OFF</span>'
+          : ''
+      ) +
 
       '</div>' +
 
+      '<div class="pd-info">' +
+
+      '<p class="pc-cat">' +
+      U.escapeHtml(
+        cat ? cat.name : ''
+      ) +
+      '</p>' +
+
+      '<h1>' +
+      U.escapeHtml(p.name) +
+      '</h1>' +
+
+      '<p class="pd-short">' +
+      U.escapeHtml(p.short) +
+      '</p>' +
+
+      '<p class="pd-price">' +
+      '<span id="pd-price" class="price-now"></span> ' +
+      '<span id="pd-mrp" class="price-old"></span>' +
+      '</p>' +
+
+      '<p class="stock stock-' +
+      p.stock +
+      '">' +
+      stockLabel(p) +
+      '</p>' +
+
+      '<fieldset class="pack-options">' +
+      '<legend>Select pack size</legend>' +
+      packsHTML +
+      '</fieldset>' +
+
+      '<div class="pd-qty-row">' +
+
+      '<span class="label">Quantity</span>' +
+
+      '<div class="qty">' +
+
+      '<button type="button" id="qty-dec" aria-label="Decrease quantity">−</button>' +
+
+      '<input id="qty-input" type="number" min="1" max="99" value="1" aria-label="Quantity">' +
+
+      '<button type="button" id="qty-inc" aria-label="Increase quantity">+</button>' +
+
+      '</div>' +
+
+      '<span class="pd-line-total">Total: <strong id="pd-total"></strong></span>' +
+
+      '</div>' +
+
+      '<div class="pd-actions">' +
+
+      '<button type="button" id="pd-add" class="btn btn-primary"' +
+      (
+        out
+          ? ' disabled'
+          : ''
+      ) +
+      '>' +
+      (
+        out
+          ? 'Out of stock'
+          : 'Add to Cart'
+      ) +
+      '</button>' +
+
+      '<a id="pd-whatsapp" class="btn btn-whatsapp" href="#" target="_blank" rel="noopener">Order on WhatsApp</a>' +
+
+      '</div>' +
+
+      '<p class="form-note">A WhatsApp message is an enquiry only. It is not a confirmed order or proof of payment.</p>' +
+
+      '</div>' +
+      '</div>' +
 
       '<section class="pd-tabs">' +
 
-        '<h2>Product description</h2>' +
+      '<h2>Product description</h2>' +
 
-        '<p>' +
-        U.escapeHtml(
-          p.description
-        ) +
-        '</p>' +
+      '<p>' +
+      U.escapeHtml(p.description) +
+      '</p>' +
 
-        '<table class="spec-table">' +
+      '<table class="spec-table">' +
+      '<tbody>' +
 
-          '<tbody>' +
+      '<tr><th>Product ID</th><td>' +
+      U.escapeHtml(String(p.id)) +
+      '</td></tr>' +
 
-            '<tr>' +
+      '<tr><th>Category</th><td>' +
+      U.escapeHtml(
+        cat ? cat.name : ''
+      ) +
+      '</td></tr>' +
 
-              '<th>Product ID</th>' +
+      '<tr><th>Available packs</th><td>' +
+      p.packs
+        .map(function (pack) {
+          return U.escapeHtml(pack.label);
+        })
+        .join(', ') +
+      '</td></tr>' +
 
-              '<td>' +
-              U.escapeHtml(
-                p.id
-              ) +
-              '</td>' +
+      '<tr><th>Ingredients</th><td>' +
+      (
+        p.ingredients
+          ? U.escapeHtml(p.ingredients)
+          : NA
+      ) +
+      '</td></tr>' +
 
-            '</tr>' +
+      '<tr><th>Allergen information</th><td>' +
+      (
+        p.allergens
+          ? U.escapeHtml(p.allergens)
+          : NA
+      ) +
+      '</td></tr>' +
 
-            '<tr>' +
+      '<tr><th>Storage</th><td>' +
+      (
+        p.storage
+          ? U.escapeHtml(p.storage)
+          : NA
+      ) +
+      '</td></tr>' +
 
-              '<th>Category</th>' +
-
-              '<td>' +
-              U.escapeHtml(
-                cat
-                  ? cat.name
-                  : ''
-              ) +
-              '</td>' +
-
-            '</tr>' +
-
-            '<tr>' +
-
-              '<th>Available packs</th>' +
-
-              '<td>' +
-
-              p.packs
-                .map(
-                  function (k) {
-
-                    return U.escapeHtml(
-                      k.label
-                    );
-
-                  }
-                )
-                .join(', ') +
-
-              '</td>' +
-
-            '</tr>' +
-
-            '<tr>' +
-
-              '<th>Ingredients</th>' +
-
-              '<td>' +
-              (
-                p.ingredients
-                  ? U.escapeHtml(
-                      p.ingredients
-                    )
-                  : NA
-              ) +
-              '</td>' +
-
-            '</tr>' +
-
-            '<tr>' +
-
-              '<th>Allergen information</th>' +
-
-              '<td>' +
-              (
-                p.allergens
-                  ? U.escapeHtml(
-                      p.allergens
-                    )
-                  : NA
-              ) +
-              '</td>' +
-
-            '</tr>' +
-
-            '<tr>' +
-
-              '<th>Storage</th>' +
-
-              '<td>' +
-              (
-                p.storage
-                  ? U.escapeHtml(
-                      p.storage
-                    )
-                  : NA
-              ) +
-              '</td>' +
-
-            '</tr>' +
-
-          '</tbody>' +
-
-        '</table>' +
+      '</tbody>' +
+      '</table>' +
 
       '</section>';
-
-
 
     var priceEl =
       document.getElementById(
         'pd-price'
       );
 
-
     var mrpEl =
       document.getElementById(
         'pd-mrp'
       );
-
 
     var totalEl =
       document.getElementById(
         'pd-total'
       );
 
-
     var waEl =
       document.getElementById(
         'pd-whatsapp'
       );
-
 
     var qtyEl =
       document.getElementById(
         'qty-input'
       );
 
-
-
     function currentPack() {
-
-      var v =
+      var variant =
         getVariant(
           p.id,
           state.packId
         );
 
-
-      return (
-        v
-          ? v.pack
-          : p.packs[0]
-      );
-
+      return variant
+        ? variant.pack
+        : p.packs[0];
     }
 
-
-
     function update() {
-
       var pack =
         currentPack();
-
 
       var now =
         salePrice(
@@ -3250,647 +2339,393 @@
           p.discount
         );
 
-
       priceEl.textContent =
-        U.formatINR(
-          now
-        );
-
+        U.formatINR(now);
 
       mrpEl.textContent =
         p.discount
-          ? U.formatINR(
-              pack.price
-            )
+          ? U.formatINR(pack.price)
           : '';
-
 
       totalEl.textContent =
         U.formatINR(
-          now *
-          state.qty
+          now * state.qty
         );
 
-
       var msg =
-
         'Hello Brit.Tuna, I would like to order:\n' +
-
         'Product: ' +
         p.name +
-
         '\nPack size: ' +
         pack.label +
-
         '\nQuantity: ' +
         state.qty +
-
         '\nLink: ' +
         absoluteUrl(
           productUrl(p)
         );
 
-
       waEl.href =
-        U.whatsappLink(
-          msg
-        );
-
+        U.whatsappLink(msg);
     }
 
+    function setQty(number) {
+      number =
+        parseInt(number, 10);
 
+      if (
+        !number ||
+        number < 1
+      ) {
+        number = 1;
+      }
 
-    function setQty(n) {
+      if (number > 99) {
+        number = 99;
+      }
 
-      n =
-        parseInt(
-          n,
-          10
+      var pack =
+        currentPack();
+
+      /*
+        Database products know actual
+        stock quantity.
+
+        Demo products do not.
+      */
+
+      if (
+        pack.stockQuantity !== null &&
+        pack.stockQuantity !== undefined &&
+        number > pack.stockQuantity
+      ) {
+        number =
+          Math.max(
+            1,
+            pack.stockQuantity
+          );
+
+        toast(
+          'Only ' +
+          pack.stockQuantity +
+          ' available in this pack.'
         );
-
-
-      if (
-        !n ||
-        n < 1
-      ) {
-
-        n = 1;
-
       }
-
-
-      if (
-        n > 99
-      ) {
-
-        n = 99;
-
-      }
-
 
       state.qty =
-        n;
-
+        number;
 
       qtyEl.value =
-        n;
-
+        number;
 
       update();
-
     }
-
-
 
     box.addEventListener(
       'change',
-
       function (e) {
-
         if (
           e.target.name ===
           'pack'
         ) {
-
           state.packId =
             e.target.value;
 
+          state.qty = 1;
+          qtyEl.value = 1;
 
           update();
-
         }
-
       }
     );
 
-
-
     document
-      .getElementById(
-        'qty-dec'
-      )
+      .getElementById('qty-dec')
       .addEventListener(
         'click',
-
         function () {
-
           setQty(
-            state.qty -
-            1
+            state.qty - 1
           );
-
         }
       );
 
-
-
     document
-      .getElementById(
-        'qty-inc'
-      )
+      .getElementById('qty-inc')
       .addEventListener(
         'click',
-
         function () {
-
           setQty(
-            state.qty +
-            1
+            state.qty + 1
           );
-
         }
       );
-
-
 
     qtyEl.addEventListener(
       'change',
-
       function () {
-
-        setQty(
-          qtyEl.value
-        );
-
+        setQty(qtyEl.value);
       }
     );
 
-
-
-    /* ======================================================
-       PRODUCT DETAILS ADD TO CART
-
-       IMPORTANT:
-       BTCart.add() is asynchronous because it checks
-       the Supabase customer login session.
-    ====================================================== */
-
     document
-      .getElementById(
-        'pd-add'
-      )
+      .getElementById('pd-add')
       .addEventListener(
         'click',
-
         async function () {
-
-
-          if (
-            !window.BTCart
-          ) {
-
+          if (!window.BTCart) {
             console.error(
               'Brit.Tuna: Cart is not available.'
             );
 
             return;
-
           }
 
-
-          var button =
-            this;
-
-
+          var button = this;
           var oldText =
             button.textContent;
 
-
-          button.disabled =
-            true;
-
-
+          button.disabled = true;
           button.textContent =
             'Adding...';
 
-
           try {
+            var pack =
+              currentPack();
 
+            if (
+              pack.stockQuantity !== null &&
+              pack.stockQuantity !== undefined &&
+              pack.stockQuantity <= 0
+            ) {
+              toast(
+                'This pack is currently out of stock.'
+              );
+
+              return;
+            }
 
             var ok =
               await window.BTCart.add(
-
                 p.id,
-
                 state.packId,
-
                 state.qty
-
               );
-
-
-            /*
-              Logged-in customer:
-              product was added.
-            */
 
             if (ok) {
-
               toast(
-
                 p.name +
-
                 ' (' +
-
                 currentPack().label +
-
                 ') × ' +
-
                 state.qty +
-
                 ' added to cart'
-
               );
-
             }
-
-
           } catch (error) {
-
-
             console.error(
               'Brit.Tuna: Add to cart failed.',
               error
             );
 
-
             toast(
               'Unable to add this product. Please try again.'
             );
-
-
           } finally {
-
-
-            /*
-              If cart.js redirected the guest
-              customer to login.html this page
-              will unload.
-
-              Otherwise restore the button.
-            */
-
             button.disabled =
               p.stock ===
               'out_of_stock';
 
-
             button.textContent =
               oldText;
-
           }
-
-
         }
       );
 
-
-
     update();
 
+    /* RELATED PRODUCTS */
 
-
-    /* ======================================================
-       RELATED PRODUCTS
-    ====================================================== */
-
-    var rel =
+    var related =
       document.getElementById(
         'related-grid'
       );
 
-
-    if (rel) {
-
-
+    if (related) {
       var same =
-        cache.filter(
-          function (x) {
-
-            return (
-              x.category ===
-                p.category &&
-              x.id !==
-                p.id
-            );
-
-          }
-        );
-
+        cache.filter(function (item) {
+          return (
+            item.category === p.category &&
+            item.id !== p.id
+          );
+        });
 
       var others =
-        cache.filter(
-          function (x) {
-
-            return (
-              x.category !==
-              p.category
-            );
-
-          }
-        );
-
+        cache.filter(function (item) {
+          return (
+            item.category !== p.category
+          );
+        });
 
       renderGrid(
-
-        rel,
-
+        related,
         same
-          .concat(
-            others
-          )
-          .slice(
-            0,
-            4
-          )
-
+          .concat(others)
+          .slice(0, 4)
       );
-
     }
-
   }
-
-
 
   /* ==========================================================
      PRODUCT CARD ADD TO CART
-
-     Works on:
-     - Home
-     - Shop
-     - Products
-     - Related products
-
-     Guest:
-     -> cart.js saves pending product
-     -> login.html
-
-     Logged in:
-     -> product added immediately
   ========================================================== */
 
   document.addEventListener(
-
     'click',
-
     async function (e) {
-
-
-      var btn =
+      var button =
         e.target.closest(
           '.js-add-card'
         );
 
-
-      if (!btn) {
-
+      if (!button) {
         return;
-
       }
 
-
-      var p =
+      var product =
         getById(
-          btn.getAttribute(
+          button.getAttribute(
             'data-product-id'
           )
         );
 
-
       if (
-        !p ||
+        !product ||
+        !product.packs.length ||
         !window.BTCart
       ) {
-
         return;
-
       }
 
+      var pack =
+        product.packs[0];
+
+      if (
+        pack.stockQuantity !== null &&
+        pack.stockQuantity !== undefined &&
+        pack.stockQuantity <= 0
+      ) {
+        toast(
+          'This product is currently out of stock.'
+        );
+
+        return;
+      }
 
       var oldText =
-        btn.textContent;
+        button.textContent;
 
-
-      btn.disabled =
-        true;
-
-
-      btn.textContent =
+      button.disabled = true;
+      button.textContent =
         'Adding...';
 
-
       try {
-
-
         var ok =
           await window.BTCart.add(
-
-            p.id,
-
-            p.packs[0].id,
-
+            product.id,
+            pack.id,
             1
-
           );
-
-
-        /*
-          If logged in and product
-          was successfully added.
-        */
 
         if (ok) {
-
           toast(
-
-            p.name +
-
+            product.name +
             ' (' +
-
-            p.packs[0].label +
-
+            pack.label +
             ') added to cart'
-
           );
-
         }
-
-
       } catch (error) {
-
-
         console.error(
           'Brit.Tuna: Add to cart failed.',
           error
         );
 
-
         toast(
           'Unable to add this product. Please try again.'
         );
-
-
       } finally {
-
-
-        /*
-          Guest users will already be
-          redirecting to login.html.
-
-          Logged-in users remain here,
-          so restore button state.
-        */
-
-        btn.disabled =
-          p.stock ===
+        button.disabled =
+          product.stock ===
           'out_of_stock';
 
-
-        btn.textContent =
+        button.textContent =
           oldText;
-
       }
-
-
     }
-
   );
-
-
 
   /* ==========================================================
      BOOT
   ========================================================== */
 
   document.addEventListener(
-
     'DOMContentLoaded',
-
     function () {
-
-
       var page =
         document.body.getAttribute(
           'data-page'
         );
 
-
       load()
-        .then(
-          function () {
-
-
-            if (
-              page ===
-              'home'
-            ) {
-
-              initHome();
-
-            }
-
-
-            else if (
-              page ===
-              'shop'
-            ) {
-
-              initShop();
-
-            }
-
-
-            else if (
-              page ===
-              'products'
-            ) {
-
-              initProducts();
-
-            }
-
-
-            else if (
-              page ===
-              'product-details'
-            ) {
-
-              initDetails();
-
-            }
-
-
+        .then(function () {
+          if (page === 'home') {
+            initHome();
+          } else if (page === 'shop') {
+            initShop();
+          } else if (page === 'products') {
+            initProducts();
+          } else if (
+            page ===
+            'product-details'
+          ) {
+            initDetails();
           }
-        )
-        .catch(
-          function (error) {
-
-            console.error(
-              'Brit.Tuna: Product initialization failed.',
-              error
-            );
-
-          }
-        );
-
+        })
+        .catch(function (error) {
+          console.error(
+            'Brit.Tuna: Product initialization failed.',
+            error
+          );
+        });
     }
-
   );
 
-
-
   /* ==========================================================
-     PUBLIC PRODUCT API
+     PUBLIC API
   ========================================================== */
 
   window.BTProducts = {
+    categories: CATEGORIES,
+    priceRanges: PRICE_RANGES,
 
-    categories:
-      CATEGORIES,
+    load: load,
 
-    priceRanges:
-      PRICE_RANGES,
+    getAll: getAll,
+    getById: getById,
+    getBySlug: getBySlug,
+    getCategory: getCategory,
+    getVariant: getVariant,
 
-    load:
-      load,
+    salePrice: salePrice,
+    fromPrice: fromPrice,
 
-    getAll:
-      getAll,
+    imageFor: imageFor,
+    stockLabel: stockLabel,
 
-    getById:
-      getById,
-
-    getBySlug:
-      getBySlug,
-
-    getCategory:
-      getCategory,
-
-    getVariant:
-      getVariant,
-
-    salePrice:
-      salePrice,
-
-    fromPrice:
-      fromPrice,
-
-    imageFor:
-      imageFor,
-
-    stockLabel:
-      stockLabel,
-
-    filter:
-      filter,
-
-    cardHTML:
-      cardHTML,
-
-    productUrl:
-      productUrl
-
+    filter: filter,
+    cardHTML: cardHTML,
+    productUrl: productUrl
   };
-
 
 })();
