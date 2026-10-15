@@ -50,6 +50,7 @@
   >
 
   <style>
+
     .account-user-box {
       padding: 14px;
       margin-bottom: 16px;
@@ -74,6 +75,7 @@
     #profile-result {
       margin-top: 14px;
     }
+
   </style>
 
 </head>
@@ -82,14 +84,23 @@
 <body data-page="account">
 
 
-  <!-- HEADER -->
+  <!-- ============================================
+       HEADER
+  ============================================= -->
+
   <div id="site-header"></div>
 
+
+
+  <!-- ============================================
+       MAIN
+  ============================================= -->
 
   <main id="main">
 
 
     <!-- PAGE HERO -->
+
     <section class="page-hero">
 
       <div class="container">
@@ -112,6 +123,7 @@
 
 
       <!-- ACCOUNT NOTICE -->
+
       <p
         class="notice notice-error"
         id="account-notice"
@@ -451,7 +463,10 @@
 
 
 
-  <!-- FOOTER -->
+  <!-- ============================================
+       FOOTER
+  ============================================= -->
+
   <div id="site-footer"></div>
 
 
@@ -601,18 +616,20 @@
 
 
 
-    let currentUser = null;
+    let currentUser =
+      null;
 
 
 
     /* ==========================================
-       SHOW MESSAGE
+       SHOW ACCOUNT NOTICE
     ========================================== */
 
     function showNotice(message) {
 
       accountNotice.textContent =
         message;
+
 
       accountNotice.hidden =
         false;
@@ -626,12 +643,17 @@
       accountNotice.hidden =
         true;
 
+
       accountNotice.textContent =
         '';
 
     }
 
 
+
+    /* ==========================================
+       PROFILE RESULT MESSAGE
+    ========================================== */
 
     function showProfileMessage(
       message,
@@ -640,6 +662,7 @@
 
       profileResult.hidden =
         false;
+
 
       profileResult.textContent =
         message;
@@ -663,8 +686,26 @@
 
 
 
+    function hideProfileMessage() {
+
+      profileResult.hidden =
+        true;
+
+
+      profileResult.textContent =
+        '';
+
+
+      profileResult.classList.remove(
+        'notice-error'
+      );
+
+    }
+
+
+
     /* ==========================================
-       ENABLE PROFILE
+       ENABLE PROFILE FORM
     ========================================== */
 
     function enableProfileForm() {
@@ -672,23 +713,103 @@
       nameInput.disabled =
         false;
 
+
       phoneInput.disabled =
         false;
+
 
       addressInput.disabled =
         false;
 
+
       cityInput.disabled =
         false;
+
 
       stateInput.disabled =
         false;
 
+
       pinInput.disabled =
         false;
 
+
       saveButton.disabled =
         false;
+
+    }
+
+
+
+    /* ==========================================
+       DISABLE PROFILE FORM
+    ========================================== */
+
+    function disableProfileForm() {
+
+      nameInput.disabled =
+        true;
+
+
+      phoneInput.disabled =
+        true;
+
+
+      addressInput.disabled =
+        true;
+
+
+      cityInput.disabled =
+        true;
+
+
+      stateInput.disabled =
+        true;
+
+
+      pinInput.disabled =
+        true;
+
+
+      saveButton.disabled =
+        true;
+
+    }
+
+
+
+    /* ==========================================
+       CLEAR PROFILE FORM
+    ========================================== */
+
+    function clearProfileForm() {
+
+      emailInput.value =
+        '';
+
+
+      nameInput.value =
+        '';
+
+
+      phoneInput.value =
+        '';
+
+
+      addressInput.value =
+        '';
+
+
+      cityInput.value =
+        '';
+
+
+      stateInput.value =
+        '';
+
+
+      pinInput.value =
+        '';
 
     }
 
@@ -704,53 +825,33 @@
         null;
 
 
-      emailInput.value =
-        '';
+      clearProfileForm();
+
 
       emailInput.placeholder =
         'Sign in to see your email';
 
 
-      nameInput.value =
-        '';
-
-      phoneInput.value =
-        '';
-
-
-      nameInput.disabled =
-        true;
-
-      phoneInput.disabled =
-        true;
-
-      addressInput.disabled =
-        true;
-
-      cityInput.disabled =
-        true;
-
-      stateInput.disabled =
-        true;
-
-      pinInput.disabled =
-        true;
-
-      saveButton.disabled =
-        true;
+      disableProfileForm();
 
 
       signInLink.hidden =
         false;
 
+
       registerLink.hidden =
         false;
+
 
       logoutButton.hidden =
         true;
 
+
       accountUserBox.hidden =
         true;
+
+
+      hideProfileMessage();
 
 
       showNotice(
@@ -765,7 +866,9 @@
        LOCAL DELIVERY DETAILS
     ========================================== */
 
-    function loadLocalDeliveryDetails(userId) {
+    function loadLocalDeliveryDetails(
+      userId
+    ) {
 
       try {
 
@@ -781,28 +884,36 @@
 
 
         if (!saved) {
+
           return;
+
         }
 
 
         const details =
-          JSON.parse(saved);
+          JSON.parse(
+            saved
+          );
 
 
         addressInput.value =
-          details.address || '';
+          details.address ||
+          '';
 
 
         cityInput.value =
-          details.city || '';
+          details.city ||
+          '';
 
 
         stateInput.value =
-          details.state || '';
+          details.state ||
+          '';
 
 
         pinInput.value =
-          details.pin || '';
+          details.pin ||
+          '';
 
       }
 
@@ -819,7 +930,9 @@
 
 
 
-    function saveLocalDeliveryDetails(userId) {
+    function saveLocalDeliveryDetails(
+      userId
+    ) {
 
       try {
 
@@ -847,7 +960,9 @@
 
         localStorage.setItem(
           key,
-          JSON.stringify(details)
+          JSON.stringify(
+            details
+          )
         );
 
       }
@@ -869,7 +984,9 @@
        LOAD PROFILE FROM SUPABASE
     ========================================== */
 
-    async function loadProfile(user) {
+    async function loadProfile(
+      user
+    ) {
 
       currentUser =
         user;
@@ -878,46 +995,65 @@
       hideNotice();
 
 
-      /* EMAIL */
+      hideProfileMessage();
+
+
+
+      /* ========================================
+         EMAIL FROM SUPABASE AUTH
+      ======================================== */
 
       emailInput.value =
-        user.email || '';
-
-
-
-      /*
-        Google normally provides name
-        inside user_metadata.
-
-        Our profiles table also contains
-        full_name.
-      */
-
-      const googleName =
-        user.user_metadata?.full_name ||
-        user.user_metadata?.name ||
+        user.email ||
         '';
 
 
 
-      /* SHOW LOGGED IN UI */
+      /* ========================================
+         GOOGLE / AUTH NAME
+      ======================================== */
+
+      const metadata =
+        user.user_metadata ||
+        {};
+
+
+      const googleName =
+
+        metadata.full_name ||
+
+        metadata.name ||
+
+        '';
+
+
+
+      /* ========================================
+         LOGGED-IN UI
+      ======================================== */
 
       signInLink.hidden =
         true;
 
+
       registerLink.hidden =
         true;
 
+
       logoutButton.hidden =
         false;
+
 
       accountUserBox.hidden =
         false;
 
 
       accountUserName.textContent =
+
         googleName ||
+
         user.email ||
+
         'Brit.Tuna Customer';
 
 
@@ -926,8 +1062,11 @@
 
 
 
-      try {
+      /* ========================================
+         LOAD PROFILE TABLE
+      ======================================== */
 
+      try {
 
         const {
           data: profile,
@@ -935,14 +1074,20 @@
         } =
 
           await window.supabaseClient
-            .from('profiles')
+
+            .from(
+              'profiles'
+            )
+
             .select(
               'id, full_name, phone, role'
             )
+
             .eq(
               'id',
               user.id
             )
+
             .maybeSingle();
 
 
@@ -950,15 +1095,10 @@
         if (error) {
 
           console.error(
-            'Profile load error:',
+            'Brit.Tuna: Profile load error:',
             error
           );
 
-
-          /*
-            Auth still works even if
-            profile query has a problem.
-          */
 
           nameInput.value =
             googleName;
@@ -975,14 +1115,18 @@
 
 
 
-        /* PROFILE EXISTS */
+        /* ======================================
+           PROFILE EXISTS
+        ====================================== */
 
         if (profile) {
 
-
           nameInput.value =
+
             profile.full_name ||
+
             googleName ||
+
             '';
 
 
@@ -992,20 +1136,25 @@
 
 
           accountUserName.textContent =
+
             profile.full_name ||
+
             googleName ||
+
             user.email ||
+
             'Brit.Tuna Customer';
 
         }
 
         else {
 
-
           /*
-            In case profile trigger did not
-            create a row, still show Google
-            information.
+            The automatic signup trigger should
+            normally create the profile.
+
+            If a profile is missing, keep the
+            Auth/Google name visible.
           */
 
           nameInput.value =
@@ -1019,14 +1168,12 @@
           user.id
         );
 
-
       }
 
       catch (error) {
 
-
         console.error(
-          'Unexpected profile load error:',
+          'Brit.Tuna: Unexpected profile load error:',
           error
         );
 
@@ -1051,13 +1198,16 @@
 
     async function initialiseAccount() {
 
-
-      if (!window.supabaseClient) {
-
+      if (
+        !window.supabaseClient
+      ) {
 
         showNotice(
           'Account service is not ready. Please refresh the page.'
         );
+
+
+        disableProfileForm();
 
 
         return;
@@ -1067,12 +1217,6 @@
 
 
       try {
-
-
-        /*
-          getSession() checks the Supabase
-          login session stored in browser.
-        */
 
         const {
           data,
@@ -1087,9 +1231,8 @@
 
         if (error) {
 
-
           console.error(
-            'Session error:',
+            'Brit.Tuna: Session error:',
             error
           );
 
@@ -1104,12 +1247,16 @@
 
 
         const session =
-          data?.session;
+          data
+            ? data.session
+            : null;
 
 
 
-        if (!session || !session.user) {
-
+        if (
+          !session ||
+          !session.user
+        ) {
 
           showLoggedOutUI();
 
@@ -1121,24 +1268,20 @@
 
 
         console.log(
-          'Brit.Tuna: Logged in user:',
-          session.user.id
+          'Brit.Tuna: Account session ready.'
         );
-
 
 
         await loadProfile(
           session.user
         );
 
-
       }
 
       catch (error) {
 
-
         console.error(
-          'Account initialization error:',
+          'Brit.Tuna: Account initialization error:',
           error
         );
 
@@ -1153,6 +1296,21 @@
 
     /* ==========================================
        PROFILE SAVE
+
+       IMPORTANT SECURITY CHANGE:
+
+       OLD:
+       .from('profiles').update(...)
+
+       NEW:
+       .rpc('update_my_profile', ...)
+
+       Customer can update ONLY:
+       - full_name
+       - phone
+
+       Customer cannot change:
+       - role
     ========================================== */
 
     profileForm.addEventListener(
@@ -1161,13 +1319,18 @@
 
       async function (event) {
 
-
         event.preventDefault();
 
 
+        hideProfileMessage();
+
+
+
+        /* ======================================
+           REQUIRE LOGIN
+        ====================================== */
 
         if (!currentUser) {
-
 
           showProfileMessage(
             'Please sign in first.',
@@ -1181,43 +1344,62 @@
 
 
 
+        /* ======================================
+           VALUES
+        ====================================== */
+
         const fullName =
           nameInput.value.trim();
 
 
         const phone =
           phoneInput.value
-            .replace(/\D/g, '');
+            .replace(
+              /\D/g,
+              ''
+            );
 
 
         const pin =
           pinInput.value
-            .replace(/\D/g, '');
+            .replace(
+              /\D/g,
+              ''
+            );
 
 
 
-        /* RESET ERRORS */
+        /* ======================================
+           RESET VALIDATION ERRORS
+        ====================================== */
 
         document.getElementById(
           'err-p-name'
-        ).textContent = '';
+        ).textContent =
+          '';
 
 
         document.getElementById(
           'err-p-phone'
-        ).textContent = '';
+        ).textContent =
+          '';
 
 
         document.getElementById(
           'err-p-pin'
-        ).textContent = '';
+        ).textContent =
+          '';
 
 
 
-        /* VALIDATE NAME */
+        /* ======================================
+           VALIDATE NAME
+        ====================================== */
 
-        if (!fullName) {
-
+        if (
+          fullName.length <
+          2
+        ) {
 
           document.getElementById(
             'err-p-name'
@@ -1225,19 +1407,25 @@
             'Please enter your full name.';
 
 
+          nameInput.focus();
+
+
           return;
 
         }
 
 
 
-        /* VALIDATE PHONE */
+        /* ======================================
+           VALIDATE PHONE
+        ====================================== */
 
         if (
           phone &&
-          !/^[6-9][0-9]{9}$/.test(phone)
+          !/^[6-9][0-9]{9}$/.test(
+            phone
+          )
         ) {
-
 
           document.getElementById(
             'err-p-phone'
@@ -1245,19 +1433,25 @@
             'Enter a valid 10-digit Indian mobile number.';
 
 
+          phoneInput.focus();
+
+
           return;
 
         }
 
 
 
-        /* VALIDATE PIN */
+        /* ======================================
+           VALIDATE PIN
+        ====================================== */
 
         if (
           pin &&
-          !/^[0-9]{6}$/.test(pin)
+          !/^[1-9][0-9]{5}$/.test(
+            pin
+          )
         ) {
-
 
           document.getElementById(
             'err-p-pin'
@@ -1265,11 +1459,18 @@
             'Enter a valid 6-digit PIN code.';
 
 
+          pinInput.focus();
+
+
           return;
 
         }
 
 
+
+        /* ======================================
+           SAVING UI
+        ====================================== */
 
         saveButton.disabled =
           true;
@@ -1282,69 +1483,34 @@
 
         try {
 
-
-          /*
-            Only these columns currently
-            exist in profiles:
-
-            full_name
-            phone
-
-            Address fields are saved locally
-            until we add database columns.
-          */
+          /* ====================================
+             VERIFY SESSION BEFORE UPDATE
+          ==================================== */
 
           const {
-            data,
-            error
+            data: sessionData,
+            error: sessionError
           } =
 
             await window.supabaseClient
-              .from('profiles')
-              .update({
-
-                full_name:
-                  fullName,
-
-                phone:
-                  phone || null,
-
-                updated_at:
-                  new Date().toISOString()
-
-              })
-              .eq(
-                'id',
-                currentUser.id
-              )
-              .select(
-                'id, full_name, phone, role'
-              )
-              .single();
+              .auth
+              .getSession();
 
 
 
-          if (error) {
-
-
-            console.error(
-              'Profile update error:',
-              error
-            );
-
+          if (
+            sessionError ||
+            !sessionData ||
+            !sessionData.session
+          ) {
 
             showProfileMessage(
-              error.message,
+              'Your session has expired. Please sign in again.',
               true
             );
 
 
-            saveButton.disabled =
-              false;
-
-
-            saveButton.textContent =
-              'Save profile';
+            showLoggedOutUI();
 
 
             return;
@@ -1353,7 +1519,73 @@
 
 
 
-          /* SAVE ADDRESS LOCALLY */
+          /* ====================================
+             SECURE PROFILE UPDATE
+
+             Calls the PostgreSQL function:
+
+             public.update_my_profile(
+               new_full_name,
+               new_phone
+             )
+
+             The logged-in user's ID comes from
+             auth.uid() inside PostgreSQL.
+
+             We do NOT send a user ID.
+
+             We do NOT send a role.
+          ==================================== */
+
+          const {
+            error
+          } =
+
+            await window.supabaseClient
+              .rpc(
+                'update_my_profile',
+                {
+
+                  new_full_name:
+                    fullName,
+
+                  new_phone:
+                    phone ||
+                    null
+
+                }
+              );
+
+
+
+          if (error) {
+
+            console.error(
+              'Brit.Tuna: Secure profile update error:',
+              error
+            );
+
+
+            showProfileMessage(
+              'Could not save your profile. Please try again.',
+              true
+            );
+
+
+            return;
+
+          }
+
+
+
+          /* ====================================
+             SAVE ADDRESS LOCALLY
+
+             Address is NOT being written to
+             Supabase yet.
+
+             It stays in this browser only.
+          ==================================== */
 
           saveLocalDeliveryDetails(
             currentUser.id
@@ -1361,9 +1593,25 @@
 
 
 
+          /* ====================================
+             UPDATE SCREEN
+          ==================================== */
+
+          nameInput.value =
+            fullName;
+
+
+          phoneInput.value =
+            phone;
+
+
           accountUserName.textContent =
-            data.full_name ||
-            currentUser.email;
+
+            fullName ||
+
+            currentUser.email ||
+
+            'Brit.Tuna Customer';
 
 
 
@@ -1372,13 +1620,17 @@
           );
 
 
+
+          console.log(
+            'Brit.Tuna: Profile securely updated.'
+          );
+
         }
 
         catch (error) {
 
-
           console.error(
-            'Unexpected profile save error:',
+            'Brit.Tuna: Unexpected profile save error:',
             error
           );
 
@@ -1390,14 +1642,25 @@
 
         }
 
+        finally {
+
+          /*
+            Enable button again only when
+            customer is still logged in.
+          */
+
+          if (currentUser) {
+
+            saveButton.disabled =
+              false;
+
+          }
 
 
-        saveButton.disabled =
-          false;
+          saveButton.textContent =
+            'Save profile';
 
-
-        saveButton.textContent =
-          'Save profile';
+        }
 
       }
 
@@ -1415,9 +1678,12 @@
 
       async function () {
 
+        if (
+          !window.supabaseClient
+        ) {
 
-        if (!window.supabaseClient) {
           return;
+
         }
 
 
@@ -1432,7 +1698,6 @@
 
         try {
 
-
           const {
             error
           } =
@@ -1445,9 +1710,8 @@
 
           if (error) {
 
-
             console.error(
-              'Logout error:',
+              'Brit.Tuna: Logout error:',
               error
             );
 
@@ -1469,14 +1733,12 @@
           window.location.href =
             'index.html';
 
-
         }
 
         catch (error) {
 
-
           console.error(
-            'Unexpected logout error:',
+            'Brit.Tuna: Unexpected logout error:',
             error
           );
 
@@ -1500,8 +1762,9 @@
        AUTH STATE CHANGES
     ========================================== */
 
-    if (window.supabaseClient) {
-
+    if (
+      window.supabaseClient
+    ) {
 
       window.supabaseClient
         .auth
@@ -1512,28 +1775,30 @@
             session
           ) {
 
-
             console.log(
               'Brit.Tuna auth event:',
               event
             );
 
 
-            if (
-              event === 'SIGNED_OUT'
-            ) {
 
+            if (
+              event ===
+              'SIGNED_OUT'
+            ) {
 
               showLoggedOutUI();
 
             }
 
 
-            if (
-              event === 'SIGNED_IN' &&
-              session?.user
-            ) {
 
+            if (
+              event ===
+                'SIGNED_IN' &&
+              session &&
+              session.user
+            ) {
 
               loadProfile(
                 session.user
