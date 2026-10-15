@@ -1,24 +1,17 @@
 /* ==========================================================
-   cart.js — Brit.Tuna frontend cart
-
-   Customer must be logged in before adding products.
-
-   If customer is not logged in:
-   1. Save pending cart action
-   2. Redirect to login.html
-   3. After login, pending action can be restored
-
-   Cart data is stored in localStorage for now.
+   cart.js — Brit.Tuna
+   Supabase-ready frontend cart
 
    IMPORTANT:
-   This browser cart is NOT a real order.
-   Prices and payments must later be verified by the backend.
+   - Cart is stored in localStorage.
+   - Login is required before Add to Cart.
+   - Product/variant prices come from BTProducts.
+   - This does NOT create a real order.
+   - Backend must verify price and stock before payment.
    ========================================================== */
 
 (function () {
   'use strict';
-
-  var U = window.BTUtil;
 
   var KEY = 'britTunaCartDemo_v1';
   var PENDING_KEY = 'britTunaPendingCartAction';
@@ -26,99 +19,303 @@
 
   var MAX_QTY = 99;
 
-
   /* ==========================================================
-     QUANTITY
-     ========================================================== */
+     UTILITIES
+  ========================================================== */
 
-  function clampQty(n) {
-    n = parseInt(n, 10);
-
-    if (!n || n < 1) {
-      return 1;
-    }
-
-    if (n > MAX_QTY) {
-      return MAX_QTY;
-    }
-
-    return n;
+  function getUtil() {
+    return window.BTUtil || null;
   }
 
+  function escapeHtml(value) {
+    var U = getUtil();
+
+    if (
+      U &&
+      typeof U.escapeHtml === 'function'
+    ) {
+      return U.escapeHtml(
+        String(value || '')
+      );
+    }
+
+    return String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function formatINR(value) {
+    var U = getUtil();
+
+    if (
+      U &&
+      typeof U.formatINR === 'function'
+    ) {
+      return U.formatINR(
+        Number(value || 0)
+      );
+    }
+
+    try {
+      return new Intl.NumberFormat(
+        'en-IN',
+        {
+          style: 'currency',
+          currency: 'INR',
+          maximumFractionDigits: 0
+        }
+      ).format(
+        Number(value || 0)
+      );
+    } catch (error) {
+      return (
+        '₹' +
+        Number(value || 0)
+      );
+    }
+  }
+
+  function clampQty(value) {
+    var qty =
+      parseInt(
+        value,
+        10
+      );
+
+    if (
+      !qty ||
+      qty < 1
+    ) {
+      qty = 1;
+    }
+
+    if (
+      qty > MAX_QTY
+    ) {
+      qty = MAX_QTY;
+    }
+
+    return qty;
+  }
+
+  function normalizeId(value) {
+    return String(
+      value === null ||
+      value === undefined
+        ? ''
+        : value
+    );
+  }
 
   /* ==========================================================
-     STORAGE
-     ========================================================== */
+     RAW STORAGE
 
-  function read() {
+     IMPORTANT:
+     Do NOT validate against BTProducts here.
+
+     Supabase products may still be loading when
+     localStorage is first read.
+  ========================================================== */
+
+  function readRaw() {
     try {
-      var raw = window.localStorage.getItem(KEY);
+      var raw =
+        window.localStorage.getItem(
+          KEY
+        );
 
-      var arr = raw ? JSON.parse(raw) : [];
-
-      if (!Array.isArray(arr)) {
+      if (!raw) {
         return [];
       }
 
-      return arr
-        .filter(function (i) {
+      var data =
+        JSON.parse(raw);
+
+      if (
+        !Array.isArray(data)
+      ) {
+        return [];
+      }
+
+      return data
+        .filter(function (item) {
           return (
-            i &&
-            typeof i.productId === 'string' &&
-            typeof i.packId === 'string' &&
-            window.BTProducts &&
-            window.BTProducts.getVariant(
-              i.productId,
-              i.packId
-            )
+            item &&
+            item.productId !== undefined &&
+            item.productId !== null &&
+            item.packId !== undefined &&
+            item.packId !== null
           );
         })
-        .map(function (i) {
+        .map(function (item) {
           return {
-            productId: i.productId,
-            packId: i.packId,
-            qty: clampQty(i.qty)
+            productId:
+              normalizeId(
+                item.productId
+              ),
+
+            packId:
+              normalizeId(
+                item.packId
+              ),
+
+            qty:
+              clampQty(
+                item.qty
+              )
           };
         });
-
-    } catch (e) {
+    } catch (error) {
       console.error(
         'Brit.Tuna: Could not read cart.',
-        e
+        error
       );
 
       return [];
     }
   }
 
-
   function write(items) {
+    var clean =
+      (items || [])
+        .filter(function (item) {
+          return (
+            item &&
+            item.productId !== undefined &&
+            item.packId !== undefined
+          );
+        })
+        .map(function (item) {
+          return {
+            productId:
+              normalizeId(
+                item.productId
+              ),
+
+            packId:
+              normalizeId(
+                item.packId
+              ),
+
+            qty:
+              clampQty(
+                item.qty
+              )
+          };
+        });
+
     try {
       window.localStorage.setItem(
         KEY,
-        JSON.stringify(items)
+        JSON.stringify(clean)
       );
-
-    } catch (e) {
+    } catch (error) {
       console.error(
         'Brit.Tuna: Could not save cart.',
-        e
+        error
       );
     }
 
     document.dispatchEvent(
-      new CustomEvent('bt:cart-changed')
+      new CustomEvent(
+        'bt:cart-changed'
+      )
     );
   }
 
+  /* ==========================================================
+     PRODUCT READY
+  ========================================================== */
+
+  async function ensureProductsLoaded() {
+    if (
+      !window.BTProducts
+    ) {
+      console.error(
+        'Brit.Tuna: BTProducts is not available.'
+      );
+
+      return false;
+    }
+
+    if (
+      typeof window.BTProducts.load ===
+      'function'
+    ) {
+      try {
+        await window.BTProducts.load();
+      } catch (error) {
+        console.error(
+          'Brit.Tuna: Could not load products for cart.',
+          error
+        );
+
+        return false;
+      }
+    }
+
+    return true;
+  }
 
   /* ==========================================================
-     AUTH
-     ========================================================== */
+     GET VARIANT
+  ========================================================== */
+
+  function getVariant(
+    productId,
+    packId
+  ) {
+    if (
+      !window.BTProducts ||
+      typeof window.BTProducts.getVariant !==
+        'function'
+    ) {
+      return null;
+    }
+
+    return window.BTProducts.getVariant(
+      normalizeId(productId),
+      normalizeId(packId)
+    );
+  }
+
+  /* ==========================================================
+     VALID CART ITEMS
+
+     Validation happens AFTER products are ready.
+  ========================================================== */
+
+  function read() {
+    var items =
+      readRaw();
+
+    if (
+      !window.BTProducts
+    ) {
+      return items;
+    }
+
+    return items.filter(
+      function (item) {
+        return !!getVariant(
+          item.productId,
+          item.packId
+        );
+      }
+    );
+  }
+
+  /* ==========================================================
+     SESSION
+  ========================================================== */
 
   async function getSession() {
-
-    if (!window.supabaseClient) {
+    if (
+      !window.supabaseClient
+    ) {
       console.error(
         'Brit.Tuna: Supabase client is not available.'
       );
@@ -127,9 +324,10 @@
     }
 
     try {
-
       var result =
-        await window.supabaseClient.auth.getSession();
+        await window.supabaseClient
+          .auth
+          .getSession();
 
       if (result.error) {
         console.error(
@@ -140,10 +338,12 @@
         return null;
       }
 
-      return result.data.session;
-
+      return (
+        result.data
+          ? result.data.session
+          : null
+      );
     } catch (error) {
-
       console.error(
         'Brit.Tuna: Unable to check login session.',
         error
@@ -153,40 +353,41 @@
     }
   }
 
-
   /* ==========================================================
-     SAVE PENDING ADD-TO-CART ACTION
-     ========================================================== */
+     PENDING ADD TO CART
+  ========================================================== */
 
   function savePendingCartAction(
     productId,
     packId,
     qty
   ) {
-
     try {
-
       window.localStorage.setItem(
         PENDING_KEY,
         JSON.stringify({
-          productId: productId,
-          packId: packId,
-          qty: clampQty(qty)
+          productId:
+            normalizeId(
+              productId
+            ),
+
+          packId:
+            normalizeId(
+              packId
+            ),
+
+          qty:
+            clampQty(
+              qty
+            )
         })
       );
-
-      /*
-       After successful login,
-       customer should continue to cart.html
-      */
 
       window.localStorage.setItem(
         AFTER_LOGIN_KEY,
         'cart.html'
       );
-
     } catch (error) {
-
       console.error(
         'Brit.Tuna: Could not save pending cart action.',
         error
@@ -194,176 +395,277 @@
     }
   }
 
+  /* ==========================================================
+     STOCK HELPERS
+  ========================================================== */
+
+  function availableStock(pack) {
+    if (
+      !pack ||
+      pack.stockQuantity === null ||
+      pack.stockQuantity === undefined
+    ) {
+      return null;
+    }
+
+    var stock =
+      Number(
+        pack.stockQuantity
+      );
+
+    if (
+      !Number.isFinite(stock)
+    ) {
+      return null;
+    }
+
+    return Math.max(
+      0,
+      Math.floor(stock)
+    );
+  }
+
+  function safeQtyForPack(
+    qty,
+    pack
+  ) {
+    qty =
+      clampQty(qty);
+
+    var stock =
+      availableStock(
+        pack
+      );
+
+    if (
+      stock === null
+    ) {
+      return qty;
+    }
+
+    if (
+      stock <= 0
+    ) {
+      return 0;
+    }
+
+    return Math.min(
+      qty,
+      stock,
+      MAX_QTY
+    );
+  }
 
   /* ==========================================================
      INTERNAL ADD
-     No authentication check here.
-
-     Used after customer is already authenticated.
-     ========================================================== */
+  ========================================================== */
 
   function addDirect(
     productId,
     packId,
     qty
   ) {
-
-    if (!window.BTProducts) {
-      console.error(
-        'Brit.Tuna: BTProducts is not available.'
+    productId =
+      normalizeId(
+        productId
       );
 
-      return false;
-    }
+    packId =
+      normalizeId(
+        packId
+      );
 
-    var v =
-      window.BTProducts.getVariant(
+    var variant =
+      getVariant(
         productId,
         packId
       );
 
-    if (!v) {
+    if (!variant) {
       console.error(
-        'Brit.Tuna: Product variant not found.'
+        'Brit.Tuna: Product variant not found.',
+        {
+          productId:
+            productId,
+
+          packId:
+            packId
+        }
       );
 
       return false;
     }
 
     if (
-      v.product.stock === 'out_of_stock'
+      variant.product.stock ===
+      'out_of_stock'
     ) {
       return false;
     }
 
-    var items = read();
+    var stock =
+      availableStock(
+        variant.pack
+      );
 
-    var found = null;
-
-    items.forEach(function (i) {
-
-      if (
-        i.productId === productId &&
-        i.packId === packId
-      ) {
-        found = i;
-      }
-
-    });
-
-
-    if (found) {
-
-      found.qty =
-        clampQty(
-          found.qty +
-          clampQty(qty)
-        );
-
-    } else {
-
-      items.push({
-        productId: productId,
-        packId: packId,
-        qty: clampQty(qty)
-      });
-
+    if (
+      stock !== null &&
+      stock <= 0
+    ) {
+      return false;
     }
 
-    write(items);
+    var items =
+      readRaw();
+
+    var found =
+      null;
+
+    items.forEach(
+      function (item) {
+        if (
+          normalizeId(
+            item.productId
+          ) === productId &&
+          normalizeId(
+            item.packId
+          ) === packId
+        ) {
+          found =
+            item;
+        }
+      }
+    );
+
+    var addQty =
+      clampQty(
+        qty
+      );
+
+    if (found) {
+      var requested =
+        clampQty(
+          found.qty +
+          addQty
+        );
+
+      found.qty =
+        safeQtyForPack(
+          requested,
+          variant.pack
+        );
+    } else {
+      var firstQty =
+        safeQtyForPack(
+          addQty,
+          variant.pack
+        );
+
+      if (
+        firstQty <= 0
+      ) {
+        return false;
+      }
+
+      items.push({
+        productId:
+          productId,
+
+        packId:
+          packId,
+
+        qty:
+          firstQty
+      });
+    }
+
+    write(
+      items
+    );
 
     return true;
   }
-
 
   /* ==========================================================
      ADD TO CART
 
      Login required.
-     ========================================================== */
+  ========================================================== */
 
   async function add(
     productId,
     packId,
     qty
   ) {
+    var ready =
+      await ensureProductsLoaded();
 
-    /*
-      First validate product
-    */
-
-    if (!window.BTProducts) {
-
-      console.error(
-        'Brit.Tuna: Products are not loaded.'
-      );
-
+    if (!ready) {
       return false;
     }
 
+    productId =
+      normalizeId(
+        productId
+      );
+
+    packId =
+      normalizeId(
+        packId
+      );
 
     var variant =
-      window.BTProducts.getVariant(
+      getVariant(
         productId,
         packId
       );
 
-
     if (!variant) {
-
       console.error(
-        'Brit.Tuna: Invalid product or pack.'
+        'Brit.Tuna: Invalid product or pack.',
+        {
+          productId:
+            productId,
+
+          packId:
+            packId
+        }
       );
 
       return false;
     }
 
+    var stock =
+      availableStock(
+        variant.pack
+      );
 
     if (
       variant.product.stock ===
-      'out_of_stock'
+        'out_of_stock' ||
+      (
+        stock !== null &&
+        stock <= 0
+      )
     ) {
-
       return false;
     }
-
-
-    /*
-      Check login
-    */
 
     var session =
       await getSession();
 
-
-    /*
-      NOT LOGGED IN
-    */
-
     if (!session) {
-
       savePendingCartAction(
         productId,
         packId,
         qty
       );
 
-
-      /*
-        Redirect to login page
-      */
-
       window.location.href =
         'login.html';
 
       return false;
     }
-
-
-    /*
-      LOGGED IN
-      Add normally
-    */
 
     return addDirect(
       productId,
@@ -372,309 +674,420 @@
     );
   }
 
-
   /* ==========================================================
-     RESTORE PENDING CART ACTION
-
-     We will call this after successful login.
-     ========================================================== */
+     RESTORE PENDING ACTION
+  ========================================================== */
 
   async function restorePendingAction() {
-
     var session =
       await getSession();
-
 
     if (!session) {
       return false;
     }
 
+    var ready =
+      await ensureProductsLoaded();
 
-    var raw = null;
+    if (!ready) {
+      return false;
+    }
+
+    var raw =
+      null;
 
     try {
-
       raw =
         window.localStorage.getItem(
           PENDING_KEY
         );
-
     } catch (error) {
-
       return false;
     }
-
 
     if (!raw) {
       return false;
     }
 
-
-    var pending = null;
-
+    var pending =
+      null;
 
     try {
-
       pending =
         JSON.parse(raw);
-
     } catch (error) {
-
-      window.localStorage.removeItem(
-        PENDING_KEY
-      );
+      try {
+        window.localStorage.removeItem(
+          PENDING_KEY
+        );
+      } catch (removeError) {
+        /* Ignore */
+      }
 
       return false;
     }
-
 
     if (
       !pending ||
-      !pending.productId ||
-      !pending.packId
+      pending.productId === undefined ||
+      pending.packId === undefined
     ) {
-
-      window.localStorage.removeItem(
-        PENDING_KEY
-      );
+      try {
+        window.localStorage.removeItem(
+          PENDING_KEY
+        );
+      } catch (removeError) {
+        /* Ignore */
+      }
 
       return false;
     }
 
-
     var success =
       addDirect(
-        pending.productId,
-        pending.packId,
+        normalizeId(
+          pending.productId
+        ),
+
+        normalizeId(
+          pending.packId
+        ),
+
         pending.qty
       );
 
-
     if (success) {
-
-      window.localStorage.removeItem(
-        PENDING_KEY
-      );
+      try {
+        window.localStorage.removeItem(
+          PENDING_KEY
+        );
+      } catch (error) {
+        /* Ignore */
+      }
 
       return true;
     }
 
-
     return false;
   }
 
-
   /* ==========================================================
      SET QUANTITY
-     ========================================================== */
+  ========================================================== */
 
   function setQty(
     productId,
     packId,
     qty
   ) {
+    productId =
+      normalizeId(
+        productId
+      );
 
-    var items = read();
+    packId =
+      normalizeId(
+        packId
+      );
 
+    var variant =
+      getVariant(
+        productId,
+        packId
+      );
 
-    items.forEach(function (i) {
+    if (!variant) {
+      return false;
+    }
 
-      if (
-        i.productId === productId &&
-        i.packId === packId
-      ) {
+    var nextQty =
+      safeQtyForPack(
+        qty,
+        variant.pack
+      );
 
-        i.qty =
-          clampQty(qty);
+    if (
+      nextQty <= 0
+    ) {
+      remove(
+        productId,
+        packId
+      );
+
+      return false;
+    }
+
+    var items =
+      readRaw();
+
+    items.forEach(
+      function (item) {
+        if (
+          normalizeId(
+            item.productId
+          ) === productId &&
+          normalizeId(
+            item.packId
+          ) === packId
+        ) {
+          item.qty =
+            nextQty;
+        }
       }
+    );
 
-    });
+    write(
+      items
+    );
 
-
-    write(items);
+    return true;
   }
-
 
   /* ==========================================================
      REMOVE
-     ========================================================== */
+  ========================================================== */
 
   function remove(
     productId,
     packId
   ) {
+    productId =
+      normalizeId(
+        productId
+      );
+
+    packId =
+      normalizeId(
+        packId
+      );
 
     var items =
-      read().filter(
-        function (i) {
-
+      readRaw().filter(
+        function (item) {
           return !(
-            i.productId === productId &&
-            i.packId === packId
+            normalizeId(
+              item.productId
+            ) === productId &&
+            normalizeId(
+              item.packId
+            ) === packId
           );
-
         }
       );
 
-
-    write(items);
+    write(
+      items
+    );
   }
 
-
   /* ==========================================================
-     CLEAR CART
-     ========================================================== */
+     CLEAR
+  ========================================================== */
 
   function clear() {
-
     write([]);
-
   }
 
-
   /* ==========================================================
-     CART COUNT
-     ========================================================== */
+     COUNT
+  ========================================================== */
 
   function count() {
-
-    return read().reduce(
-      function (n, i) {
-
-        return n + i.qty;
-
+    return readRaw().reduce(
+      function (
+        total,
+        item
+      ) {
+        return (
+          total +
+          clampQty(
+            item.qty
+          )
+        );
       },
       0
     );
   }
 
-
   /* ==========================================================
      CART LINES
-     ========================================================== */
+  ========================================================== */
 
   function lines() {
-
-    if (!window.BTProducts) {
+    if (
+      !window.BTProducts
+    ) {
       return [];
     }
 
+    var result =
+      [];
 
-    return read().map(
-      function (i) {
-
-        var v =
-          window.BTProducts.getVariant(
-            i.productId,
-            i.packId
+    readRaw().forEach(
+      function (item) {
+        var variant =
+          getVariant(
+            item.productId,
+            item.packId
           );
 
+        /*
+          Product may have been removed,
+          disabled or variant deleted.
+          Skip it safely.
+        */
+
+        if (!variant) {
+          return;
+        }
+
+        var qty =
+          safeQtyForPack(
+            item.qty,
+            variant.pack
+          );
+
+        if (
+          qty <= 0
+        ) {
+          return;
+        }
 
         var unit =
           window.BTProducts.salePrice(
-            v.pack.price,
-            v.product.discount
+            variant.pack.price,
+            variant.product.discount
           );
 
+        result.push({
+          product:
+            variant.product,
 
-        return {
+          pack:
+            variant.pack,
 
-          product: v.product,
-
-          pack: v.pack,
-
-          qty: i.qty,
+          qty:
+            qty,
 
           mrpUnit:
-            v.pack.price,
+            Number(
+              variant.pack.price
+            ),
 
-          unit: unit,
+          unit:
+            Number(
+              unit
+            ),
 
           lineTotal:
-            unit * i.qty
-
-        };
-
+            Number(unit) *
+            qty
+        });
       }
     );
-  }
 
+    return result;
+  }
 
   /* ==========================================================
      TOTALS
-     ========================================================== */
+  ========================================================== */
 
   function totals() {
+    var cartLines =
+      lines();
 
-    var ls = lines();
+    var mrp =
+      0;
 
-    var mrp = 0;
+    var subtotal =
+      0;
 
-    var subtotal = 0;
+    var items =
+      0;
 
-    var items = 0;
-
-
-    ls.forEach(
-      function (l) {
-
+    cartLines.forEach(
+      function (line) {
         mrp +=
-          l.mrpUnit *
-          l.qty;
-
+          line.mrpUnit *
+          line.qty;
 
         subtotal +=
-          l.lineTotal;
-
+          line.lineTotal;
 
         items +=
-          l.qty;
-
+          line.qty;
       }
     );
 
-
     return {
+      itemCount:
+        items,
 
-      itemCount: items,
-
-      mrpTotal: mrp,
+      mrpTotal:
+        mrp,
 
       savings:
-        mrp - subtotal,
+        Math.max(
+          0,
+          mrp - subtotal
+        ),
 
-      subtotal: subtotal,
+      subtotal:
+        subtotal,
 
-      total: subtotal
-
+      total:
+        subtotal
     };
   }
 
-
   /* ==========================================================
      CART LINE HTML
-     ========================================================== */
+  ========================================================== */
 
-  function lineHTML(l) {
-
+  function lineHTML(line) {
     var url =
       window.BTProducts.productUrl(
-        l.product
+        line.product
       );
 
+    var stock =
+      availableStock(
+        line.pack
+      );
 
-    return '' +
+    var stockText =
+      '';
 
+    if (
+      stock !== null
+    ) {
+      stockText =
+        '<span class="cart-stock">' +
+        escapeHtml(
+          String(stock)
+        ) +
+        ' available</span>';
+    }
+
+    return (
       '<article class="cart-line" ' +
 
       'data-product="' +
-      l.product.id +
+      escapeHtml(
+        String(
+          line.product.id
+        )
+      ) +
 
       '" data-pack="' +
-      l.pack.id +
+      escapeHtml(
+        String(
+          line.pack.id
+        )
+      ) +
 
       '">' +
-
 
       '<a class="cart-img" href="' +
       url +
@@ -682,18 +1095,17 @@
 
       '<img src="' +
       window.BTProducts.imageFor(
-        l.product
+        line.product
       ) +
 
       '" alt="' +
-      U.escapeHtml(
-        l.product.name
+      escapeHtml(
+        line.product.name
       ) +
 
       '" width="96" height="72">' +
 
       '</a>' +
-
 
       '<div class="cart-info">' +
 
@@ -703,114 +1115,104 @@
       url +
       '">' +
 
-      U.escapeHtml(
-        l.product.name
+      escapeHtml(
+        line.product.name
       ) +
 
       '</a>' +
 
       '</h3>' +
 
-
       '<p class="cart-meta">' +
 
       'Pack: ' +
 
-      U.escapeHtml(
-        l.pack.label
+      escapeHtml(
+        line.pack.label
       ) +
 
       ' · ' +
 
-      U.formatINR(
-        l.unit
+      formatINR(
+        line.unit
       ) +
 
       ' each' +
 
       '</p>' +
 
+      stockText +
 
       '<button type="button" ' +
-
       'class="link-btn" ' +
-
       'data-action="remove">' +
-
       'Remove' +
-
       '</button>' +
 
       '</div>' +
-
 
       '<div class="qty">' +
 
       '<button type="button" ' +
-
       'data-action="dec" ' +
-
       'aria-label="Decrease quantity">' +
-
       '−' +
-
       '</button>' +
 
-
       '<input type="number" ' +
-
       'min="1" ' +
-
-      'max="99" ' +
+      'max="' +
+      (
+        stock !== null
+          ? Math.min(
+              MAX_QTY,
+              Math.max(
+                1,
+                stock
+              )
+            )
+          : MAX_QTY
+      ) +
+      '" ' +
 
       'value="' +
-      l.qty +
+      line.qty +
+      '" ' +
 
-      '" data-action="set" ' +
+      'data-action="set" ' +
 
       'aria-label="Quantity for ' +
-
-      U.escapeHtml(
-        l.product.name
+      escapeHtml(
+        line.product.name
       ) +
-
       '">' +
 
-
       '<button type="button" ' +
-
       'data-action="inc" ' +
-
       'aria-label="Increase quantity">' +
-
       '+' +
-
       '</button>' +
 
       '</div>' +
 
-
       '<p class="cart-total">' +
 
-      U.formatINR(
-        l.lineTotal
+      formatINR(
+        line.lineTotal
       ) +
 
       '</p>' +
 
-
-      '</article>';
+      '</article>'
+    );
   }
-
 
   /* ==========================================================
      SUMMARY
-     ========================================================== */
+  ========================================================== */
 
   function summaryRows(t) {
-
-    return '' +
-
+    return (
       '<div class="summary-row">' +
 
       '<span>Items (' +
@@ -818,53 +1220,42 @@
       ')</span>' +
 
       '<span>' +
-      U.formatINR(
+      formatINR(
         t.mrpTotal
       ) +
       '</span>' +
 
       '</div>' +
 
-
       (
         t.savings > 0
-
           ?
+            '<div class="summary-row summary-save">' +
 
-          '<div class="summary-row summary-save">' +
+            '<span>Discount</span>' +
 
-          '<span>Demo discount</span>' +
+            '<span>− ' +
+            formatINR(
+              t.savings
+            ) +
+            '</span>' +
 
-          '<span>− ' +
-
-          U.formatINR(
-            t.savings
-          ) +
-
-          '</span>' +
-
-          '</div>'
-
+            '</div>'
           :
-
-          ''
+            ''
       ) +
-
 
       '<div class="summary-row">' +
 
       '<span>Subtotal</span>' +
 
       '<span>' +
-
-      U.formatINR(
+      formatINR(
         t.subtotal
       ) +
-
       '</span>' +
 
       '</div>' +
-
 
       '<div class="summary-row">' +
 
@@ -874,95 +1265,97 @@
 
       '</div>' +
 
-
       '<div class="summary-row summary-total">' +
 
       '<span>Total</span>' +
 
       '<span>' +
-
-      U.formatINR(
+      formatINR(
         t.total
       ) +
-
       '</span>' +
 
-      '</div>';
+      '</div>'
+    );
   }
 
-
   /* ==========================================================
-     RENDER CART PAGE
-     ========================================================== */
+     CART PAGE RENDER
+  ========================================================== */
 
   function renderCartPage() {
-
     var empty =
       document.getElementById(
         'cart-empty'
       );
-
 
     var content =
       document.getElementById(
         'cart-content'
       );
 
-
     var itemsEl =
       document.getElementById(
         'cart-items'
       );
 
-
-    var sumEl =
+    var summaryEl =
       document.getElementById(
         'cart-summary'
       );
 
+    /*
+      Not cart.html.
+    */
 
     if (!itemsEl) {
       return;
     }
 
+    var cartLines =
+      lines();
 
-    var ls = lines();
-
-
-    if (!ls.length) {
-
+    if (
+      !cartLines.length
+    ) {
       if (empty) {
-        empty.hidden = false;
+        empty.hidden =
+          false;
       }
 
       if (content) {
-        content.hidden = true;
+        content.hidden =
+          true;
+      }
+
+      itemsEl.innerHTML =
+        '';
+
+      if (summaryEl) {
+        summaryEl.innerHTML =
+          '';
       }
 
       return;
     }
 
-
     if (empty) {
-      empty.hidden = true;
+      empty.hidden =
+        true;
     }
-
 
     if (content) {
-      content.hidden = false;
+      content.hidden =
+        false;
     }
 
-
     itemsEl.innerHTML =
-      ls.map(
-        lineHTML
-      ).join('');
+      cartLines
+        .map(lineHTML)
+        .join('');
 
-
-    if (sumEl) {
-
-      sumEl.innerHTML =
-
+    if (summaryEl) {
+      summaryEl.innerHTML =
         '<h2>Order summary</h2>' +
 
         summaryRows(
@@ -971,116 +1364,96 @@
 
         '<p class="notice notice-small">' +
 
-        'Demo prices. Final prices must be verified by the backend before payment.' +
+        'Cart prices are loaded from the current product catalogue. Final price and stock must still be verified securely before payment.' +
 
         '</p>' +
 
         '<a class="btn btn-primary btn-block" ' +
-
         'href="checkout.html">' +
-
         'Proceed to Checkout' +
-
         '</a>' +
 
         '<a class="btn btn-outline btn-block" ' +
-
         'href="shop.html">' +
-
         'Continue Shopping' +
-
         '</a>';
-
     }
   }
 
-
   /* ==========================================================
      CHECKOUT SUMMARY
-     ========================================================== */
+  ========================================================== */
 
   function renderCheckoutSummary() {
-
     var el =
       document.getElementById(
         'checkout-summary'
       );
 
-
     if (!el) {
       return;
     }
 
+    var cartLines =
+      lines();
 
-    var ls = lines();
-
-
-    if (!ls.length) {
-
+    if (
+      !cartLines.length
+    ) {
       el.innerHTML =
-
         '<h2>Order summary</h2>' +
 
         '<p>Your cart is empty.</p>' +
 
-        '<a class="btn btn-primary btn-block" ' +
-
-        'href="shop.html">' +
+        '<a class="btn btn-primary btn-block" href="shop.html">' +
 
         'Go to Shop' +
 
         '</a>';
 
-
       return;
     }
 
-
     el.innerHTML =
-
       '<h2>Order summary</h2>' +
 
       '<ul class="summary-list">' +
 
-      ls.map(
-        function (l) {
-
+      cartLines
+        .map(function (line) {
           return (
-
             '<li>' +
 
             '<span>' +
 
-            U.escapeHtml(
-              l.product.name
+            escapeHtml(
+              line.product.name
             ) +
 
             ' (' +
 
-            U.escapeHtml(
-              l.pack.label
+            escapeHtml(
+              line.pack.label
             ) +
 
             ') × ' +
 
-            l.qty +
+            line.qty +
 
             '</span>' +
 
             '<span>' +
 
-            U.formatINR(
-              l.lineTotal
+            formatINR(
+              line.lineTotal
             ) +
 
             '</span>' +
 
             '</li>'
-
           );
-
-        }
-      ).join('') +
+        })
+        .join('') +
 
       '</ul>' +
 
@@ -1089,139 +1462,168 @@
       );
   }
 
-
   /* ==========================================================
      RENDER ALL
-     ========================================================== */
+  ========================================================== */
 
   function renderAll() {
-
     renderCartPage();
-
     renderCheckoutSummary();
-
   }
 
+  /* ==========================================================
+     ASYNC INITIAL RENDER
+
+     Wait for Supabase products/variants.
+  ========================================================== */
+
+  async function initializeCart() {
+    var ready =
+      await ensureProductsLoaded();
+
+    if (!ready) {
+      /*
+        Even if products failed,
+        allow the page to display its
+        empty/fallback state.
+      */
+
+      renderAll();
+      return;
+    }
+
+    renderAll();
+
+    document.dispatchEvent(
+      new CustomEvent(
+        'bt:cart-ready'
+      )
+    );
+
+    console.log(
+      'Brit.Tuna: Cart ready.'
+    );
+  }
 
   /* ==========================================================
      CART BUTTON EVENTS
-     ========================================================== */
+  ========================================================== */
 
   document.addEventListener(
     'click',
-    function (e) {
-
-      var btn =
-        e.target.closest(
+    function (event) {
+      var button =
+        event.target.closest(
           '[data-action]'
         );
 
-
       var line =
-        e.target.closest(
+        event.target.closest(
           '.cart-line'
         );
 
-
       if (
-        !btn ||
+        !button ||
         !line
       ) {
         return;
       }
 
-
-      var pid =
-        line.getAttribute(
-          'data-product'
+      var productId =
+        normalizeId(
+          line.getAttribute(
+            'data-product'
+          )
         );
 
-
-      var kid =
-        line.getAttribute(
-          'data-pack'
+      var packId =
+        normalizeId(
+          line.getAttribute(
+            'data-pack'
+          )
         );
-
 
       var action =
-        btn.getAttribute(
+        button.getAttribute(
           'data-action'
         );
 
+      var current =
+        1;
 
-      var current = 1;
-
-
-      read().forEach(
-        function (i) {
-
+      readRaw().forEach(
+        function (item) {
           if (
-            i.productId === pid &&
-            i.packId === kid
+            normalizeId(
+              item.productId
+            ) === productId &&
+            normalizeId(
+              item.packId
+            ) === packId
           ) {
-
             current =
-              i.qty;
+              clampQty(
+                item.qty
+              );
           }
-
         }
       );
 
-
       if (
-        action === 'remove'
+        action ===
+        'remove'
       ) {
-
         remove(
-          pid,
-          kid
+          productId,
+          packId
         );
-
       } else if (
-        action === 'inc'
+        action ===
+        'inc'
       ) {
-
         setQty(
-          pid,
-          kid,
+          productId,
+          packId,
           current + 1
         );
-
       } else if (
-        action === 'dec'
+        action ===
+        'dec'
       ) {
+        /*
+          Quantity 1 -> minus:
+          keep minimum quantity at 1.
+          Customer can use Remove button.
+        */
 
         setQty(
-          pid,
-          kid,
-          current - 1
+          productId,
+          packId,
+          Math.max(
+            1,
+            current - 1
+          )
         );
-
       }
-
     }
   );
 
-
   /* ==========================================================
      QUANTITY INPUT
-     ========================================================== */
+  ========================================================== */
 
   document.addEventListener(
     'change',
-    function (e) {
-
+    function (event) {
       var input =
-        e.target.closest(
+        event.target.closest(
           'input[data-action="set"]'
         );
 
-
       var line =
-        e.target.closest(
+        event.target.closest(
           '.cart-line'
         );
-
 
       if (
         !input ||
@@ -1230,94 +1632,111 @@
         return;
       }
 
-
       setQty(
-
-        line.getAttribute(
-          'data-product'
+        normalizeId(
+          line.getAttribute(
+            'data-product'
+          )
         ),
 
-        line.getAttribute(
-          'data-pack'
+        normalizeId(
+          line.getAttribute(
+            'data-pack'
+          )
         ),
 
         input.value
-
       );
-
     }
   );
 
-
   /* ==========================================================
-     CART CHANGE
-     ========================================================== */
+     CART CHANGED
+  ========================================================== */
 
   document.addEventListener(
     'bt:cart-changed',
-    renderAll
+    function () {
+      renderAll();
+    }
   );
 
-
   /* ==========================================================
-     OTHER TAB CART CHANGE
-     ========================================================== */
+     OTHER TAB STORAGE CHANGE
+  ========================================================== */
 
   window.addEventListener(
     'storage',
-    function (e) {
-
+    function (event) {
       if (
-        e.key === KEY
+        event.key === KEY
       ) {
+        renderAll();
 
         document.dispatchEvent(
           new CustomEvent(
             'bt:cart-changed'
           )
         );
-
       }
-
     }
   );
 
-
   /* ==========================================================
      PAGE LOAD
-     ========================================================== */
+  ========================================================== */
 
   document.addEventListener(
     'DOMContentLoaded',
-    renderAll
-  );
+    function () {
+      initializeCart()
+        .catch(function (error) {
+          console.error(
+            'Brit.Tuna: Cart initialization failed.',
+            error
+          );
 
+          renderAll();
+        });
+    }
+  );
 
   /* ==========================================================
      PUBLIC API
-     ========================================================== */
+  ========================================================== */
 
   window.BTCart = {
+    add:
+      add,
 
-    add: add,
-
-    addDirect: addDirect,
+    addDirect:
+      addDirect,
 
     restorePendingAction:
       restorePendingAction,
 
-    setQty: setQty,
+    setQty:
+      setQty,
 
-    remove: remove,
+    remove:
+      remove,
 
-    clear: clear,
+    clear:
+      clear,
 
-    count: count,
+    count:
+      count,
 
-    lines: lines,
+    lines:
+      lines,
 
-    totals: totals
+    totals:
+      totals,
 
+    render:
+      renderAll,
+
+    initialize:
+      initializeCart
   };
-
 })();
