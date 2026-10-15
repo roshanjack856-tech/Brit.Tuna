@@ -326,7 +326,7 @@
 
   /* ==========================================================
      DEMO PRODUCTS
-     Used only as fallback while database is being prepared.
+     Used only if Supabase has no usable products.
   ========================================================== */
 
   var DEFAULT_PRODUCTS = [
@@ -663,7 +663,6 @@
 
   function fromRow(r) {
     var slug =
-      r.slug ||
       slugify(r.name);
 
     var id =
@@ -686,11 +685,11 @@
       variants.map(function (variant) {
         return {
           /*
-            IMPORTANT:
-            This is the REAL Supabase
-            product_variants.id.
+            REAL product_variants.id from Supabase.
+            This is important for secure orders later.
           */
-          id: String(variant.id),
+          id:
+            String(variant.id),
 
           variantId:
             Number(variant.id),
@@ -699,13 +698,19 @@
             Number(r.id),
 
           label:
-            String(variant.pack_size || ''),
+            String(
+              variant.pack_size || ''
+            ),
 
           price:
-            Number(variant.price),
+            Number(
+              variant.price
+            ),
 
           stockQuantity:
-            Number(variant.stock_quantity) || 0,
+            Number(
+              variant.stock_quantity
+            ) || 0,
 
           active:
             variant.is_active !== false
@@ -713,20 +718,29 @@
       });
 
     packs.sort(function (a, b) {
-      return Number(a.variantId) - Number(b.variantId);
+      return (
+        Number(a.variantId) -
+        Number(b.variantId)
+      );
     });
 
     var totalStock =
       packs.reduce(function (total, pack) {
-        return total + pack.stockQuantity;
+        return (
+          total +
+          pack.stockQuantity
+        );
       }, 0);
 
-    var stock = 'in_stock';
+    var stock =
+      'in_stock';
 
     if (totalStock <= 0) {
-      stock = 'out_of_stock';
+      stock =
+        'out_of_stock';
     } else if (totalStock <= 10) {
-      stock = 'low_stock';
+      stock =
+        'low_stock';
     }
 
     var info =
@@ -751,36 +765,35 @@
         category,
 
       short:
-        r.short ||
-        r.description ||
-        '',
+        r.description || '',
 
       description:
-        r.description ||
-        '',
+        r.description || '',
 
       image:
         r.image_url ||
-        r.image ||
         catImage(
           category,
           r.name || ''
         ),
 
-      discount:
-        Number(r.discount) || 0,
+      /*
+        Current database does not yet have
+        discount column, so production
+        products use 0.
+      */
+      discount: 0,
 
       stock:
         stock,
 
-      featured:
-        !!r.featured,
-
-      bestseller:
-        !!r.bestseller,
-
-      wholesale:
-        !!r.wholesale,
+      /*
+        Current database does not yet have
+        featured/bestseller/wholesale fields.
+      */
+      featured: false,
+      bestseller: false,
+      wholesale: false,
 
       active:
         r.is_active !== false,
@@ -790,8 +803,7 @@
         'own',
 
       status:
-        r.status ||
-        '',
+        r.status || '',
 
       brandId:
         r.brand_id ||
@@ -801,20 +813,18 @@
         r.seller_id ||
         null,
 
-      ingredients:
-        r.ingredients ||
-        info.ingredients ||
+      affiliateUrl:
+        r.affiliate_url ||
         '',
+
+      ingredients:
+        info.ingredients || '',
 
       allergens:
-        r.allergens ||
-        info.allergens ||
-        '',
+        info.allergens || '',
 
       storage:
-        r.storage ||
-        info.storage ||
-        '',
+        info.storage || '',
 
       packs:
         packs
@@ -824,12 +834,12 @@
   /* ==========================================================
      LOAD PRODUCTS FROM SUPABASE
 
-     Supabase:
-       products
-          ↓
-       product_variants
+     IMPORTANT FIX:
+     The previous version used .join('')
+     which removed commas from the select query.
 
-     Demo catalogue is fallback only.
+     This version uses a correct Supabase
+     select string.
   ========================================================== */
 
   async function load() {
@@ -845,39 +855,46 @@
       var result =
         await window.supabaseClient
           .from('products')
-          .select(
-            [
-              'id',
-              'name',
-              'description',
-              'category',
-              'price',
-              'image_url',
-              'affiliate_url',
-              'is_active',
-              'brand_id',
-              'seller_id',
-              'product_type',
-              'status',
-              'created_at',
-              'updated_at',
-              'product_variants(',
-              'id,',
-              'product_id,',
-              'pack_size,',
-              'price,',
-              'stock_quantity,',
-              'is_active,',
-              'created_at,',
-              'updated_at',
-              ')'
-            ].join('')
+          .select(`
+            id,
+            name,
+            description,
+            category,
+            price,
+            image_url,
+            affiliate_url,
+            is_active,
+            brand_id,
+            seller_id,
+            product_type,
+            status,
+            created_at,
+            updated_at,
+            product_variants (
+              id,
+              product_id,
+              pack_size,
+              price,
+              stock_quantity,
+              is_active,
+              created_at,
+              updated_at
+            )
+          `)
+          .eq(
+            'status',
+            'active'
           )
-          .eq('status', 'active')
-          .eq('is_active', true)
-          .order('id', {
-            ascending: true
-          });
+          .eq(
+            'is_active',
+            true
+          )
+          .order(
+            'id',
+            {
+              ascending: true
+            }
+          );
 
       if (result.error) {
         console.warn(
@@ -902,7 +919,15 @@
             );
           });
 
-      if (databaseProducts.length > 0) {
+      /*
+        Once Supabase contains usable
+        active products, use Supabase
+        instead of mixing them with demos.
+      */
+
+      if (
+        databaseProducts.length > 0
+      ) {
         cache =
           databaseProducts;
 
@@ -939,10 +964,17 @@
   }
 
   function getById(id) {
-    id = String(id);
+    id =
+      String(id);
 
-    for (var i = 0; i < cache.length; i++) {
-      if (String(cache[i].id) === id) {
+    for (
+      var i = 0;
+      i < cache.length;
+      i++
+    ) {
+      if (
+        String(cache[i].id) === id
+      ) {
         return cache[i];
       }
     }
@@ -951,10 +983,17 @@
   }
 
   function getBySlug(slug) {
-    slug = String(slug || '');
+    slug =
+      String(slug || '');
 
-    for (var i = 0; i < cache.length; i++) {
-      if (cache[i].slug === slug) {
+    for (
+      var i = 0;
+      i < cache.length;
+      i++
+    ) {
+      if (
+        cache[i].slug === slug
+      ) {
         return cache[i];
       }
     }
@@ -963,8 +1002,14 @@
   }
 
   function getCategory(id) {
-    for (var i = 0; i < CATEGORIES.length; i++) {
-      if (CATEGORIES[i].id === id) {
+    for (
+      var i = 0;
+      i < CATEGORIES.length;
+      i++
+    ) {
+      if (
+        CATEGORIES[i].id === id
+      ) {
         return CATEGORIES[i];
       }
     }
@@ -972,7 +1017,10 @@
     return null;
   }
 
-  function getVariant(productId, packId) {
+  function getVariant(
+    productId,
+    packId
+  ) {
     var product =
       getById(productId);
 
@@ -983,10 +1031,15 @@
     packId =
       String(packId);
 
-    for (var i = 0; i < product.packs.length; i++) {
+    for (
+      var i = 0;
+      i < product.packs.length;
+      i++
+    ) {
       if (
-        String(product.packs[i].id) ===
-        packId
+        String(
+          product.packs[i].id
+        ) === packId
       ) {
         return {
           product: product,
@@ -1002,16 +1055,23 @@
      PRICING
   ========================================================== */
 
-  function salePrice(price, discount) {
+  function salePrice(
+    price,
+    discount
+  ) {
     return Math.round(
       Number(price) *
-        (100 - Number(discount || 0)) /
+        (
+          100 -
+          Number(discount || 0)
+        ) /
         100
     );
   }
 
   function fromPrice(p) {
-    var min = Infinity;
+    var min =
+      Infinity;
 
     p.packs.forEach(function (pack) {
       var price =
@@ -1025,24 +1085,31 @@
       }
     });
 
-    return min === Infinity
-      ? 0
-      : min;
+    return (
+      min === Infinity
+        ? 0
+        : min
+    );
   }
 
   function fromMrp(p) {
-    var min = Infinity;
+    var min =
+      Infinity;
 
     p.packs.forEach(function (pack) {
-      if (Number(pack.price) < min) {
+      if (
+        Number(pack.price) < min
+      ) {
         min =
           Number(pack.price);
       }
     });
 
-    return min === Infinity
-      ? 0
-      : min;
+    return (
+      min === Infinity
+        ? 0
+        : min
+    );
   }
 
   function stockLabel(p) {
@@ -1076,15 +1143,19 @@
 
     var svg =
       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">' +
+
       '<rect width="400" height="300" fill="' +
       cat.color +
       '"/>' +
+
       '<text x="200" y="165" font-size="110" text-anchor="middle">' +
       cat.icon +
       '</text>' +
+
       '<text x="200" y="262" font-size="22" text-anchor="middle" fill="#7a1f2b" font-family="sans-serif">' +
       xmlEscape(p.name) +
       '</text>' +
+
       '</svg>';
 
     return (
@@ -1098,17 +1169,21 @@
   ========================================================== */
 
   function filter(opts) {
-    opts = opts || {};
+    opts =
+      opts || {};
 
     var q =
       String(opts.q || '')
         .toLowerCase()
         .trim();
 
-    var range = null;
+    var range =
+      null;
 
     PRICE_RANGES.forEach(function (r) {
-      if (r.id === opts.price) {
+      if (
+        r.id === opts.price
+      ) {
         range = r;
       }
     });
@@ -1125,7 +1200,9 @@
 
         if (q) {
           var cat =
-            getCategory(p.category);
+            getCategory(
+              p.category
+            );
 
           var hay =
             (
@@ -1133,7 +1210,11 @@
               ' ' +
               p.short +
               ' ' +
-              (cat ? cat.name : '')
+              (
+                cat
+                  ? cat.name
+                  : ''
+              )
             ).toLowerCase();
 
           var ok =
@@ -1186,13 +1267,21 @@
 
       case 'name-asc':
         list.sort(function (a, b) {
-          return a.name.localeCompare(b.name);
+          return (
+            a.name.localeCompare(
+              b.name
+            )
+          );
         });
         break;
 
       case 'name-desc':
         list.sort(function (a, b) {
-          return b.name.localeCompare(a.name);
+          return (
+            b.name.localeCompare(
+              a.name
+            )
+          );
         });
         break;
 
@@ -1221,7 +1310,9 @@
   function productUrl(p) {
     return (
       'product-details.html?slug=' +
-      encodeURIComponent(p.slug)
+      encodeURIComponent(
+        p.slug
+      )
     );
   }
 
@@ -1235,7 +1326,9 @@
     }
 
     var cat =
-      getCategory(p.category);
+      getCategory(
+        p.category
+      );
 
     var out =
       p.stock ===
@@ -1252,7 +1345,9 @@
       first.label +
       '\nQuantity: 1' +
       '\nLink: ' +
-      absoluteUrl(productUrl(p));
+      absoluteUrl(
+        productUrl(p)
+      );
 
     var mrp =
       fromMrp(p);
@@ -1289,7 +1384,9 @@
 
       '<p class="pc-cat">' +
       U.escapeHtml(
-        cat ? cat.name : ''
+        cat
+          ? cat.name
+          : ''
       ) +
       '</p>' +
 
@@ -1306,15 +1403,21 @@
       '</p>' +
 
       '<p class="pc-packs">Packs: ' +
+
       p.packs
         .map(function (pack) {
-          return U.escapeHtml(pack.label);
+          return U.escapeHtml(
+            pack.label
+          );
         })
         .join(' · ') +
+
       '</p>' +
 
       '<p class="pc-price">' +
+
       '<span class="price-from">From</span> ' +
+
       '<span class="price-now">' +
       U.formatINR(now) +
       '</span>' +
@@ -1340,7 +1443,11 @@
       '<button type="button" class="btn btn-primary btn-sm js-add-card" data-product-id="' +
       U.escapeHtml(String(p.id)) +
       '"' +
-      (out ? ' disabled' : '') +
+      (
+        out
+          ? ' disabled'
+          : ''
+      ) +
       '>Add to Cart</button>' +
 
       '<a class="btn btn-whatsapp btn-sm" href="' +
@@ -1366,7 +1473,9 @@
     }
 
     var category =
-      getCategory(product.category);
+      getCategory(
+        product.category
+      );
 
     if (!category) {
       return '';
@@ -1374,12 +1483,15 @@
 
     var svg =
       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">' +
+
       '<rect width="400" height="300" fill="' +
       category.color +
       '"/>' +
+
       '<text x="200" y="165" font-size="110" text-anchor="middle">' +
       category.icon +
       '</text>' +
+
       '</svg>';
 
     return (
@@ -1397,8 +1509,12 @@
       if (
         target &&
         target.tagName === 'IMG' &&
-        target.getAttribute('data-pid') &&
-        !target.getAttribute('data-fb')
+        target.getAttribute(
+          'data-pid'
+        ) &&
+        !target.getAttribute(
+          'data-fb'
+        )
       ) {
         target.setAttribute(
           'data-fb',
@@ -1407,7 +1523,9 @@
 
         target.src =
           placeholderFor(
-            target.getAttribute('data-pid')
+            target.getAttribute(
+              'data-pid'
+            )
           );
       }
     },
@@ -1421,7 +1539,9 @@
   function offersHTML() {
     return cache
       .filter(function (product) {
-        return product.discount > 0;
+        return (
+          product.discount > 0
+        );
       })
       .slice(0, 8)
       .map(function (product) {
@@ -1441,13 +1561,19 @@
           '% OFF</span>' +
 
           '<h3>' +
-          U.escapeHtml(product.name) +
+          U.escapeHtml(
+            product.name
+          ) +
           '</h3>' +
 
           '<p>From ' +
-          U.formatINR(fromPrice(product)) +
+          U.formatINR(
+            fromPrice(product)
+          ) +
           ' <s>' +
-          U.formatINR(fromMrp(product)) +
+          U.formatINR(
+            fromMrp(product)
+          ) +
           '</s></p>' +
 
           '</a>'
@@ -1460,7 +1586,10 @@
      GRID
   ========================================================== */
 
-  function renderGrid(el, list) {
+  function renderGrid(
+    el,
+    list
+  ) {
     if (!el) {
       return;
     }
@@ -1480,12 +1609,14 @@
       window.BTUI &&
       window.BTUI.toast
     ) {
-      window.BTUI.toast(message);
+      window.BTUI.toast(
+        message
+      );
     }
   }
 
   /* ==========================================================
-     HOME PAGE
+     HOME
   ========================================================== */
 
   function initHome() {
@@ -1496,39 +1627,43 @@
 
     if (categoryGrid) {
       categoryGrid.innerHTML =
-        CATEGORIES.map(function (category) {
-          var count =
-            cache.filter(function (product) {
-              return (
-                product.category ===
-                category.id
-              );
-            }).length;
+        CATEGORIES
+          .map(function (category) {
+            var count =
+              cache.filter(function (product) {
+                return (
+                  product.category ===
+                  category.id
+                );
+              }).length;
 
-          return (
-            '<a class="cat-card has-photo" href="products.html?category=' +
-            category.id +
-            '" style="--cat-bg:' +
-            category.color +
-            ';--cat-photo:url(\'' +
-            category.photo +
-            '\')">' +
+            return (
+              '<a class="cat-card has-photo" href="products.html?category=' +
+              category.id +
+              '" style="--cat-bg:' +
+              category.color +
+              ';--cat-photo:url(\'' +
+              category.photo +
+              '\')">' +
 
-            '<h3>' +
-            category.name +
-            '</h3>' +
+              '<h3>' +
+              category.name +
+              '</h3>' +
 
-            '<p>' +
-            U.escapeHtml(category.blurb) +
-            '</p>' +
+              '<p>' +
+              U.escapeHtml(
+                category.blurb
+              ) +
+              '</p>' +
 
-            '<span class="cat-count">' +
-            count +
-            ' products</span>' +
+              '<span class="cat-count">' +
+              count +
+              ' products</span>' +
 
-            '</a>'
-          );
-        }).join('');
+              '</a>'
+            );
+          })
+          .join('');
     }
 
     var offersGrid =
@@ -1553,13 +1688,6 @@
             return product.bestseller;
           })
           .slice(0, 4);
-
-      /*
-        Database products currently do not
-        have bestseller metadata.
-
-        Show first products if necessary.
-      */
 
       if (!best.length) {
         best =
@@ -1602,12 +1730,14 @@
       option.textContent =
         item[labelKey];
 
-      select.appendChild(option);
+      select.appendChild(
+        option
+      );
     });
   }
 
   /* ==========================================================
-     SHOP PAGE
+     SHOP
   ========================================================== */
 
   function initShop() {
@@ -1699,11 +1829,14 @@
 
     if (searchEl) {
       searchEl.value =
-        U.getParam('q') || '';
+        U.getParam('q') ||
+        '';
     }
 
     var urlCategory =
-      U.getParam('category');
+      U.getParam(
+        'category'
+      );
 
     if (
       categoryEl &&
@@ -1800,15 +1933,18 @@
           }
 
           if (categoryEl) {
-            categoryEl.value = 'all';
+            categoryEl.value =
+              'all';
           }
 
           if (priceEl) {
-            priceEl.value = 'all';
+            priceEl.value =
+              'all';
           }
 
           if (sortEl) {
-            sortEl.value = 'default';
+            sortEl.value =
+              'default';
           }
 
           render();
@@ -1859,10 +1995,15 @@
       );
 
     var current =
-      U.getParam('category');
+      U.getParam(
+        'category'
+      );
 
-    if (!getCategory(current)) {
-      current = 'all';
+    if (
+      !getCategory(current)
+    ) {
+      current =
+        'all';
     }
 
     fillSelect(
@@ -1900,9 +2041,11 @@
 
       var html =
         '<a class="chip' +
-        (current === 'all'
-          ? ' active'
-          : '') +
+        (
+          current === 'all'
+            ? ' active'
+            : ''
+        ) +
         '" href="products.html" data-cat="all">All</a>';
 
       CATEGORIES.forEach(function (category) {
@@ -1931,7 +2074,8 @@
     function render() {
       var list =
         filter({
-          category: current,
+          category:
+            current,
 
           sort:
             sortEl
@@ -1945,7 +2089,9 @@
       );
 
       var category =
-        getCategory(current);
+        getCategory(
+          current
+        );
 
       if (heading) {
         heading.textContent =
@@ -2027,10 +2173,14 @@
     }
 
     var slug =
-      U.getParam('slug');
+      U.getParam(
+        'slug'
+      );
 
     var id =
-      U.getParam('id');
+      U.getParam(
+        'id'
+      );
 
     var p =
       slug
@@ -2066,7 +2216,9 @@
       );
 
     var cat =
-      getCategory(p.category);
+      getCategory(
+        p.category
+      );
 
     var out =
       p.stock ===
@@ -2076,7 +2228,8 @@
       packId:
         p.packs[0].id,
 
-      qty: 1
+      qty:
+        1
     };
 
     var NA =
@@ -2089,7 +2242,9 @@
             '<label class="pack-opt">' +
 
             '<input type="radio" name="pack" value="' +
-            U.escapeHtml(String(pack.id)) +
+            U.escapeHtml(
+              String(pack.id)
+            ) +
             '"' +
             (
               index === 0
@@ -2099,7 +2254,9 @@
             '>' +
 
             '<span>' +
-            U.escapeHtml(pack.label) +
+            U.escapeHtml(
+              pack.label
+            ) +
             '</span>' +
 
             '<small>' +
@@ -2126,13 +2283,17 @@
       '">' +
 
       U.escapeHtml(
-        cat ? cat.name : 'Products'
+        cat
+          ? cat.name
+          : 'Products'
       ) +
 
       '</a> / ' +
 
       '<span>' +
-      U.escapeHtml(p.name) +
+      U.escapeHtml(
+        p.name
+      ) +
       '</span>' +
 
       '</nav>' +
@@ -2163,16 +2324,22 @@
 
       '<p class="pc-cat">' +
       U.escapeHtml(
-        cat ? cat.name : ''
+        cat
+          ? cat.name
+          : ''
       ) +
       '</p>' +
 
       '<h1>' +
-      U.escapeHtml(p.name) +
+      U.escapeHtml(
+        p.name
+      ) +
       '</h1>' +
 
       '<p class="pd-short">' +
-      U.escapeHtml(p.short) +
+      U.escapeHtml(
+        p.short
+      ) +
       '</p>' +
 
       '<p class="pd-price">' +
@@ -2239,34 +2406,46 @@
       '<h2>Product description</h2>' +
 
       '<p>' +
-      U.escapeHtml(p.description) +
+      U.escapeHtml(
+        p.description
+      ) +
       '</p>' +
 
       '<table class="spec-table">' +
       '<tbody>' +
 
       '<tr><th>Product ID</th><td>' +
-      U.escapeHtml(String(p.id)) +
+      U.escapeHtml(
+        String(p.id)
+      ) +
       '</td></tr>' +
 
       '<tr><th>Category</th><td>' +
       U.escapeHtml(
-        cat ? cat.name : ''
+        cat
+          ? cat.name
+          : ''
       ) +
       '</td></tr>' +
 
       '<tr><th>Available packs</th><td>' +
+
       p.packs
         .map(function (pack) {
-          return U.escapeHtml(pack.label);
+          return U.escapeHtml(
+            pack.label
+          );
         })
         .join(', ') +
+
       '</td></tr>' +
 
       '<tr><th>Ingredients</th><td>' +
       (
         p.ingredients
-          ? U.escapeHtml(p.ingredients)
+          ? U.escapeHtml(
+              p.ingredients
+            )
           : NA
       ) +
       '</td></tr>' +
@@ -2274,7 +2453,9 @@
       '<tr><th>Allergen information</th><td>' +
       (
         p.allergens
-          ? U.escapeHtml(p.allergens)
+          ? U.escapeHtml(
+              p.allergens
+            )
           : NA
       ) +
       '</td></tr>' +
@@ -2282,7 +2463,9 @@
       '<tr><th>Storage</th><td>' +
       (
         p.storage
-          ? U.escapeHtml(p.storage)
+          ? U.escapeHtml(
+              p.storage
+            )
           : NA
       ) +
       '</td></tr>' +
@@ -2324,9 +2507,11 @@
           state.packId
         );
 
-      return variant
-        ? variant.pack
-        : p.packs[0];
+      return (
+        variant
+          ? variant.pack
+          : p.packs[0]
+      );
     }
 
     function update() {
@@ -2340,16 +2525,21 @@
         );
 
       priceEl.textContent =
-        U.formatINR(now);
+        U.formatINR(
+          now
+        );
 
       mrpEl.textContent =
         p.discount
-          ? U.formatINR(pack.price)
+          ? U.formatINR(
+              pack.price
+            )
           : '';
 
       totalEl.textContent =
         U.formatINR(
-          now * state.qty
+          now *
+          state.qty
         );
 
       var msg =
@@ -2366,12 +2556,17 @@
         );
 
       waEl.href =
-        U.whatsappLink(msg);
+        U.whatsappLink(
+          msg
+        );
     }
 
     function setQty(number) {
       number =
-        parseInt(number, 10);
+        parseInt(
+          number,
+          10
+        );
 
       if (
         !number ||
@@ -2386,13 +2581,6 @@
 
       var pack =
         currentPack();
-
-      /*
-        Database products know actual
-        stock quantity.
-
-        Demo products do not.
-      */
 
       if (
         pack.stockQuantity !== null &&
@@ -2431,8 +2619,11 @@
           state.packId =
             e.target.value;
 
-          state.qty = 1;
-          qtyEl.value = 1;
+          state.qty =
+            1;
+
+          qtyEl.value =
+            1;
 
           update();
         }
@@ -2440,7 +2631,9 @@
     );
 
     document
-      .getElementById('qty-dec')
+      .getElementById(
+        'qty-dec'
+      )
       .addEventListener(
         'click',
         function () {
@@ -2451,7 +2644,9 @@
       );
 
     document
-      .getElementById('qty-inc')
+      .getElementById(
+        'qty-inc'
+      )
       .addEventListener(
         'click',
         function () {
@@ -2464,12 +2659,20 @@
     qtyEl.addEventListener(
       'change',
       function () {
-        setQty(qtyEl.value);
+        setQty(
+          qtyEl.value
+        );
       }
     );
 
+    /* ======================================================
+       ADD TO CART
+    ====================================================== */
+
     document
-      .getElementById('pd-add')
+      .getElementById(
+        'pd-add'
+      )
       .addEventListener(
         'click',
         async function () {
@@ -2481,11 +2684,15 @@
             return;
           }
 
-          var button = this;
+          var button =
+            this;
+
           var oldText =
             button.textContent;
 
-          button.disabled = true;
+          button.disabled =
+            true;
+
           button.textContent =
             'Adding...';
 
@@ -2544,7 +2751,9 @@
 
     update();
 
-    /* RELATED PRODUCTS */
+    /* ======================================================
+       RELATED PRODUCTS
+    ====================================================== */
 
     var related =
       document.getElementById(
@@ -2555,15 +2764,18 @@
       var same =
         cache.filter(function (item) {
           return (
-            item.category === p.category &&
-            item.id !== p.id
+            item.category ===
+              p.category &&
+            item.id !==
+              p.id
           );
         });
 
       var others =
         cache.filter(function (item) {
           return (
-            item.category !== p.category
+            item.category !==
+            p.category
           );
         });
 
@@ -2625,7 +2837,9 @@
       var oldText =
         button.textContent;
 
-      button.disabled = true;
+      button.disabled =
+        true;
+
       button.textContent =
         'Adding...';
 
@@ -2679,11 +2893,17 @@
 
       load()
         .then(function () {
-          if (page === 'home') {
+          if (
+            page === 'home'
+          ) {
             initHome();
-          } else if (page === 'shop') {
+          } else if (
+            page === 'shop'
+          ) {
             initShop();
-          } else if (page === 'products') {
+          } else if (
+            page === 'products'
+          ) {
             initProducts();
           } else if (
             page ===
@@ -2706,26 +2926,49 @@
   ========================================================== */
 
   window.BTProducts = {
-    categories: CATEGORIES,
-    priceRanges: PRICE_RANGES,
+    categories:
+      CATEGORIES,
 
-    load: load,
+    priceRanges:
+      PRICE_RANGES,
 
-    getAll: getAll,
-    getById: getById,
-    getBySlug: getBySlug,
-    getCategory: getCategory,
-    getVariant: getVariant,
+    load:
+      load,
 
-    salePrice: salePrice,
-    fromPrice: fromPrice,
+    getAll:
+      getAll,
 
-    imageFor: imageFor,
-    stockLabel: stockLabel,
+    getById:
+      getById,
 
-    filter: filter,
-    cardHTML: cardHTML,
-    productUrl: productUrl
+    getBySlug:
+      getBySlug,
+
+    getCategory:
+      getCategory,
+
+    getVariant:
+      getVariant,
+
+    salePrice:
+      salePrice,
+
+    fromPrice:
+      fromPrice,
+
+    imageFor:
+      imageFor,
+
+    stockLabel:
+      stockLabel,
+
+    filter:
+      filter,
+
+    cardHTML:
+      cardHTML,
+
+    productUrl:
+      productUrl
   };
-
 })();
