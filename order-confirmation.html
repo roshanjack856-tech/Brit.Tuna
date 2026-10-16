@@ -46,6 +46,119 @@
     rel="stylesheet"
     href="responsive.css"
   >
+
+
+  <!-- ============================================
+       ORDER CONFIRMATION PAGE STYLES
+  ============================================= -->
+
+  <style>
+
+    .fulfillment-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 8px;
+    }
+
+
+    .fulfillment-label {
+      color: #6d746f;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+
+    .fulfillment-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      line-height: 1;
+      font-weight: 700;
+      text-transform: capitalize;
+    }
+
+
+    .fulfillment-badge.pending {
+      background: #fff3df;
+      color: #8a5a0a;
+    }
+
+
+    .fulfillment-badge.processing {
+      background: #e8f1ff;
+      color: #245ea8;
+    }
+
+
+    .fulfillment-badge.shipped {
+      background: #eee8ff;
+      color: #6340a5;
+    }
+
+
+    .fulfillment-badge.delivered {
+      background: #e8f7ec;
+      color: #18723a;
+    }
+
+
+    .fulfillment-badge.cancelled {
+      background: #fff0ed;
+      color: #a52f25;
+    }
+
+
+    .fulfillment-badge.unknown {
+      background: #f1f2f1;
+      color: #58625c;
+    }
+
+
+    .order-item-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+    }
+
+
+    .order-item-name {
+      font-weight: 600;
+    }
+
+
+    .order-status-note {
+      margin-top: 15px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #f7f9f7;
+      color: #68716b;
+      font-size: 0.82rem;
+      line-height: 1.55;
+    }
+
+
+    .order-status-note strong {
+      color: #1f5a3a;
+    }
+
+
+    @media (max-width: 600px) {
+
+      #order-items li {
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+    }
+
+  </style>
+
 </head>
 
 
@@ -77,7 +190,7 @@
         </h1>
 
         <p>
-          Your order status, as recorded by Brit.Tuna.
+          View your order and latest seller fulfillment status.
         </p>
 
       </div>
@@ -149,6 +262,26 @@
               id="order-totals"
               style="margin-top:12px"
             ></div>
+
+
+            <div class="order-status-note">
+
+              <strong>
+                Seller Status
+              </strong>
+
+              shows the latest fulfillment status
+              for each product.
+
+              The overall
+
+              <strong>
+                Order Status
+              </strong>
+
+              is managed separately by Brit.Tuna.
+
+            </div>
 
           </div>
 
@@ -636,6 +769,101 @@
 
 
       /* ==========================================
+         NORMALIZE FULFILLMENT STATUS
+      ========================================== */
+
+      function normalizeFulfillmentStatus(
+        value
+      ) {
+
+        var status =
+          String(
+            value ||
+            'pending'
+          )
+            .trim()
+            .toLowerCase();
+
+
+        var allowedStatuses = [
+
+          'pending',
+
+          'processing',
+
+          'shipped',
+
+          'delivered',
+
+          'cancelled'
+
+        ];
+
+
+        if (
+          !allowedStatuses.includes(
+            status
+          )
+        ) {
+
+          return 'unknown';
+
+        }
+
+
+        return status;
+
+      }
+
+
+      /* ==========================================
+         FULFILLMENT STATUS HTML
+      ========================================== */
+
+      function fulfillmentStatusHtml(
+        value
+      ) {
+
+        var status =
+          normalizeFulfillmentStatus(
+            value
+          );
+
+
+        return (
+
+          '<div class="fulfillment-row">' +
+
+            '<span class="fulfillment-label">' +
+
+              'Seller Status:' +
+
+            '</span>' +
+
+            '<span class="fulfillment-badge ' +
+
+              escapeHtml(
+                status
+              ) +
+
+            '">' +
+
+              escapeHtml(
+                statusLabel(
+                  status
+                )
+              ) +
+
+            '</span>' +
+
+          '</div>'
+
+        );
+
+      }
+
+
+      /* ==========================================
          RENDER ORDER
       ========================================== */
 
@@ -703,6 +931,7 @@
 
           orderItems.innerHTML =
             items.map(
+
               function (item) {
 
                 var quantity =
@@ -728,20 +957,31 @@
 
                   '<li>' +
 
-                    '<span>' +
+                    '<span class="order-item-info">' +
 
-                      escapeHtml(
-                        item.product_name ||
-                        'Product'
+                      '<span class="order-item-name">' +
+
+                        escapeHtml(
+                          item.product_name ||
+                          'Product'
+                        ) +
+
+                        ' × ' +
+
+                        escapeHtml(
+                          quantity
+                        ) +
+
+                      '</span>' +
+
+
+                      fulfillmentStatusHtml(
+                        item.fulfillment_status
                       ) +
 
-                      ' × ' +
-
-                      escapeHtml(
-                        quantity
-                      ) +
 
                     '</span>' +
+
 
                     '<span>' +
 
@@ -758,6 +998,7 @@
                 );
 
               }
+
             ).join('');
 
         } else {
@@ -815,11 +1056,13 @@
           order.pincode
 
         ].filter(
+
           function (value) {
 
             return !!value;
 
           }
+
         );
 
 
@@ -986,7 +1229,7 @@
         /* ----------------------------------------
            VALIDATE ORDER ID
 
-           Current orders.id is BIGINT.
+           orders.id is BIGINT.
 
            Examples:
            1
@@ -1085,12 +1328,11 @@
           /* ======================================
              LOAD ORDER + ORDER ITEMS
 
-             IMPORTANT FIX:
+             Customer RLS protects the order.
 
-             Supabase select fields must be
-             comma-separated.
-
-             RLS protects customer orders.
+             IMPORTANT:
+             fulfillment_status is loaded from
+             public.order_items.
           ====================================== */
 
           var orderResult =
@@ -1119,7 +1361,8 @@
                   product_id,
                   product_name,
                   price,
-                  quantity
+                  quantity,
+                  fulfillment_status
                 )
               `)
 
@@ -1166,6 +1409,16 @@
             return;
 
           }
+
+
+          /* ======================================
+             DEBUG
+          ====================================== */
+
+          console.log(
+            'Brit.Tuna Order Confirmation:',
+            orderResult.data
+          );
 
 
           /* ======================================
