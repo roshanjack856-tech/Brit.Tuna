@@ -61,7 +61,6 @@
   <div id="site-header"></div>
 
 
-
   <!-- ============================================
        MAIN
   ============================================= -->
@@ -88,7 +87,6 @@
     </section>
 
 
-
     <!-- ============================================
          CHECKOUT PAGE
     ============================================= -->
@@ -105,7 +103,6 @@
       >
         Checking your account...
       </div>
-
 
 
       <!-- LOGIN REQUIRED MESSAGE -->
@@ -154,7 +151,6 @@
       </div>
 
 
-
       <!-- EMPTY CART MESSAGE -->
 
       <div
@@ -182,9 +178,8 @@
       </div>
 
 
-
       <!-- ============================================
-           REAL CHECKOUT CONTENT
+           CHECKOUT CONTENT
       ============================================= -->
 
       <div
@@ -193,16 +188,15 @@
       >
 
 
-        <!-- DEMO NOTICE -->
+        <!-- TEST ORDER NOTICE -->
 
         <p class="notice">
 
-          Demo mode: no real order is saved and no payment is
-          taken. Real orders and Razorpay payments will be
-          connected later through a secure backend.
+          Test order mode: your order will be saved to Brit.Tuna,
+          but no payment will be collected. Razorpay will be
+          connected later.
 
         </p>
-
 
 
         <div
@@ -238,7 +232,6 @@
             </p>
 
 
-
             <div class="form-grid">
 
 
@@ -265,7 +258,6 @@
                 ></span>
 
               </div>
-
 
 
               <!-- PHONE -->
@@ -295,7 +287,6 @@
               </div>
 
 
-
               <!-- EMAIL -->
 
               <div class="form-field full">
@@ -320,7 +311,6 @@
                 ></span>
 
               </div>
-
 
 
               <!-- ADDRESS -->
@@ -349,7 +339,6 @@
               </div>
 
 
-
               <!-- CITY -->
 
               <div class="form-field">
@@ -375,7 +364,6 @@
               </div>
 
 
-
               <!-- STATE -->
 
               <div class="form-field">
@@ -399,7 +387,6 @@
                 ></span>
 
               </div>
-
 
 
               <!-- PIN CODE -->
@@ -428,9 +415,7 @@
 
               </div>
 
-
             </div>
-
 
 
             <!-- PAYMENT WARNING -->
@@ -440,39 +425,36 @@
               style="margin-top:14px"
             >
 
-              Do not enter card, UPI PIN, CVV or banking
-              information on this page. Online payment will be
-              handled by the payment provider's secure checkout
-              after the backend is connected.
+              This is currently a test order. Do not enter card,
+              UPI PIN, CVV or banking information. No payment
+              will be collected.
 
             </p>
 
 
-
-            <!-- DEMO SUBMIT -->
+            <!-- PLACE TEST ORDER -->
 
             <button
               type="submit"
               class="btn btn-primary btn-block"
               id="place-order-button"
             >
-              Place Order (Demo)
+              Place Test Order
             </button>
-
 
 
             <!-- RESULT -->
 
             <div
               class="notice notice-small"
-              id="demo-result"
+              id="order-result"
               role="status"
+              aria-live="polite"
               hidden
             ></div>
 
 
           </form>
-
 
 
           <!-- ======================================
@@ -498,7 +480,6 @@
   </main>
 
 
-
   <!-- ============================================
        FOOTER
   ============================================= -->
@@ -506,10 +487,8 @@
   <div id="site-footer"></div>
 
 
-
   <!-- ============================================
        JAVASCRIPT
-
        IMPORTANT LOAD ORDER
   ============================================= -->
 
@@ -546,7 +525,6 @@
   <script src="script.js"></script>
 
 
-
   <!-- ============================================
        CHECKOUT PAGE LOGIC
   ============================================= -->
@@ -556,7 +534,6 @@
     (function () {
 
       'use strict';
-
 
 
       /* ==========================================
@@ -595,7 +572,7 @@
 
       var result =
         document.getElementById(
-          'demo-result'
+          'order-result'
         );
 
 
@@ -604,6 +581,15 @@
           'checkout-user-email'
         );
 
+
+      var placeOrderButton =
+        document.getElementById(
+          'place-order-button'
+        );
+
+
+      var orderCreating =
+        false;
 
 
       /* ==========================================
@@ -620,7 +606,6 @@
         }
 
       }
-
 
 
       function showLoginRequired() {
@@ -654,7 +639,6 @@
       }
 
 
-
       function showEmptyCart() {
 
         hideLoading();
@@ -684,7 +668,6 @@
         }
 
       }
-
 
 
       function showCheckout() {
@@ -718,6 +701,85 @@
       }
 
 
+      /* ==========================================
+         RESULT MESSAGE
+      ========================================== */
+
+      function showResult(message) {
+
+        if (!result) {
+
+          return;
+
+        }
+
+
+        result.textContent =
+          message;
+
+
+        result.hidden =
+          false;
+
+
+        result.scrollIntoView({
+
+          behavior:
+            'smooth',
+
+          block:
+            'nearest'
+
+        });
+
+      }
+
+
+      function hideResult() {
+
+        if (!result) {
+
+          return;
+
+        }
+
+
+        result.textContent =
+          '';
+
+
+        result.hidden =
+          true;
+
+      }
+
+
+      /* ==========================================
+         ORDER BUTTON
+      ========================================== */
+
+      function setOrderButtonLoading(
+        loading
+      ) {
+
+        if (!placeOrderButton) {
+
+          return;
+
+        }
+
+
+        placeOrderButton.disabled =
+          loading;
+
+
+        placeOrderButton.textContent =
+          loading
+            ? 'Creating Order...'
+            : 'Place Test Order';
+
+      }
+
 
       /* ==========================================
          REDIRECT TO LOGIN
@@ -749,7 +811,6 @@
       }
 
 
-
       /* ==========================================
          CART CHECK
       ========================================== */
@@ -773,7 +834,6 @@
         );
 
       }
-
 
 
       /* ==========================================
@@ -801,10 +861,6 @@
           );
 
 
-        /*
-          Email comes from Supabase Auth.
-        */
-
         if (emailInput) {
 
           emailInput.value =
@@ -822,12 +878,6 @@
 
         }
 
-
-
-        /*
-          Google OAuth / signup metadata
-          may already contain the name.
-        */
 
         var metadata =
           user.user_metadata ||
@@ -855,7 +905,6 @@
         }
 
       }
-
 
 
       /* ==========================================
@@ -897,7 +946,6 @@
               .maybeSingle();
 
 
-
           if (profileResult.error) {
 
             console.warn(
@@ -910,7 +958,6 @@
           }
 
 
-
           var profile =
             profileResult.data;
 
@@ -920,7 +967,6 @@
             return;
 
           }
-
 
 
           var nameInput =
@@ -935,7 +981,6 @@
             );
 
 
-
           if (
             nameInput &&
             profile.full_name
@@ -945,7 +990,6 @@
               profile.full_name;
 
           }
-
 
 
           if (
@@ -971,14 +1015,8 @@
       }
 
 
-
       /* ==========================================
          LOAD SAVED DELIVERY DETAILS
-
-         We currently keep address information
-         in localStorage.
-
-         Later these can be moved to Supabase.
       ========================================== */
 
       function loadSavedDeliveryDetails() {
@@ -1049,12 +1087,8 @@
       }
 
 
-
       /* ==========================================
          SAVE DELIVERY DETAILS
-
-         Browser-only convenience data.
-         This does NOT create an order.
       ========================================== */
 
       function saveDeliveryDetails() {
@@ -1126,16 +1160,11 @@
       }
 
 
-
       /* ==========================================
          CHECKOUT AUTH GUARD
       ========================================== */
 
       async function initialiseCheckout() {
-
-        /*
-          Supabase client must exist.
-        */
 
         if (
           !window.supabaseClient
@@ -1157,14 +1186,27 @@
         try {
 
           /*
-            Get logged-in session.
+            Wait for product catalogue first.
+
+            Cart validation depends on current
+            Supabase products + variants.
           */
+
+          if (
+            window.BTCart &&
+            typeof window.BTCart.initialize ===
+              'function'
+          ) {
+
+            await window.BTCart.initialize();
+
+          }
+
 
           var sessionResult =
             await window.supabaseClient
               .auth
               .getSession();
-
 
 
           if (sessionResult.error) {
@@ -1183,18 +1225,12 @@
           }
 
 
-
           var session =
 
             sessionResult.data
               ? sessionResult.data.session
               : null;
 
-
-
-          /*
-            NOT LOGGED IN
-          */
 
           if (
             !session ||
@@ -1208,22 +1244,28 @@
           }
 
 
-
-          /*
-            CUSTOMER IS LOGGED IN
-          */
-
           var user =
             session.user;
 
 
-
           /*
-            First check cart.
+            Use validated cart lines here instead
+            of only raw localStorage count.
           */
 
+          var validLines =
+
+            window.BTCart &&
+            typeof window.BTCart.lines ===
+              'function'
+
+              ? window.BTCart.lines()
+
+              : [];
+
+
           if (
-            !cartHasItems()
+            !validLines.length
           ) {
 
             showEmptyCart();
@@ -1233,47 +1275,32 @@
           }
 
 
-
-          /*
-            Fill email/name from Auth.
-          */
-
           fillAuthUser(
             user
           );
 
-
-
-          /*
-            Load profile name + phone.
-          */
 
           await loadCustomerProfile(
             user
           );
 
 
-
-          /*
-            Load previously typed address
-            from browser.
-          */
-
           loadSavedDeliveryDetails();
 
 
+          if (
+            window.BTCart &&
+            typeof window.BTCart.render ===
+              'function'
+          ) {
 
-          /*
-            Show checkout.
-          */
+            window.BTCart.render();
+
+          }
+
 
           showCheckout();
 
-
-
-          /*
-            Remove old login destination.
-          */
 
           try {
 
@@ -1304,7 +1331,6 @@
         }
 
       }
-
 
 
       /* ==========================================
@@ -1418,7 +1444,6 @@
       };
 
 
-
       /* ==========================================
          CHECK ONE FIELD
       ========================================== */
@@ -1478,7 +1503,6 @@
       }
 
 
-
       /* ==========================================
          FIELD BLUR VALIDATION
       ========================================== */
@@ -1521,6 +1545,75 @@
       );
 
 
+      /* ==========================================
+         BUILD SECURE RPC CART
+      ========================================== */
+
+      function buildRpcCartItems() {
+
+        if (
+          !window.BTCart ||
+          typeof window.BTCart.lines !==
+            'function'
+        ) {
+
+          return [];
+
+        }
+
+
+        var cartLines =
+          window.BTCart.lines();
+
+
+        return cartLines.map(
+          function (line) {
+
+            var productId =
+              Number(
+                line.product.id
+              );
+
+
+            var variantId =
+              null;
+
+
+            if (
+              line.pack &&
+              line.pack.id !== undefined &&
+              line.pack.id !== null &&
+              line.pack.id !== ''
+            ) {
+
+              variantId =
+                Number(
+                  line.pack.id
+                );
+
+            }
+
+
+            return {
+
+              product_id:
+                productId,
+
+              variant_id:
+                variantId,
+
+              quantity:
+                Number(
+                  line.qty
+                )
+
+            };
+
+          }
+        );
+
+      }
+
 
       /* ==========================================
          FORM SUBMIT
@@ -1536,29 +1629,36 @@
           event.preventDefault();
 
 
-          result.hidden =
-            true;
+          if (orderCreating) {
+
+            return;
+
+          }
 
 
-          result.textContent =
-            '';
-
+          hideResult();
 
 
           /* ======================================
-             VERIFY LOGIN AGAIN
+             VERIFY SUPABASE
           ====================================== */
 
           if (
             !window.supabaseClient
           ) {
 
-            redirectToLogin();
+            showResult(
+              'Order failed: Supabase connection is unavailable.'
+            );
 
             return;
 
           }
 
+
+          /* ======================================
+             VERIFY LOGIN AGAIN
+          ====================================== */
 
           try {
 
@@ -1566,6 +1666,21 @@
               await window.supabaseClient
                 .auth
                 .getSession();
+
+
+            if (sessionResult.error) {
+
+              console.error(
+                'Brit.Tuna: Session verification failed.',
+                sessionResult.error
+              );
+
+
+              redirectToLogin();
+
+              return;
+
+            }
 
 
             var session =
@@ -1589,12 +1704,17 @@
 
           } catch (error) {
 
+            console.error(
+              'Brit.Tuna: Session verification error.',
+              error
+            );
+
+
             redirectToLogin();
 
             return;
 
           }
-
 
 
           /* ======================================
@@ -1640,65 +1760,269 @@
           }
 
 
-
           /* ======================================
-             CHECK CART AGAIN
+             CHECK CART
           ====================================== */
 
+          var rpcCartItems =
+            buildRpcCartItems();
+
+
           if (
-            !cartHasItems()
+            !rpcCartItems.length
           ) {
 
-            result.textContent =
-              'Your cart is empty. Add products before checking out.';
-
-
-            result.hidden =
-              false;
-
+            showResult(
+              'Your cart is empty or the products are no longer available.'
+            );
 
             return;
 
           }
 
 
-
           /*
-            Save delivery details locally
-            for convenience.
-
-            This does NOT create an order.
+            Validate IDs before calling RPC.
           */
 
-          saveDeliveryDetails();
+          var invalidCartItem =
+            rpcCartItems.some(
+              function (item) {
 
+                return (
+                  !Number.isInteger(
+                    item.product_id
+                  ) ||
+                  item.product_id <= 0 ||
+                  (
+                    item.variant_id !== null &&
+                    (
+                      !Number.isInteger(
+                        item.variant_id
+                      ) ||
+                      item.variant_id <= 0
+                    )
+                  ) ||
+                  !Number.isInteger(
+                    item.quantity
+                  ) ||
+                  item.quantity <= 0
+                );
+
+              }
+            );
+
+
+          if (invalidCartItem) {
+
+            console.error(
+              'Brit.Tuna: Invalid cart data.',
+              rpcCartItems
+            );
+
+
+            showResult(
+              'One of the cart items is invalid. Please remove it and add the product again.'
+            );
+
+            return;
+
+          }
 
 
           /* ======================================
-             DEMO ONLY
-
-             IMPORTANT:
-             - No database order insert
-             - No payment
-             - No cart clear
-             - No fake confirmation
+             CREATE TEST ORDER
           ====================================== */
 
-          result.textContent =
-            'Demo mode: your delivery details are valid, but no order has been created and no payment has been taken. Real order creation will be enabled after the secure backend and payment system are connected.';
+          orderCreating =
+            true;
 
 
-          result.hidden =
-            false;
+          setOrderButtonLoading(
+            true
+          );
 
 
-          result.scrollIntoView({
-            behavior:
-              'smooth',
+          try {
 
-            block:
-              'nearest'
-          });
+            /*
+              SECURITY:
+
+              Only product_id,
+              variant_id and quantity
+              are sent from the cart.
+
+              Browser price is NOT sent.
+
+              create_customer_order()
+              calculates the order total
+              using database prices.
+            */
+
+            var orderResult =
+              await window.supabaseClient
+                .rpc(
+                  'create_customer_order',
+                  {
+
+                    customer_name_input:
+                      document
+                        .getElementById(
+                          'name'
+                        )
+                        .value
+                        .trim(),
+
+                    customer_phone_input:
+                      document
+                        .getElementById(
+                          'phone'
+                        )
+                        .value
+                        .trim(),
+
+                    shipping_address_input:
+                      document
+                        .getElementById(
+                          'address'
+                        )
+                        .value
+                        .trim(),
+
+                    city_input:
+                      document
+                        .getElementById(
+                          'city'
+                        )
+                        .value
+                        .trim(),
+
+                    state_input:
+                      document
+                        .getElementById(
+                          'state'
+                        )
+                        .value
+                        .trim(),
+
+                    pincode_input:
+                      document
+                        .getElementById(
+                          'pin'
+                        )
+                        .value
+                        .trim(),
+
+                    cart_items:
+                      rpcCartItems
+
+                  }
+                );
+
+
+            if (orderResult.error) {
+
+              throw orderResult.error;
+
+            }
+
+
+            var orderId =
+              orderResult.data;
+
+
+            if (
+              orderId === null ||
+              orderId === undefined ||
+              orderId === ''
+            ) {
+
+              throw new Error(
+                'Order was created but no order ID was returned.'
+              );
+
+            }
+
+
+            console.log(
+              'Brit.Tuna: Test order created:',
+              orderId
+            );
+
+
+            /*
+              Save delivery information only
+              after successful database order.
+            */
+
+            saveDeliveryDetails();
+
+
+            /*
+              Clear cart only after Supabase
+              confirms success.
+            */
+
+            if (
+              window.BTCart &&
+              typeof window.BTCart.clear ===
+                'function'
+            ) {
+
+              window.BTCart.clear();
+
+            }
+
+
+            /*
+              Redirect to confirmation.
+
+              IMPORTANT:
+              Payment has NOT been collected.
+            */
+
+            window.location.replace(
+              'order-confirmation.html?order=' +
+              encodeURIComponent(
+                String(
+                  orderId
+                )
+              )
+            );
+
+
+          } catch (error) {
+
+            console.error(
+              'Brit.Tuna: Order creation failed.',
+              error
+            );
+
+
+            var message =
+              error &&
+              error.message
+
+                ? error.message
+
+                : 'Order could not be created. Please try again.';
+
+
+            showResult(
+              'Order failed: ' +
+              message
+            );
+
+
+            orderCreating =
+              false;
+
+
+            setOrderButtonLoading(
+              false
+            );
+
+          }
 
 
         }
@@ -1706,12 +2030,8 @@
       );
 
 
-
       /* ==========================================
          AUTH STATE CHANGE
-
-         If customer signs out in another tab
-         while checkout is open, protect page.
       ========================================== */
 
       if (
@@ -1734,12 +2054,6 @@
                 !session
               ) {
 
-                /*
-                  Do not immediately redirect during
-                  initial auth setup unless checkout
-                  has already been displayed.
-                */
-
                 if (
                   checkoutContent &&
                   !checkoutContent.hidden
@@ -1756,7 +2070,6 @@
           );
 
       }
-
 
 
       /* ==========================================
