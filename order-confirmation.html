@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
   <meta charset="UTF-8">
 
   <meta
@@ -9,7 +10,7 @@
     content="width=device-width, initial-scale=1"
   >
 
-  <title>Order Confirmation | Brit.Tuna</title>
+  <title>Order Details | Brit.Tuna</title>
 
   <meta
     name="robots"
@@ -20,6 +21,9 @@
     name="theme-color"
     content="#1f5a3a"
   >
+
+
+  <!-- Google Fonts -->
 
   <link
     rel="preconnect"
@@ -37,6 +41,9 @@
     rel="stylesheet"
   >
 
+
+  <!-- Brit.Tuna CSS -->
+
   <link
     rel="stylesheet"
     href="style.css"
@@ -48,29 +55,301 @@
   >
 
 
-  <!-- ============================================
-       ORDER CONFIRMATION PAGE STYLES
-  ============================================= -->
-
   <style>
 
-    .fulfillment-row {
+    /* ======================================================
+       ORDER CONFIRMATION
+       ====================================================== */
+
+    .confirmation-wrap {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+
+    .confirmation-message {
+      padding: 18px;
+      border-radius: 14px;
+      background: #f7f4eb;
+      color: #34423a;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+
+    .confirmation-message.error {
+      background: #fff0ed;
+      color: #9c2f25;
+    }
+
+
+    .confirmation-message.success {
+      background: #edf7f0;
+      color: #1f5a3a;
+    }
+
+
+    .confirmation-card {
+      background: #ffffff;
+      border: 1px solid rgba(31, 90, 58, 0.12);
+      border-radius: 20px;
+      padding: 26px;
+      box-shadow: 0 8px 30px rgba(25, 50, 35, 0.06);
+    }
+
+
+    /* ======================================================
+       HEADER
+       ====================================================== */
+
+    .confirmation-top {
       display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #ecebe5;
+    }
+
+
+    .confirmation-top h2 {
+      margin: 0 0 6px;
+      color: #173d29;
+      font-family: "Fraunces", serif;
+      font-size: 1.5rem;
+    }
+
+
+    .confirmation-date {
+      margin: 0;
+      color: #6d746f;
+      font-size: 0.9rem;
+    }
+
+
+    .confirmation-total {
+      color: #1f5a3a;
+      font-size: 1.35rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+
+    /* ======================================================
+       STATUS
+       ====================================================== */
+
+    .confirmation-statuses {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin: 20px 0;
+    }
+
+
+    .confirmation-badge {
+      display: inline-flex;
       align-items: center;
+      justify-content: center;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: #eef4ef;
+      color: #1f5a3a;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: capitalize;
+    }
+
+
+    .confirmation-badge.payment {
+      background: #fff3df;
+      color: #8a5a0a;
+    }
+
+
+    /* ======================================================
+       TEST ORDER NOTICE
+       ====================================================== */
+
+    .test-order-notice {
+      padding: 13px 15px;
+      margin-bottom: 22px;
+      border-radius: 12px;
+      background: #fff8e8;
+      color: #775410;
+      line-height: 1.55;
+      font-size: 0.86rem;
+    }
+
+
+    .test-order-notice strong {
+      color: #614207;
+    }
+
+
+    /* ======================================================
+       CUSTOMER INFO
+       ====================================================== */
+
+    .confirmation-section {
+      margin-top: 25px;
+    }
+
+
+    .confirmation-section-title {
+      margin: 0 0 15px;
+      color: #173d29;
+      font-family: "Fraunces", serif;
+      font-size: 1.15rem;
+    }
+
+
+    .customer-grid {
+      display: grid;
+      grid-template-columns:
+        repeat(
+          2,
+          minmax(0, 1fr)
+        );
+      gap: 15px;
+    }
+
+
+    .customer-info-box {
+      padding: 14px;
+      border-radius: 12px;
+      background: #f8faf8;
+    }
+
+
+    .customer-info-label {
+      display: block;
+      color: #788078;
+      font-size: 0.76rem;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+
+    .customer-info-value {
+      color: #29352e;
+      font-weight: 700;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+
+    .customer-info-box.full {
+      grid-column: 1 / -1;
+    }
+
+
+    /* ======================================================
+       ORDER ITEMS
+       ====================================================== */
+
+    .confirmation-items {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+
+    .confirmation-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      padding: 17px 0;
+      border-bottom: 1px dashed #dedfd9;
+    }
+
+
+    .confirmation-item:last-child {
+      border-bottom: 0;
+    }
+
+
+    .confirmation-item-left {
+      flex: 1;
+      min-width: 0;
+    }
+
+
+    .confirmation-item-name {
+      display: block;
+      margin-bottom: 6px;
+      color: #29352e;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+
+    .confirmation-item-details {
+      display: flex;
       flex-wrap: wrap;
       gap: 7px;
       margin-top: 8px;
     }
 
 
-    .fulfillment-label {
+    .item-detail {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 9px;
+      border-radius: 8px;
+      background: #f3f4f1;
+      color: #626b65;
+      font-size: 0.77rem;
+      font-weight: 600;
+    }
+
+
+    .item-detail.pack {
+      background: #edf5ef;
+      color: #1f5a3a;
+      font-weight: 700;
+    }
+
+
+    .confirmation-item-price {
+      color: #1f5a3a;
+      font-weight: 700;
+      white-space: nowrap;
+      text-align: right;
+    }
+
+
+    .unit-price {
+      display: block;
+      margin-top: 4px;
+      color: #788078;
+      font-size: 0.73rem;
+      font-weight: 500;
+    }
+
+
+    /* ======================================================
+       SELLER STATUS
+       ====================================================== */
+
+    .seller-status-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 7px;
+      margin-top: 10px;
+    }
+
+
+    .seller-status-label {
       color: #6d746f;
       font-size: 0.78rem;
       font-weight: 600;
     }
 
 
-    .fulfillment-badge {
+    .seller-status {
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -83,76 +362,187 @@
     }
 
 
-    .fulfillment-badge.pending {
+    .seller-status.pending {
       background: #fff3df;
       color: #8a5a0a;
     }
 
 
-    .fulfillment-badge.processing {
+    .seller-status.processing {
       background: #e8f1ff;
       color: #245ea8;
     }
 
 
-    .fulfillment-badge.shipped {
+    .seller-status.shipped {
       background: #eee8ff;
       color: #6340a5;
     }
 
 
-    .fulfillment-badge.delivered {
+    .seller-status.delivered {
       background: #e8f7ec;
       color: #18723a;
     }
 
 
-    .fulfillment-badge.cancelled {
+    .seller-status.cancelled {
       background: #fff0ed;
       color: #a52f25;
     }
 
 
-    .fulfillment-badge.unknown {
+    .seller-status.unknown {
       background: #f1f2f1;
       color: #58625c;
     }
 
 
-    .order-item-info {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 2px;
-    }
+    /* ======================================================
+       STATUS HELP
+       ====================================================== */
 
-
-    .order-item-name {
-      font-weight: 600;
-    }
-
-
-    .order-status-note {
+    .status-help {
       margin-top: 15px;
       padding: 12px 14px;
-      border-radius: 12px;
-      background: #f7f9f7;
-      color: #68716b;
-      font-size: 0.82rem;
-      line-height: 1.55;
+      border-radius: 11px;
+      background: #f8faf8;
+      color: #66716a;
+      font-size: 0.8rem;
+      line-height: 1.6;
     }
 
 
-    .order-status-note strong {
+    .status-help strong {
       color: #1f5a3a;
     }
 
 
-    @media (max-width: 600px) {
+    /* ======================================================
+       SUMMARY
+       ====================================================== */
 
-      #order-items li {
-        align-items: flex-start;
-        gap: 12px;
+    .order-summary {
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid #ecebe5;
+    }
+
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 8px;
+      color: #59635d;
+    }
+
+
+    .summary-row.total {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #ecebe5;
+      color: #173d29;
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+
+    .summary-row.total strong {
+      color: #1f5a3a;
+    }
+
+
+    /* ======================================================
+       ACTIONS
+       ====================================================== */
+
+    .confirmation-actions {
+      display: flex;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 25px;
+    }
+
+
+    .confirmation-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 11px 17px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 700;
+      transition: 0.2s ease;
+    }
+
+
+    .confirmation-btn.primary {
+      background: #1f5a3a;
+      color: #ffffff;
+    }
+
+
+    .confirmation-btn.secondary {
+      border: 1px solid rgba(31, 90, 58, 0.22);
+      background: #ffffff;
+      color: #1f5a3a;
+    }
+
+
+    .confirmation-btn:hover {
+      transform: translateY(-1px);
+      opacity: 0.92;
+    }
+
+
+    /* ======================================================
+       MOBILE
+       ====================================================== */
+
+    @media (max-width: 650px) {
+
+      .confirmation-card {
+        padding: 18px;
+      }
+
+
+      .confirmation-top {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+
+      .customer-grid {
+        grid-template-columns: 1fr;
+      }
+
+
+      .customer-info-box.full {
+        grid-column: auto;
+      }
+
+
+      .confirmation-item {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+
+      .confirmation-item-price {
+        text-align: left;
+      }
+
+
+      .confirmation-actions {
+        flex-direction: column;
+      }
+
+
+      .confirmation-btn {
+        width: 100%;
       }
 
     }
@@ -165,32 +555,30 @@
 <body data-page="order-confirmation">
 
 
-  <!-- ============================================
+  <!-- ======================================================
        HEADER
-  ============================================= -->
+       ====================================================== -->
 
   <div id="site-header"></div>
 
 
-  <!-- ============================================
+  <!-- ======================================================
        MAIN
-  ============================================= -->
+       ====================================================== -->
 
   <main id="main">
 
-
-    <!-- PAGE HERO -->
 
     <section class="page-hero">
 
       <div class="container">
 
         <h1>
-          Order Confirmation
+          Order Details
         </h1>
 
         <p>
-          View your order and latest seller fulfillment status.
+          Review your Brit.Tuna order and product fulfillment status.
         </p>
 
       </div>
@@ -198,854 +586,564 @@
     </section>
 
 
-    <!-- ============================================
-         PAGE CONTENT
-    ============================================= -->
+    <section class="container page-body">
 
-    <div class="container page-body">
-
-      <div class="prose">
+      <div class="confirmation-wrap">
 
 
-        <!-- ======================================
-             STATUS BOX
-        ======================================= -->
+        <!-- MESSAGE -->
 
         <div
-          class="empty-state"
-          id="confirm-state"
+          id="confirmation-message"
+          class="confirmation-message"
           role="status"
           aria-live="polite"
         >
-
-          <h2>
-            Checking your order...
-          </h2>
-
-          <p>
-            Please wait a moment.
-          </p>
-
+          Loading your order...
         </div>
 
 
-        <!-- ======================================
-             ORDER DETAILS
-        ======================================= -->
+        <!-- ORDER CONTENT -->
 
         <div
-          id="order-details"
-          style="margin-top:24px"
+          id="confirmation-content"
           hidden
-        >
-
-
-          <!-- ORDER SUMMARY -->
-
-          <div class="order-card">
-
-            <h2 style="margin-top:0">
-              Order summary
-            </h2>
-
-            <div id="order-meta"></div>
-
-
-            <ul
-              class="summary-list"
-              id="order-items"
-              style="margin-top:12px"
-            ></ul>
-
-
-            <div
-              id="order-totals"
-              style="margin-top:12px"
-            ></div>
-
-
-            <div class="order-status-note">
-
-              <strong>
-                Seller Status
-              </strong>
-
-              shows the latest fulfillment status
-              for each product.
-
-              The overall
-
-              <strong>
-                Order Status
-              </strong>
-
-              is managed separately by Brit.Tuna.
-
-            </div>
-
-          </div>
-
-
-          <!-- DELIVERY DETAILS -->
-
-          <div class="order-card">
-
-            <h2 style="margin-top:0">
-              Delivery details
-            </h2>
-
-            <div id="order-delivery"></div>
-
-          </div>
-
-
-          <!-- PAYMENT INFORMATION -->
-
-          <div class="order-card">
-
-            <h2 style="margin-top:0">
-              Payment information
-            </h2>
-
-            <div id="payment-information"></div>
-
-          </div>
-
-
-        </div>
-
-
-        <!-- ======================================
-             ACTION BUTTONS
-        ======================================= -->
-
-        <div
-          class="hero-actions"
-          style="margin-top:24px"
-        >
-
-          <a
-            class="btn btn-primary"
-            href="orders.html"
-          >
-            My orders
-          </a>
-
-
-          <a
-            class="btn btn-outline"
-            href="shop.html"
-          >
-            Continue shopping
-          </a>
-
-
-          <a
-            class="btn btn-whatsapp"
-            data-whatsapp
-            data-message="Hello Brit.Tuna, I have a question about my order."
-            href="#"
-          >
-            Ask on WhatsApp
-          </a>
-
-        </div>
-
-
-        <!-- SECURITY NOTE -->
-
-        <p
-          class="form-note"
-          style="margin-top:18px"
-        >
-
-          Order and payment status shown on this page comes from
-          the Brit.Tuna database. This test-order system does not
-          collect online payment. Razorpay will be connected later.
-
-        </p>
+        ></div>
 
 
       </div>
 
-    </div>
+    </section>
 
 
   </main>
 
 
-  <!-- ============================================
+  <!-- ======================================================
        FOOTER
-  ============================================= -->
+       ====================================================== -->
 
   <div id="site-footer"></div>
 
 
-  <!-- ============================================
-       JAVASCRIPT
-  ============================================= -->
+  <!-- ======================================================
+       SUPABASE
+       ====================================================== -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
-  <!-- 1. Supabase Library -->
-
-  <script
-    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-  ></script>
-
-
-  <!-- 2. Brit.Tuna Config -->
+  <!-- ======================================================
+       BRIT.TUNA FILES
+       ====================================================== -->
 
   <script src="config.js"></script>
 
-
-  <!-- 3. Create Supabase Client -->
-
   <script src="supabase.js"></script>
-
-
-  <!-- 4. Products -->
-
-  <script src="products.js"></script>
-
-
-  <!-- 5. Cart -->
-
-  <script src="cart.js"></script>
-
-
-  <!-- 6. Shared Website UI -->
 
   <script src="script.js"></script>
 
 
-  <!-- ============================================
+  <!-- ======================================================
        ORDER CONFIRMATION LOGIC
-  ============================================= -->
+       ====================================================== -->
 
   <script>
 
     (function () {
 
-      'use strict';
+      "use strict";
 
 
-      /* ==========================================
+      /* ====================================================
          ELEMENTS
-      ========================================== */
+         ==================================================== */
 
-      var stateBox =
+      var messageElement =
         document.getElementById(
-          'confirm-state'
+          "confirmation-message"
         );
 
 
-      var details =
+      var contentElement =
         document.getElementById(
-          'order-details'
+          "confirmation-content"
         );
 
 
-      var orderMeta =
-        document.getElementById(
-          'order-meta'
-        );
-
-
-      var orderItems =
-        document.getElementById(
-          'order-items'
-        );
-
-
-      var orderTotals =
-        document.getElementById(
-          'order-totals'
-        );
-
-
-      var orderDelivery =
-        document.getElementById(
-          'order-delivery'
-        );
-
-
-      var paymentInformation =
-        document.getElementById(
-          'payment-information'
-        );
-
-
-      /* ==========================================
+      /* ====================================================
          ESCAPE HTML
-      ========================================== */
+         ==================================================== */
 
       function escapeHtml(value) {
 
-        if (
-          window.BTUtil &&
-          typeof window.BTUtil.escapeHtml ===
-            'function'
-        ) {
-
-          return window.BTUtil.escapeHtml(
-            String(
-              value === null ||
-              value === undefined
-                ? ''
-                : value
-            )
-          );
-
-        }
-
-
         return String(
-          value === null ||
-          value === undefined
-            ? ''
+          value == null
+            ? ""
             : value
         )
+
           .replace(
             /&/g,
-            '&amp;'
+            "&amp;"
           )
+
           .replace(
             /</g,
-            '&lt;'
+            "&lt;"
           )
+
           .replace(
             />/g,
-            '&gt;'
+            "&gt;"
           )
+
           .replace(
             /"/g,
-            '&quot;'
+            "&quot;"
           )
+
           .replace(
             /'/g,
-            '&#039;'
+            "&#039;"
           );
 
       }
 
 
-      /* ==========================================
-         FORMAT INR
-      ========================================== */
+      /* ====================================================
+         MONEY
+         ==================================================== */
 
-      function formatINR(value) {
+      function formatMoney(value) {
+
+        var amount =
+          Number(
+            value || 0
+          );
+
+
+        return new Intl.NumberFormat(
+          "en-IN",
+          {
+
+            style:
+              "currency",
+
+            currency:
+              "INR",
+
+            maximumFractionDigits:
+              2
+
+          }
+        ).format(
+          amount
+        );
+
+      }
+
+
+      /* ====================================================
+         DATE
+         ==================================================== */
+
+      function formatDate(value) {
+
+        if (!value) {
+
+          return "";
+
+        }
+
+
+        var date =
+          new Date(
+            value
+          );
+
 
         if (
-          window.BTUtil &&
-          typeof window.BTUtil.formatINR ===
-            'function'
+          Number.isNaN(
+            date.getTime()
+          )
         ) {
 
-          return window.BTUtil.formatINR(
-            Number(
-              value || 0
-            )
-          );
+          return "";
 
         }
 
 
-        try {
+        return new Intl.DateTimeFormat(
+          "en-IN",
+          {
 
-          return new Intl.NumberFormat(
-            'en-IN',
-            {
-              style:
-                'currency',
+            day:
+              "2-digit",
 
-              currency:
-                'INR',
+            month:
+              "short",
 
-              maximumFractionDigits:
-                2
-            }
-          ).format(
-            Number(
-              value || 0
-            )
-          );
+            year:
+              "numeric",
 
-        } catch (error) {
+            hour:
+              "2-digit",
 
-          return (
-            '₹' +
-            Number(
-              value || 0
-            )
-          );
+            minute:
+              "2-digit"
 
-        }
+          }
+        ).format(
+          date
+        );
 
       }
 
 
-      /* ==========================================
-         GET ORDER ID FROM URL
-      ========================================== */
+      /* ====================================================
+         MESSAGE
+         ==================================================== */
 
-      function getOrderId() {
-
-        try {
-
-          var params =
-            new URLSearchParams(
-              window.location.search
-            );
-
-
-          return params.get(
-            'order'
-          );
-
-        } catch (error) {
-
-          console.error(
-            'Brit.Tuna: Could not read order ID.',
-            error
-          );
-
-
-          return null;
-
-        }
-
-      }
-
-
-      /* ==========================================
-         STATE MESSAGE
-      ========================================== */
-
-      function setState(
-        title,
+      function showMessage(
         text,
-        extraHtml
+        type
       ) {
 
-        if (!stateBox) {
-
-          return;
-
-        }
+        messageElement.textContent =
+          text;
 
 
-        stateBox.innerHTML =
-
-          '<h2>' +
-
-          escapeHtml(
-            title
-          ) +
-
-          '</h2>' +
-
-          '<p>' +
-
-          escapeHtml(
-            text
-          ) +
-
-          '</p>' +
-
-          (
-            extraHtml ||
-            ''
-          );
-
-      }
+        messageElement.className =
+          "confirmation-message";
 
 
-      /* ==========================================
-         SUMMARY ROW
-      ========================================== */
+        if (type) {
 
-      function row(
-        label,
-        value
-      ) {
-
-        return (
-
-          '<div class="summary-row">' +
-
-            '<span>' +
-
-              escapeHtml(
-                label
-              ) +
-
-            '</span>' +
-
-            '<span>' +
-
-              value +
-
-            '</span>' +
-
-          '</div>'
-
-        );
-
-      }
-
-
-      /* ==========================================
-         FORMAT DATE
-      ========================================== */
-
-      function formatDate(
-        value
-      ) {
-
-        if (!value) {
-
-          return '-';
-
-        }
-
-
-        try {
-
-          return new Date(
-            value
-          ).toLocaleString(
-            'en-IN',
-            {
-              dateStyle:
-                'medium',
-
-              timeStyle:
-                'short'
-            }
-          );
-
-        } catch (error) {
-
-          return String(
-            value
+          messageElement.classList.add(
+            type
           );
 
         }
 
-      }
 
-
-      /* ==========================================
-         STATUS LABEL
-      ========================================== */
-
-      function statusLabel(
-        value
-      ) {
-
-        if (!value) {
-
-          return '-';
-
-        }
-
-
-        var text =
-          String(
-            value
-          )
-            .replace(
-              /_/g,
-              ' '
-            );
-
-
-        return (
-          text.charAt(0).toUpperCase() +
-          text.slice(1)
-        );
+        messageElement.hidden =
+          false;
 
       }
 
 
-      /* ==========================================
-         NORMALIZE FULFILLMENT STATUS
-      ========================================== */
+      function hideMessage() {
+
+        messageElement.hidden =
+          true;
+
+      }
+
+
+      /* ====================================================
+         SELLER FULFILLMENT
+         ==================================================== */
 
       function normalizeFulfillmentStatus(
-        value
+        status
       ) {
 
-        var status =
+        var value =
           String(
-            value ||
-            'pending'
+            status || "pending"
           )
             .trim()
             .toLowerCase();
 
 
-        var allowedStatuses = [
+        var allowed = [
 
-          'pending',
+          "pending",
 
-          'processing',
+          "processing",
 
-          'shipped',
+          "shipped",
 
-          'delivered',
+          "delivered",
 
-          'cancelled'
+          "cancelled"
 
         ];
 
 
         if (
-          !allowedStatuses.includes(
-            status
+          !allowed.includes(
+            value
           )
         ) {
 
-          return 'unknown';
+          return "unknown";
 
         }
 
 
-        return status;
+        return value;
 
       }
 
-
-      /* ==========================================
-         FULFILLMENT STATUS HTML
-      ========================================== */
 
       function fulfillmentStatusHtml(
-        value
+        status
       ) {
 
-        var status =
+        var safeStatus =
           normalizeFulfillmentStatus(
-            value
+            status
           );
 
 
-        return (
+        return `
 
-          '<div class="fulfillment-row">' +
+          <div class="seller-status-row">
 
-            '<span class="fulfillment-label">' +
+            <span class="seller-status-label">
+              Seller Status:
+            </span>
 
-              'Seller Status:' +
+            <span
+              class="seller-status ${escapeHtml(
+                safeStatus
+              )}"
+            >
 
-            '</span>' +
+              ${escapeHtml(
+                safeStatus
+              )}
 
-            '<span class="fulfillment-badge ' +
+            </span>
 
-              escapeHtml(
-                status
-              ) +
+          </div>
 
-            '">' +
-
-              escapeHtml(
-                statusLabel(
-                  status
-                )
-              ) +
-
-            '</span>' +
-
-          '</div>'
-
-        );
+        `;
 
       }
 
 
-      /* ==========================================
-         RENDER ORDER
-      ========================================== */
+      /* ====================================================
+         PRODUCT DETAILS
+         ==================================================== */
 
-      function renderOrder(
-        order
+      function productDetailsHtml(
+        item
       ) {
 
-        var items =
-          Array.isArray(
-            order.order_items
-          )
-            ? order.order_items
-            : [];
+        var html =
+          '<div class="confirmation-item-details">';
 
 
-        /* ----------------------------------------
-           ORDER META
-        ---------------------------------------- */
-
-        orderMeta.innerHTML =
-
-          row(
-            'Order ID',
-            '#' +
-            escapeHtml(
-              order.id
-            )
-          ) +
-
-          row(
-            'Placed on',
-            escapeHtml(
-              formatDate(
-                order.created_at
-              )
-            )
-          ) +
-
-          row(
-            'Order status',
-            escapeHtml(
-              statusLabel(
-                order.order_status
-              )
-            )
-          ) +
-
-          row(
-            'Payment status',
-            escapeHtml(
-              statusLabel(
-                order.payment_status
-              )
-            )
-          );
-
-
-        /* ----------------------------------------
-           ORDER ITEMS
-        ---------------------------------------- */
+        /*
+         * Product ID
+         */
 
         if (
-          items.length
+          item.product_id
         ) {
 
-          orderItems.innerHTML =
-            items.map(
+          html += `
 
-              function (item) {
+            <span class="item-detail">
 
-                var quantity =
-                  Number(
-                    item.quantity ||
-                    0
-                  );
+              Product ID:
+              ${escapeHtml(
+                item.product_id
+              )}
 
+            </span>
 
-                var unitPrice =
-                  Number(
-                    item.price ||
-                    0
-                  );
-
-
-                var lineTotal =
-                  unitPrice *
-                  quantity;
-
-
-                return (
-
-                  '<li>' +
-
-                    '<span class="order-item-info">' +
-
-                      '<span class="order-item-name">' +
-
-                        escapeHtml(
-                          item.product_name ||
-                          'Product'
-                        ) +
-
-                        ' × ' +
-
-                        escapeHtml(
-                          quantity
-                        ) +
-
-                      '</span>' +
-
-
-                      fulfillmentStatusHtml(
-                        item.fulfillment_status
-                      ) +
-
-
-                    '</span>' +
-
-
-                    '<span>' +
-
-                      escapeHtml(
-                        formatINR(
-                          lineTotal
-                        )
-                      ) +
-
-                    '</span>' +
-
-                  '</li>'
-
-                );
-
-              }
-
-            ).join('');
-
-        } else {
-
-          orderItems.innerHTML =
-
-            '<li>' +
-
-              '<span>' +
-                'No order items available.' +
-              '</span>' +
-
-            '</li>';
+          `;
 
         }
 
 
-        /* ----------------------------------------
-           TOTAL
-        ---------------------------------------- */
+        /*
+         * PACK SIZE
+         */
 
-        orderTotals.innerHTML =
+        if (
+          item.pack_size
+        ) {
 
-          '<div class="summary-row summary-total">' +
+          html += `
 
-            '<span>' +
-              'Total' +
-            '</span>' +
+            <span class="item-detail pack">
 
-            '<span>' +
+              Pack:
+              ${escapeHtml(
+                item.pack_size
+              )}
 
-              escapeHtml(
-                formatINR(
-                  order.total_amount
-                )
-              ) +
+            </span>
 
-            '</span>' +
+          `;
 
-          '</div>';
+        }
 
 
-        /* ----------------------------------------
-           DELIVERY DETAILS
-        ---------------------------------------- */
+        /*
+         * VARIANT ID
+         */
 
-        var addressParts = [
+        if (
+          item.variant_id
+        ) {
+
+          html += `
+
+            <span class="item-detail">
+
+              Variant ID:
+              ${escapeHtml(
+                item.variant_id
+              )}
+
+            </span>
+
+          `;
+
+        }
+
+
+        html +=
+          "</div>";
+
+
+        return html;
+
+      }
+
+
+      /* ====================================================
+         RENDER ORDER ITEMS
+         ==================================================== */
+
+      function renderItems(items) {
+
+        if (
+          !Array.isArray(items) ||
+          items.length === 0
+        ) {
+
+          return `
+
+            <li class="confirmation-item">
+
+              <span class="confirmation-item-name">
+                Order items unavailable
+              </span>
+
+            </li>
+
+          `;
+
+        }
+
+
+        return items.map(
+
+          function (item) {
+
+            var quantity =
+              Number(
+                item.quantity || 1
+              );
+
+
+            var price =
+              Number(
+                item.price || 0
+              );
+
+
+            var lineTotal =
+              price *
+              quantity;
+
+
+            return `
+
+              <li class="confirmation-item">
+
+
+                <div class="confirmation-item-left">
+
+
+                  <!-- PRODUCT -->
+
+                  <span class="confirmation-item-name">
+
+                    ${escapeHtml(
+                      item.product_name ||
+                      "Product"
+                    )}
+
+                    × ${escapeHtml(
+                      quantity
+                    )}
+
+                  </span>
+
+
+                  <!-- PRODUCT / PACK / VARIANT -->
+
+                  ${productDetailsHtml(
+                    item
+                  )}
+
+
+                  <!-- SELLER FULFILLMENT -->
+
+                  ${fulfillmentStatusHtml(
+                    item.fulfillment_status
+                  )}
+
+
+                </div>
+
+
+                <!-- PRICE -->
+
+                <div class="confirmation-item-price">
+
+                  ${formatMoney(
+                    lineTotal
+                  )}
+
+                  <span class="unit-price">
+
+                    ${formatMoney(
+                      price
+                    )}
+                    each
+
+                  </span>
+
+                </div>
+
+
+              </li>
+
+            `;
+
+          }
+
+        ).join("");
+
+      }
+
+
+      /* ====================================================
+         ADDRESS
+         ==================================================== */
+
+      function buildAddress(order) {
+
+        var parts = [
 
           order.shipping_address,
 
@@ -1059,228 +1157,486 @@
 
           function (value) {
 
-            return !!value;
+            return Boolean(
+              value
+            );
 
           }
 
         );
 
 
-        orderDelivery.innerHTML =
+        return parts.join(
+          ", "
+        );
 
-          row(
-            'Name',
-            escapeHtml(
-              order.customer_name ||
-              '-'
-            )
-          ) +
+      }
 
-          row(
-            'Phone',
-            escapeHtml(
-              order.customer_phone ||
-              '-'
-            )
-          ) +
 
-          row(
-            'Address',
-            escapeHtml(
-              addressParts.join(
-                ', '
-              ) ||
-              '-'
-            )
+      /* ====================================================
+         TEST ORDER NOTICE
+         ==================================================== */
+
+      function testOrderNoticeHtml(
+        order
+      ) {
+
+        if (
+          String(
+            order.payment_method || ""
+          ).toLowerCase() !==
+          "test_order"
+        ) {
+
+          return "";
+
+        }
+
+
+        return `
+
+          <div class="test-order-notice">
+
+            <strong>
+              Demo / Test Order:
+            </strong>
+
+            This order was created using the current
+            test checkout flow.
+
+            No real online payment has been processed.
+
+          </div>
+
+        `;
+
+      }
+
+
+      /* ====================================================
+         RENDER ORDER
+         ==================================================== */
+
+      function renderOrder(
+        order
+      ) {
+
+        var orderStatus =
+          order.order_status ||
+          "pending";
+
+
+        var paymentStatus =
+          order.payment_status ||
+          "pending";
+
+
+        var address =
+          buildAddress(
+            order
           );
 
 
-        /* ----------------------------------------
-           PAYMENT INFORMATION
-        ---------------------------------------- */
+        var items =
+          Array.isArray(
+            order.order_items
+          )
 
-        var paymentMethod =
-          order.payment_method ===
-            'test_order'
+            ? order.order_items
 
-            ? 'Test order — no payment'
-
-            : statusLabel(
-                order.payment_method
-              );
+            : [];
 
 
-        paymentInformation.innerHTML =
+        contentElement.innerHTML = `
 
-          row(
-            'Payment method',
-            escapeHtml(
-              paymentMethod
-            )
-          ) +
-
-          row(
-            'Payment status',
-            escapeHtml(
-              statusLabel(
-                order.payment_status
-              )
-            )
-          );
+          <article class="confirmation-card">
 
 
-        details.hidden =
+            <!-- HEADER -->
+
+            <div class="confirmation-top">
+
+              <div>
+
+                <h2>
+
+                  Order #${escapeHtml(
+                    order.id
+                  )}
+
+                </h2>
+
+
+                <p class="confirmation-date">
+
+                  ${escapeHtml(
+                    formatDate(
+                      order.created_at
+                    )
+                  )}
+
+                </p>
+
+              </div>
+
+
+              <div class="confirmation-total">
+
+                ${formatMoney(
+                  order.total_amount
+                )}
+
+              </div>
+
+            </div>
+
+
+            <!-- OVERALL STATUS -->
+
+            <div class="confirmation-statuses">
+
+              <span class="confirmation-badge">
+
+                Order:
+                ${escapeHtml(
+                  orderStatus
+                )}
+
+              </span>
+
+
+              <span class="confirmation-badge payment">
+
+                Payment:
+                ${escapeHtml(
+                  paymentStatus
+                )}
+
+              </span>
+
+            </div>
+
+
+            <!-- TEST ORDER -->
+
+            ${testOrderNoticeHtml(
+              order
+            )}
+
+
+            <!-- CUSTOMER -->
+
+            <section class="confirmation-section">
+
+              <h3 class="confirmation-section-title">
+                Customer & Delivery
+              </h3>
+
+
+              <div class="customer-grid">
+
+
+                <div class="customer-info-box">
+
+                  <span class="customer-info-label">
+                    Customer Name
+                  </span>
+
+                  <div class="customer-info-value">
+
+                    ${escapeHtml(
+                      order.customer_name ||
+                      "-"
+                    )}
+
+                  </div>
+
+                </div>
+
+
+                <div class="customer-info-box">
+
+                  <span class="customer-info-label">
+                    Phone
+                  </span>
+
+                  <div class="customer-info-value">
+
+                    ${escapeHtml(
+                      order.customer_phone ||
+                      "-"
+                    )}
+
+                  </div>
+
+                </div>
+
+
+                <div class="customer-info-box">
+
+                  <span class="customer-info-label">
+                    Payment Method
+                  </span>
+
+                  <div class="customer-info-value">
+
+                    ${escapeHtml(
+                      order.payment_method ||
+                      "-"
+                    )}
+
+                  </div>
+
+                </div>
+
+
+                <div class="customer-info-box">
+
+                  <span class="customer-info-label">
+                    PIN Code
+                  </span>
+
+                  <div class="customer-info-value">
+
+                    ${escapeHtml(
+                      order.pincode ||
+                      "-"
+                    )}
+
+                  </div>
+
+                </div>
+
+
+                <div class="customer-info-box full">
+
+                  <span class="customer-info-label">
+                    Delivery Address
+                  </span>
+
+                  <div class="customer-info-value">
+
+                    ${escapeHtml(
+                      address ||
+                      "-"
+                    )}
+
+                  </div>
+
+                </div>
+
+
+              </div>
+
+            </section>
+
+
+            <!-- PRODUCTS -->
+
+            <section class="confirmation-section">
+
+              <h3 class="confirmation-section-title">
+                Products
+              </h3>
+
+
+              <ul class="confirmation-items">
+
+                ${renderItems(
+                  items
+                )}
+
+              </ul>
+
+
+              <div class="status-help">
+
+                <strong>
+                  Seller Status
+                </strong>
+
+                is the fulfillment status of each individual
+                product.
+
+                A seller can move their item through
+
+                <strong>
+                  Pending → Processing → Shipped → Delivered
+                </strong>
+
+                or cancel their own item where allowed.
+
+                <br><br>
+
+                The
+
+                <strong>
+                  Overall Order Status
+                </strong>
+
+                is separate and is managed by Brit.Tuna Admin.
+
+              </div>
+
+            </section>
+
+
+            <!-- TOTAL -->
+
+            <div class="order-summary">
+
+              <div class="summary-row total">
+
+                <span>
+                  Order Total
+                </span>
+
+                <strong>
+
+                  ${formatMoney(
+                    order.total_amount
+                  )}
+
+                </strong>
+
+              </div>
+
+            </div>
+
+
+            <!-- ACTIONS -->
+
+            <div class="confirmation-actions">
+
+              <a
+                href="orders.html"
+                class="confirmation-btn secondary"
+              >
+                My Orders
+              </a>
+
+
+              <a
+                href="shop.html"
+                class="confirmation-btn primary"
+              >
+                Continue Shopping
+              </a>
+
+            </div>
+
+
+          </article>
+
+        `;
+
+
+        contentElement.hidden =
           false;
 
       }
 
 
-      /* ==========================================
-         SHOW ORDER STATUS
-      ========================================== */
-
-      function showOrderStatus(
-        order
-      ) {
-
-        /*
-          TEST ORDER
-
-          No Razorpay payment has happened.
-        */
-
-        if (
-          order.payment_method ===
-          'test_order'
-        ) {
-
-          setState(
-            'Test order created successfully',
-            'Your order has been saved successfully. No payment has been collected for this test order.'
-          );
-
-
-          return;
-
-        }
-
-
-        /*
-          FUTURE REAL PAYMENT STATUS
-        */
-
-        switch (
-          order.payment_status
-        ) {
-
-
-          case 'paid':
-
-            setState(
-              'Payment verified. Order confirmed.',
-              'Your payment has been verified and your order has been recorded.'
-            );
-
-            break;
-
-
-          case 'failed':
-
-            setState(
-              'Payment failed',
-              'The payment was not successfully completed.'
-            );
-
-            break;
-
-
-          case 'refunded':
-
-            setState(
-              'Payment refunded',
-              'The payment for this order has been marked as refunded.'
-            );
-
-            break;
-
-
-          default:
-
-            setState(
-              'Payment pending',
-              'This order exists, but payment has not been verified.'
-            );
-
-        }
-
-      }
-
-
-      /* ==========================================
+      /* ====================================================
          LOAD ORDER
-      ========================================== */
+         ==================================================== */
 
       async function loadOrder() {
-
-        var orderId =
-          getOrderId();
-
-
-        /* ----------------------------------------
-           VALIDATE ORDER ID
-
-           orders.id is BIGINT.
-
-           Examples:
-           1
-           2
-           3
-           100
-        ---------------------------------------- */
-
-        if (
-          !orderId ||
-          !/^\d+$/.test(
-            orderId
-          )
-        ) {
-
-          setState(
-            'No order to show',
-            'Open this page after successfully creating an order.'
-          );
-
-
-          return;
-
-        }
-
-
-        /* ----------------------------------------
-           CHECK SUPABASE
-        ---------------------------------------- */
-
-        if (
-          !window.supabaseClient
-        ) {
-
-          setState(
-            'Order cannot be shown',
-            'Brit.Tuna could not connect to the order system.'
-          );
-
-
-          return;
-
-        }
-
 
         try {
 
 
-          /* ======================================
-             CHECK CUSTOMER LOGIN
-          ====================================== */
+          showMessage(
+            "Loading your order..."
+          );
+
+
+          contentElement.hidden =
+            true;
+
+
+          /* ----------------------------------------------
+             SUPABASE
+             ---------------------------------------------- */
+
+          if (
+            !window.supabaseClient
+          ) {
+
+            throw new Error(
+              "Supabase connection is not available."
+            );
+
+          }
+
+
+          /* ----------------------------------------------
+             ORDER ID FROM URL
+             ---------------------------------------------- */
+
+          var params =
+            new URLSearchParams(
+              window.location.search
+            );
+
+
+          var orderIdValue =
+            params.get(
+              "order"
+            );
+
+
+          if (
+            !orderIdValue
+          ) {
+
+            throw new Error(
+              "Order ID is missing."
+            );
+
+          }
+
+
+          /*
+           * Orders use BIGINT.
+           */
+
+          if (
+            !/^\d+$/.test(
+              orderIdValue
+            )
+          ) {
+
+            throw new Error(
+              "Invalid order ID."
+            );
+
+          }
+
+
+          var orderId =
+            Number(
+              orderIdValue
+            );
+
+
+          if (
+            !Number.isSafeInteger(
+              orderId
+            ) ||
+            orderId <= 0
+          ) {
+
+            throw new Error(
+              "Invalid order ID."
+            );
+
+          }
+
+
+          /* ----------------------------------------------
+             SESSION
+             ---------------------------------------------- */
 
           var sessionResult =
             await window.supabaseClient
@@ -1298,26 +1654,50 @@
 
 
           var session =
+            sessionResult.data &&
+            sessionResult.data.session;
 
-            sessionResult.data
-              ? sessionResult.data.session
-              : null;
 
+          /* ----------------------------------------------
+             LOGIN REQUIRED
+             ---------------------------------------------- */
 
           if (
             !session ||
             !session.user
           ) {
 
-            setState(
-              'Please sign in',
-              'Sign in to view this order.',
-              '<p>' +
-                '<a class="btn btn-primary" href="login.html">' +
-                  'Sign in' +
-                '</a>' +
-              '</p>'
+            showMessage(
+              "Please sign in to view this order.",
+              "error"
             );
+
+
+            contentElement.innerHTML = `
+
+              <div class="confirmation-card">
+
+                <div class="confirmation-actions">
+
+                  <a
+                    href="login.html?next=${encodeURIComponent(
+                      "order-confirmation.html?order=" +
+                      orderIdValue
+                    )}"
+                    class="confirmation-btn primary"
+                  >
+                    Login
+                  </a>
+
+                </div>
+
+              </div>
+
+            `;
+
+
+            contentElement.hidden =
+              false;
 
 
             return;
@@ -1325,63 +1705,92 @@
           }
 
 
-          /* ======================================
-             LOAD ORDER + ORDER ITEMS
-
-             Customer RLS protects the order.
+          /* ==================================================
+             GET CUSTOMER ORDER
 
              IMPORTANT:
-             fulfillment_status is loaded from
-             public.order_items.
-          ====================================== */
+             variant_id
+             pack_size
+             fulfillment_status
+
+             are loaded from order_items.
+             ================================================== */
 
           var orderResult =
             await window.supabaseClient
 
               .from(
-                'orders'
+                "orders"
               )
 
-              .select(`
+              .select(
+                `
+
                 id,
+
                 user_id,
+
                 customer_name,
+
                 customer_phone,
+
                 shipping_address,
+
                 city,
+
                 state,
+
                 pincode,
+
                 total_amount,
+
                 payment_status,
+
                 order_status,
+
                 payment_method,
+
                 created_at,
+
                 order_items (
+
                   id,
+
                   product_id,
+
+                  variant_id,
+
                   product_name,
+
+                  pack_size,
+
                   price,
+
                   quantity,
+
                   fulfillment_status
+
                 )
-              `)
+
+                `
+              )
 
               .eq(
-                'id',
+                "id",
                 orderId
               )
 
               .eq(
-                'user_id',
+                "user_id",
                 session.user.id
               )
 
               .maybeSingle();
 
 
-          /* ======================================
-             SUPABASE ERROR
-          ====================================== */
+          /* ----------------------------------------------
+             DATABASE ERROR
+             ---------------------------------------------- */
 
           if (
             orderResult.error
@@ -1392,65 +1801,64 @@
           }
 
 
-          /* ======================================
-             ORDER NOT FOUND
-          ====================================== */
+          /* ----------------------------------------------
+             ORDER NOT FOUND / ACCESS DENIED
+             ---------------------------------------------- */
 
           if (
             !orderResult.data
           ) {
 
-            setState(
-              'Order not found',
-              'We could not find this order on your account.'
+            throw new Error(
+              "Order not found or you do not have permission to view this order."
             );
-
-
-            return;
 
           }
 
 
-          /* ======================================
-             DEBUG
-          ====================================== */
-
           console.log(
-            'Brit.Tuna Order Confirmation:',
+            "Brit.Tuna Order Confirmation:",
             orderResult.data
           );
 
 
-          /* ======================================
-             DISPLAY ORDER
-          ====================================== */
+          /* ----------------------------------------------
+             RENDER
+             ---------------------------------------------- */
+
+          hideMessage();
+
 
           renderOrder(
             orderResult.data
           );
 
 
-          showOrderStatus(
-            orderResult.data
-          );
+        }
 
-
-        } catch (error) {
+        catch (error) {
 
           console.error(
-            'Brit.Tuna: Could not load order.',
+            "Brit.Tuna Order Confirmation error:",
             error
           );
 
 
-          setState(
-            'Could not load the order',
+          contentElement.hidden =
+            true;
+
+
+          showMessage(
+
             error &&
             error.message
 
               ? error.message
 
-              : 'Something went wrong while loading your order.'
+              : "Unable to load this order.",
+
+            "error"
+
           );
 
         }
@@ -1458,11 +1866,17 @@
       }
 
 
-      /* ==========================================
-         START PAGE
-      ========================================== */
+      /* ====================================================
+         START
+         ==================================================== */
 
-      loadOrder();
+      document.addEventListener(
+
+        "DOMContentLoaded",
+
+        loadOrder
+
+      );
 
 
     })();
