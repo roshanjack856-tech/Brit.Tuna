@@ -183,7 +183,7 @@
 
 
         <!-- ======================================
-             ACTIONS
+             ACTION BUTTONS
         ======================================= -->
 
         <div
@@ -253,34 +253,34 @@
   ============================================= -->
 
 
-  <!-- Supabase library -->
+  <!-- 1. Supabase Library -->
 
   <script
     src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
   ></script>
 
 
-  <!-- Brit.Tuna config -->
+  <!-- 2. Brit.Tuna Config -->
 
   <script src="config.js"></script>
 
 
-  <!-- Create Supabase client -->
+  <!-- 3. Create Supabase Client -->
 
   <script src="supabase.js"></script>
 
 
-  <!-- Products -->
+  <!-- 4. Products -->
 
   <script src="products.js"></script>
 
 
-  <!-- Cart -->
+  <!-- 5. Cart -->
 
   <script src="cart.js"></script>
 
 
-  <!-- Shared UI -->
+  <!-- 6. Shared Website UI -->
 
   <script src="script.js"></script>
 
@@ -452,7 +452,7 @@
 
 
       /* ==========================================
-         GET URL PARAMETER
+         GET ORDER ID FROM URL
       ========================================== */
 
       function getOrderId() {
@@ -504,15 +504,19 @@
         stateBox.innerHTML =
 
           '<h2>' +
+
           escapeHtml(
             title
           ) +
+
           '</h2>' +
 
           '<p>' +
+
           escapeHtml(
             text
           ) +
+
           '</p>' +
 
           (
@@ -797,7 +801,7 @@
 
 
         /* ----------------------------------------
-           DELIVERY
+           DELIVERY DETAILS
         ---------------------------------------- */
 
         var addressParts = [
@@ -849,22 +853,26 @@
 
 
         /* ----------------------------------------
-           PAYMENT
+           PAYMENT INFORMATION
         ---------------------------------------- */
+
+        var paymentMethod =
+          order.payment_method ===
+            'test_order'
+
+            ? 'Test order — no payment'
+
+            : statusLabel(
+                order.payment_method
+              );
+
 
         paymentInformation.innerHTML =
 
           row(
             'Payment method',
             escapeHtml(
-              order.payment_method ===
-                'test_order'
-
-                ? 'Test order — no payment'
-
-                : statusLabel(
-                    order.payment_method
-                  )
+              paymentMethod
             )
           ) +
 
@@ -893,12 +901,9 @@
       ) {
 
         /*
-          Current test orders use:
-          payment_method = test_order
-          payment_status = pending
+          TEST ORDER
 
-          Pending does NOT mean payment failed.
-          No payment has been attempted.
+          No Razorpay payment has happened.
         */
 
         if (
@@ -916,6 +921,10 @@
 
         }
 
+
+        /*
+          FUTURE REAL PAYMENT STATUS
+        */
 
         switch (
           order.payment_status
@@ -975,10 +984,15 @@
 
 
         /* ----------------------------------------
-           VALIDATE BIGINT ORDER ID
+           VALIDATE ORDER ID
 
-           orders.id is bigint:
-           1, 2, 3, 4...
+           Current orders.id is BIGINT.
+
+           Examples:
+           1
+           2
+           3
+           100
         ---------------------------------------- */
 
         if (
@@ -1000,7 +1014,7 @@
 
 
         /* ----------------------------------------
-           SUPABASE CHECK
+           CHECK SUPABASE
         ---------------------------------------- */
 
         if (
@@ -1021,9 +1035,9 @@
         try {
 
 
-          /* --------------------------------------
-             CHECK LOGIN
-          -------------------------------------- */
+          /* ======================================
+             CHECK CUSTOMER LOGIN
+          ====================================== */
 
           var sessionResult =
             await window.supabaseClient
@@ -1068,13 +1082,16 @@
           }
 
 
-          /* --------------------------------------
-             LOAD ORDER + ITEMS
+          /* ======================================
+             LOAD ORDER + ORDER ITEMS
 
-             RLS must ensure the logged-in
-             customer can read only their
-             own orders.
-          -------------------------------------- */
+             IMPORTANT FIX:
+
+             Supabase select fields must be
+             comma-separated.
+
+             RLS protects customer orders.
+          ====================================== */
 
           var orderResult =
             await window.supabaseClient
@@ -1083,30 +1100,28 @@
                 'orders'
               )
 
-              .select(
-                [
-                  'id',
-                  'user_id',
-                  'customer_name',
-                  'customer_phone',
-                  'shipping_address',
-                  'city',
-                  'state',
-                  'pincode',
-                  'total_amount',
-                  'payment_status',
-                  'order_status',
-                  'payment_method',
-                  'created_at',
-                  'order_items(',
-                    'id,',
-                    'product_id,',
-                    'product_name,',
-                    'price,',
-                    'quantity',
-                  ')'
-                ].join('')
-              )
+              .select(`
+                id,
+                user_id,
+                customer_name,
+                customer_phone,
+                shipping_address,
+                city,
+                state,
+                pincode,
+                total_amount,
+                payment_status,
+                order_status,
+                payment_method,
+                created_at,
+                order_items (
+                  id,
+                  product_id,
+                  product_name,
+                  price,
+                  quantity
+                )
+              `)
 
               .eq(
                 'id',
@@ -1121,6 +1136,10 @@
               .maybeSingle();
 
 
+          /* ======================================
+             SUPABASE ERROR
+          ====================================== */
+
           if (
             orderResult.error
           ) {
@@ -1129,6 +1148,10 @@
 
           }
 
+
+          /* ======================================
+             ORDER NOT FOUND
+          ====================================== */
 
           if (
             !orderResult.data
@@ -1145,9 +1168,9 @@
           }
 
 
-          /* --------------------------------------
-             DISPLAY DATABASE ORDER
-          -------------------------------------- */
+          /* ======================================
+             DISPLAY ORDER
+          ====================================== */
 
           renderOrder(
             orderResult.data
@@ -1171,7 +1194,9 @@
             'Could not load the order',
             error &&
             error.message
+
               ? error.message
+
               : 'Something went wrong while loading your order.'
           );
 
@@ -1181,7 +1206,7 @@
 
 
       /* ==========================================
-         START
+         START PAGE
       ========================================== */
 
       loadOrder();
