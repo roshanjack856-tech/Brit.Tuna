@@ -203,13 +203,51 @@
       display: block;
       color: #29352e;
       font-weight: 700;
-      margin-bottom: 8px;
+      margin-bottom: 7px;
     }
 
 
     .order-item-price {
       color: #58625c;
       white-space: nowrap;
+      font-weight: 600;
+    }
+
+
+    /* ======================================================
+       PRODUCT PACK / VARIANT
+       ====================================================== */
+
+    .order-item-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 7px;
+      margin-top: 5px;
+      margin-bottom: 7px;
+    }
+
+
+    .order-pack {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 9px;
+      border-radius: 8px;
+      background: #edf5ef;
+      color: #1f5a3a;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+
+    .order-variant {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 9px;
+      border-radius: 8px;
+      background: #f4f4f1;
+      color: #66716a;
+      font-size: 0.76rem;
       font-weight: 600;
     }
 
@@ -820,6 +858,93 @@
 
 
       /* ====================================================
+         PRODUCT PACK / VARIANT
+         ==================================================== */
+
+      function productMetaHtml(
+        item
+      ) {
+
+        var packSize =
+          item &&
+          item.pack_size
+            ? String(
+                item.pack_size
+              ).trim()
+            : "";
+
+
+        var variantId =
+          item &&
+          item.variant_id
+            ? item.variant_id
+            : null;
+
+
+        if (
+          !packSize &&
+          !variantId
+        ) {
+
+          return "";
+
+        }
+
+
+        var html =
+          '<div class="order-item-meta">';
+
+
+        if (
+          packSize
+        ) {
+
+          html += `
+
+            <span class="order-pack">
+
+              Pack:
+              ${escapeHtml(
+                packSize
+              )}
+
+            </span>
+
+          `;
+
+        }
+
+
+        if (
+          variantId
+        ) {
+
+          html += `
+
+            <span class="order-variant">
+
+              Variant ID:
+              ${escapeHtml(
+                variantId
+              )}
+
+            </span>
+
+          `;
+
+        }
+
+
+        html +=
+          "</div>";
+
+
+        return html;
+
+      }
+
+
+      /* ====================================================
          RENDER ITEMS
          ==================================================== */
 
@@ -873,6 +998,9 @@
 
                 <div class="order-item-left">
 
+
+                  <!-- PRODUCT NAME -->
+
                   <span class="order-item-name">
 
                     ${escapeHtml(
@@ -880,17 +1008,31 @@
                       "Product"
                     )}
 
-                    × ${quantity}
+                    × ${escapeHtml(
+                      quantity
+                    )}
 
                   </span>
 
+
+                  <!-- PACK SIZE + VARIANT -->
+
+                  ${productMetaHtml(
+                    item
+                  )}
+
+
+                  <!-- SELLER STATUS -->
 
                   ${fulfillmentStatusHtml(
                     item.fulfillment_status
                   )}
 
+
                 </div>
 
+
+                <!-- ITEM TOTAL -->
 
                 <span class="order-item-price">
 
@@ -1174,8 +1316,12 @@
           /* ==================================================
              GET CUSTOMER ORDERS
 
-             IMPORTANT:
-             fulfillment_status is fetched from order_items.
+             NEW:
+             variant_id
+             pack_size
+
+             fulfillment_status is also fetched
+             from order_items.
              ================================================== */
 
           var orderResult =
@@ -1208,7 +1354,11 @@
 
                   product_id,
 
+                  variant_id,
+
                   product_name,
+
+                  pack_size,
 
                   price,
 
