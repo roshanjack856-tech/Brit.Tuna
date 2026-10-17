@@ -2879,62 +2879,64 @@
      PRODUCTS PAGE
   ========================================================== */
 
-  function initProducts() {
+ function initProducts() {
 
-    var grid =
-      document.getElementById(
-        'products-grid'
-      );
+  var grid =
+    document.getElementById(
+      'product-grid'
+    );
 
-
-    if (!grid) {
-
-      return;
-
-    }
-
-
-    var category =
-      new URLSearchParams(
-        window.location.search
-      ).get(
-        'category'
-      );
+  if (!grid) {
+    console.warn(
+      'Brit.Tuna: Products product-grid not found.'
+    );
+    return;
+  }
 
 
-    var list =
-      category
-        ? filter({
-            category:
-              normalizeCategory(
-                category
-              )
-          })
-        : getAll();
-
-
-    renderGrid(
-      grid,
-      list
+  var category =
+    new URLSearchParams(
+      window.location.search
+    ).get(
+      'category'
     );
 
 
-    var empty =
-      document.getElementById(
-        'products-empty'
-      );
+  var list =
+    category
+      ? filter({
+          category:
+            normalizeCategory(
+              category
+            )
+        })
+      : getAll();
 
 
-    if (empty) {
+  renderGrid(
+    grid,
+    list
+  );
 
-      empty.hidden =
-        list.length !== 0;
 
-    }
+  var empty =
+    document.getElementById(
+      'empty-state'
+    );
+
+
+  if (empty) {
+
+    empty.hidden =
+      list.length !== 0;
 
   }
 
 
+  grid.hidden =
+    list.length === 0;
+
+}
   /* ==========================================================
      PRODUCT DETAILS
   ========================================================== */
