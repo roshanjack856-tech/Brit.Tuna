@@ -2480,56 +2480,250 @@
 
   function initShop() {
 
-    var grid =
-      document.getElementById(
-        'shop-grid'
+  var grid =
+    document.getElementById(
+      'product-grid'
+    );
+
+  if (!grid) {
+    console.warn(
+      'Brit.Tuna: product-grid not found.'
+    );
+    return;
+  }
+
+
+  var searchInput =
+    document.getElementById(
+      'search-input'
+    );
+
+
+  var categorySelect =
+    document.getElementById(
+      'category-filter'
+    );
+
+
+  var priceSelect =
+    document.getElementById(
+      'price-filter'
+    );
+
+
+  var sortSelect =
+    document.getElementById(
+      'sort-select'
+    );
+
+
+  var empty =
+    document.getElementById(
+      'empty-state'
+    );
+
+
+  var count =
+    document.getElementById(
+      'result-count'
+    );
+
+
+  /*
+    Fill category options
+  */
+  if (categorySelect) {
+
+    categorySelect.innerHTML =
+      '<option value="all">All categories</option>';
+
+    CATEGORIES.forEach(
+      function (category) {
+
+        var option =
+          document.createElement(
+            'option'
+          );
+
+        option.value =
+          category.id;
+
+        option.textContent =
+          category.name;
+
+        categorySelect.appendChild(
+          option
+        );
+
+      }
+    );
+
+  }
+
+
+  /*
+    Fill price options
+  */
+  if (priceSelect) {
+
+    priceSelect.innerHTML = '';
+
+    PRICE_RANGES.forEach(
+      function (range) {
+
+        var option =
+          document.createElement(
+            'option'
+          );
+
+        option.value =
+          range.id;
+
+        option.textContent =
+          range.label;
+
+        priceSelect.appendChild(
+          option
+        );
+
+      }
+    );
+
+  }
+
+
+  /*
+    Fill sort options
+  */
+  if (sortSelect) {
+
+    sortSelect.innerHTML = '';
+
+    var sortOptions = [
+
+      {
+        id: 'default',
+        name: 'Sort: Featured'
+      },
+
+      {
+        id: 'price-asc',
+        name: 'Price: Low to High'
+      },
+
+      {
+        id: 'price-desc',
+        name: 'Price: High to Low'
+      },
+
+      {
+        id: 'name-asc',
+        name: 'Name: A to Z'
+      },
+
+      {
+        id: 'name-desc',
+        name: 'Name: Z to A'
+      }
+
+    ];
+
+
+    sortOptions.forEach(
+      function (item) {
+
+        var option =
+          document.createElement(
+            'option'
+          );
+
+        option.value =
+          item.id;
+
+        option.textContent =
+          item.name;
+
+        sortSelect.appendChild(
+          option
+        );
+
+      }
+    );
+
+  }
+
+
+  /*
+    Read URL parameters
+  */
+  var params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+
+  /*
+    Search from URL
+    Example:
+    shop.html?q=peanuts
+  */
+  var urlSearch =
+    params.get('q');
+
+
+  if (
+    searchInput &&
+    urlSearch
+  ) {
+
+    searchInput.value =
+      urlSearch;
+
+  }
+
+
+  /*
+    Category from URL
+    Example:
+    shop.html?category=peanuts
+  */
+  var urlCategory =
+    params.get(
+      'category'
+    );
+
+
+  if (
+    categorySelect &&
+    urlCategory
+  ) {
+
+    var normalizedCategory =
+      normalizeCategory(
+        urlCategory
       );
 
 
-    if (!grid) {
+    if (
+      getCategory(
+        normalizedCategory
+      )
+    ) {
 
-      return;
+      categorySelect.value =
+        normalizedCategory;
 
     }
 
-
-    var searchInput =
-      document.getElementById(
-        'shop-search'
-      );
+  }
 
 
-    var categorySelect =
-      document.getElementById(
-        'shop-category'
-      );
+  /*
+    Render products
+  */
+  function render() {
 
-
-    var priceSelect =
-      document.getElementById(
-        'shop-price'
-      );
-
-
-    var sortSelect =
-      document.getElementById(
-        'shop-sort'
-      );
-
-
-    var empty =
-      document.getElementById(
-        'shop-empty'
-      );
-
-
-    var count =
-      document.getElementById(
-        'shop-count'
-      );
-
-
-    function render() {
+    try {
 
       var list =
         filter({
@@ -2552,87 +2746,133 @@
           sort:
             sortSelect
               ? sortSelect.value
-              : ''
+              : 'default'
 
         });
 
 
+      /*
+        Render product cards
+      */
       renderGrid(
         grid,
         list
       );
 
 
+      /*
+        Product count
+      */
       if (count) {
 
         count.textContent =
+          'Showing ' +
           list.length +
-          (
-            list.length === 1
-              ? ' product'
-              : ' products'
-          );
+          ' of ' +
+          cache.length +
+          ' products';
 
       }
 
 
+      /*
+        Empty search result
+      */
       if (empty) {
 
         empty.hidden =
-          list.length !== 0;
+          list.length > 0;
 
       }
 
 
+      /*
+        Show / hide grid
+      */
       grid.hidden =
         list.length === 0;
 
-    }
 
+    } catch (error) {
 
-    if (searchInput) {
-
-      searchInput.addEventListener(
-        'input',
-        render
+      console.error(
+        'Brit.Tuna: Shop render error.',
+        error
       );
 
-    }
+
+      grid.hidden =
+        false;
 
 
-    if (categorySelect) {
-
-      categorySelect.addEventListener(
-        'change',
-        render
-      );
-
-    }
-
-
-    if (priceSelect) {
-
-      priceSelect.addEventListener(
-        'change',
-        render
-      );
+      grid.innerHTML =
+        '<p class="state-error" role="alert">' +
+        'Sorry, products could not be loaded. Please refresh the page.' +
+        '</p>';
 
     }
-
-
-    if (sortSelect) {
-
-      sortSelect.addEventListener(
-        'change',
-        render
-      );
-
-    }
-
-
-    render();
 
   }
+
+
+  /*
+    Search event
+  */
+  if (searchInput) {
+
+    searchInput.addEventListener(
+      'input',
+      render
+    );
+
+  }
+
+
+  /*
+    Category event
+  */
+  if (categorySelect) {
+
+    categorySelect.addEventListener(
+      'change',
+      render
+    );
+
+  }
+
+
+  /*
+    Price event
+  */
+  if (priceSelect) {
+
+    priceSelect.addEventListener(
+      'change',
+      render
+    );
+
+  }
+
+
+  /*
+    Sort event
+  */
+  if (sortSelect) {
+
+    sortSelect.addEventListener(
+      'change',
+      render
+    );
+
+  }
+
+
+  /*
+    Initial product render
+  */
+  render();
+
+}
 
 
   /* ==========================================================
