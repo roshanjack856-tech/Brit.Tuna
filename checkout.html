@@ -1013,3 +1013,1077 @@
         }
 
       }
+      /* ==========================================
+         LOAD SAVED DELIVERY DETAILS
+      ========================================== */
+
+      function loadSavedDeliveryDetails() {
+
+        try {
+
+          var saved =
+            window.localStorage.getItem(
+              'britTunaDeliveryDetails'
+            );
+
+
+          if (!saved) {
+
+            return;
+
+          }
+
+
+          var data =
+            JSON.parse(
+              saved
+            );
+
+
+          var fields = [
+            'phone',
+            'address',
+            'city',
+            'state',
+            'pin'
+          ];
+
+
+          fields.forEach(
+            function (field) {
+
+              var input =
+                document.getElementById(
+                  field
+                );
+
+
+              if (
+                input &&
+                !input.value &&
+                data[field]
+              ) {
+
+                input.value =
+                  data[field];
+
+              }
+
+            }
+          );
+
+
+        } catch (error) {
+
+          console.warn(
+            'Brit.Tuna: Saved delivery details could not be loaded.',
+            error
+          );
+
+        }
+
+      }
+
+
+      /* ==========================================
+         SAVE DELIVERY DETAILS
+      ========================================== */
+
+      function saveDeliveryDetails() {
+
+        try {
+
+          var data = {
+
+            phone:
+              document
+                .getElementById(
+                  'phone'
+                )
+                .value
+                .trim(),
+
+            address:
+              document
+                .getElementById(
+                  'address'
+                )
+                .value
+                .trim(),
+
+            city:
+              document
+                .getElementById(
+                  'city'
+                )
+                .value
+                .trim(),
+
+            state:
+              document
+                .getElementById(
+                  'state'
+                )
+                .value
+                .trim(),
+
+            pin:
+              document
+                .getElementById(
+                  'pin'
+                )
+                .value
+                .trim()
+
+          };
+
+
+          window.localStorage.setItem(
+            'britTunaDeliveryDetails',
+            JSON.stringify(
+              data
+            )
+          );
+
+
+        } catch (error) {
+
+          console.warn(
+            'Brit.Tuna: Delivery details could not be saved.',
+            error
+          );
+
+        }
+
+      }
+
+
+      /* ==========================================
+         CHECKOUT AUTH GUARD
+      ========================================== */
+
+      async function initialiseCheckout() {
+
+        if (
+          !window.supabaseClient
+        ) {
+
+          console.error(
+            'Brit.Tuna: Supabase client is unavailable.'
+          );
+
+
+          showLoginRequired();
+
+
+          return;
+
+        }
+
+
+        try {
+
+          /*
+            Wait for product catalogue first.
+
+            Cart validation depends on current
+            Supabase products + variants.
+          */
+
+          if (
+            window.BTCart &&
+            typeof window.BTCart.initialize ===
+              'function'
+          ) {
+
+            await window.BTCart.initialize();
+
+          }
+
+
+          var sessionResult =
+            await window.supabaseClient
+              .auth
+              .getSession();
+
+
+          if (sessionResult.error) {
+
+            console.error(
+              'Brit.Tuna: Session check failed.',
+              sessionResult.error
+            );
+
+
+            redirectToLogin();
+
+
+            return;
+
+          }
+
+
+          var session =
+
+            sessionResult.data
+              ? sessionResult.data.session
+              : null;
+
+
+          if (
+            !session ||
+            !session.user
+          ) {
+
+            redirectToLogin();
+
+            return;
+
+          }
+
+
+          var user =
+            session.user;
+
+
+          /*
+            Use validated cart lines here instead
+            of only raw localStorage count.
+          */
+
+          var validLines =
+
+            window.BTCart &&
+            typeof window.BTCart.lines ===
+              'function'
+
+              ? window.BTCart.lines()
+
+              : [];
+
+
+          if (
+            !validLines.length
+          ) {
+
+            showEmptyCart();
+
+            return;
+
+          }
+
+
+          fillAuthUser(
+            user
+          );
+
+
+          await loadCustomerProfile(
+            user
+          );
+
+
+          loadSavedDeliveryDetails();
+
+
+          if (
+            window.BTCart &&
+            typeof window.BTCart.render ===
+              'function'
+          ) {
+
+            window.BTCart.render();
+
+          }
+
+
+          showCheckout();
+
+
+          try {
+
+            window.localStorage.removeItem(
+              'britTunaAfterLogin'
+            );
+
+          } catch (error) {
+
+            console.warn(
+              'Brit.Tuna: Could not clear login destination.',
+              error
+            );
+
+          }
+
+
+        } catch (error) {
+
+          console.error(
+            'Brit.Tuna: Checkout authentication failed.',
+            error
+          );
+
+
+          redirectToLogin();
+
+        }
+
+      }
+
+
+      /* ==========================================
+         VALIDATION RULES
+      ========================================== */
+
+      var rules = {
+
+
+        name:
+          function (v) {
+
+            return (
+              v.trim().length >=
+              2
+            )
+              ? ''
+              : 'Please enter your full name.';
+
+          },
+
+
+        phone:
+          function (v) {
+
+            var d =
+              v.replace(
+                /[\s-]/g,
+                ''
+              );
+
+
+            return (
+              /^(\+?91)?[6-9]\d{9}$/
+                .test(d)
+            )
+              ? ''
+              : 'Enter a valid 10-digit Indian mobile number.';
+
+          },
+
+
+        email:
+          function (v) {
+
+            return (
+              /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+                .test(
+                  v.trim()
+                )
+            )
+              ? ''
+              : 'Enter a valid email address.';
+
+          },
+
+
+        address:
+          function (v) {
+
+            return (
+              v.trim().length >=
+              10
+            )
+              ? ''
+              : 'Please enter your full delivery address.';
+
+          },
+
+
+        city:
+          function (v) {
+
+            return (
+              v.trim().length >=
+              2
+            )
+              ? ''
+              : 'Please enter your city.';
+
+          },
+
+
+        state:
+          function (v) {
+
+            return (
+              v.trim().length >=
+              2
+            )
+              ? ''
+              : 'Please enter your state.';
+
+          },
+
+
+        pin:
+          function (v) {
+
+            return (
+              /^[1-9]\d{5}$/
+                .test(
+                  v.trim()
+                )
+            )
+              ? ''
+              : 'Enter a valid 6-digit PIN code.';
+
+          }
+
+      };
+
+
+      /* ==========================================
+         CHECK ONE FIELD
+      ========================================== */
+
+      function check(field) {
+
+        var input =
+          document.getElementById(
+            field
+          );
+
+
+        if (!input) {
+
+          return false;
+
+        }
+
+
+        var msg =
+          rules[field](
+            input.value
+          );
+
+
+        var errorBox =
+          document.getElementById(
+            'err-' +
+            field
+          );
+
+
+        if (errorBox) {
+
+          errorBox.textContent =
+            msg;
+
+        }
+
+
+        input.classList.toggle(
+          'invalid',
+          !!msg
+        );
+
+
+        input.setAttribute(
+          'aria-invalid',
+          msg
+            ? 'true'
+            : 'false'
+        );
+
+
+        return !msg;
+
+      }
+
+
+      /* ==========================================
+         FIELD BLUR VALIDATION
+      ========================================== */
+
+      Object.keys(
+        rules
+      ).forEach(
+
+        function (field) {
+
+          var input =
+            document.getElementById(
+              field
+            );
+
+
+          if (!input) {
+
+            return;
+
+          }
+
+
+          input.addEventListener(
+
+            'blur',
+
+            function () {
+
+              check(
+                field
+              );
+
+            }
+
+          );
+
+        }
+
+      );
+
+
+      /* ==========================================
+         BUILD SECURE RPC CART
+      ========================================== */
+
+      function buildRpcCartItems() {
+
+        if (
+          !window.BTCart ||
+          typeof window.BTCart.lines !==
+            'function'
+        ) {
+
+          return [];
+
+        }
+
+
+        var cartLines =
+          window.BTCart.lines();
+
+
+        return cartLines.map(
+          function (line) {
+
+            var productId =
+              Number(
+                line.product.id
+              );
+
+
+            var variantId =
+              null;
+
+
+            if (
+              line.pack &&
+              line.pack.id !== undefined &&
+              line.pack.id !== null &&
+              line.pack.id !== ''
+            ) {
+
+              variantId =
+                Number(
+                  line.pack.id
+                );
+
+            }
+
+
+            return {
+
+              product_id:
+                productId,
+
+              variant_id:
+                variantId,
+
+              quantity:
+                Number(
+                  line.qty
+                )
+
+            };
+
+          }
+        );
+
+      }
+
+
+      /* ==========================================
+         FORM SUBMIT
+      ========================================== */
+
+      form.addEventListener(
+
+        'submit',
+
+        async function (event) {
+
+
+          event.preventDefault();
+
+
+          if (orderCreating) {
+
+            return;
+
+          }
+
+
+          hideResult();
+
+
+          /* ======================================
+             VERIFY SUPABASE
+          ====================================== */
+
+          if (
+            !window.supabaseClient
+          ) {
+
+            showResult(
+              'Order failed: Supabase connection is unavailable.'
+            );
+
+            return;
+
+          }
+
+
+          /* ======================================
+             VERIFY LOGIN AGAIN
+          ====================================== */
+
+          try {
+
+            var sessionResult =
+              await window.supabaseClient
+                .auth
+                .getSession();
+
+
+            if (sessionResult.error) {
+
+              console.error(
+                'Brit.Tuna: Session verification failed.',
+                sessionResult.error
+              );
+
+
+              redirectToLogin();
+
+              return;
+
+            }
+
+
+            var session =
+
+              sessionResult.data
+                ? sessionResult.data.session
+                : null;
+
+
+            if (
+              !session ||
+              !session.user
+            ) {
+
+              redirectToLogin();
+
+              return;
+
+            }
+
+
+          } catch (error) {
+
+            console.error(
+              'Brit.Tuna: Session verification error.',
+              error
+            );
+
+
+            redirectToLogin();
+
+            return;
+
+          }
+
+
+          /* ======================================
+             VALIDATE FORM
+          ====================================== */
+
+          var firstBad =
+            null;
+
+
+          Object.keys(
+            rules
+          ).forEach(
+
+            function (field) {
+
+              if (
+                !check(field) &&
+                !firstBad
+              ) {
+
+                firstBad =
+                  field;
+
+              }
+
+            }
+
+          );
+
+
+          if (firstBad) {
+
+            document
+              .getElementById(
+                firstBad
+              )
+              .focus();
+
+
+            return;
+
+          }
+
+
+          /* ======================================
+             CHECK CART
+          ====================================== */
+
+          var rpcCartItems =
+            buildRpcCartItems();
+
+
+          if (
+            !rpcCartItems.length
+          ) {
+
+            showResult(
+              'Your cart is empty or the products are no longer available.'
+            );
+
+            return;
+
+          }
+
+
+          /*
+            Validate IDs before calling RPC.
+          */
+
+          var invalidCartItem =
+            rpcCartItems.some(
+              function (item) {
+
+                return (
+                  !Number.isInteger(
+                    item.product_id
+                  ) ||
+                  item.product_id <= 0 ||
+                  (
+                    item.variant_id !== null &&
+                    (
+                      !Number.isInteger(
+                        item.variant_id
+                      ) ||
+                      item.variant_id <= 0
+                    )
+                  ) ||
+                  !Number.isInteger(
+                    item.quantity
+                  ) ||
+                  item.quantity <= 0
+                );
+
+              }
+            );
+
+
+          if (invalidCartItem) {
+
+            console.error(
+              'Brit.Tuna: Invalid cart data.',
+              rpcCartItems
+            );
+
+
+            showResult(
+              'One of the cart items is invalid. Please remove it and add the product again.'
+            );
+
+            return;
+
+          }
+
+
+          /* ======================================
+             CREATE TEST ORDER
+          ====================================== */
+
+          orderCreating =
+            true;
+
+
+          setOrderButtonLoading(
+            true
+          );
+
+
+          try {
+
+            /*
+              SECURITY:
+
+              Only product_id,
+              variant_id and quantity
+              are sent from the cart.
+
+              Browser price is NOT sent.
+
+              create_customer_order()
+              calculates the order total
+              using database prices.
+
+              IMPORTANT:
+              The RPC parameter below is
+              cart_items_input.
+            */
+
+            var orderResult =
+              await window.supabaseClient
+                .rpc(
+                  'create_customer_order',
+                  {
+
+                    customer_name_input:
+                      document
+                        .getElementById(
+                          'name'
+                        )
+                        .value
+                        .trim(),
+
+                    customer_phone_input:
+                      document
+                        .getElementById(
+                          'phone'
+                        )
+                        .value
+                        .trim(),
+
+                    shipping_address_input:
+                      document
+                        .getElementById(
+                          'address'
+                        )
+                        .value
+                        .trim(),
+
+                    city_input:
+                      document
+                        .getElementById(
+                          'city'
+                        )
+                        .value
+                        .trim(),
+
+                    state_input:
+                      document
+                        .getElementById(
+                          'state'
+                        )
+                        .value
+                        .trim(),
+
+                    pincode_input:
+                      document
+                        .getElementById(
+                          'pin'
+                        )
+                        .value
+                        .trim(),
+
+                    cart_items_input:
+                      rpcCartItems
+
+                  }
+                );
+                        if (orderResult.error) {
+
+              throw orderResult.error;
+
+            }
+
+
+            var orderId =
+              orderResult.data;
+
+
+            if (
+              orderId === null ||
+              orderId === undefined ||
+              orderId === ''
+            ) {
+
+              throw new Error(
+                'Order was created but no order ID was returned.'
+              );
+
+            }
+
+
+            console.log(
+              'Brit.Tuna: Test order created:',
+              orderId
+            );
+
+
+            /*
+              Save delivery information only
+              after successful database order.
+            */
+
+            saveDeliveryDetails();
+
+
+            /*
+              Clear cart only after Supabase
+              confirms success.
+            */
+
+            if (
+              window.BTCart &&
+              typeof window.BTCart.clear ===
+                'function'
+            ) {
+
+              window.BTCart.clear();
+
+            }
+
+
+            /*
+              Redirect to confirmation.
+
+              IMPORTANT:
+              Payment has NOT been collected.
+            */
+
+            window.location.replace(
+              'order-confirmation.html?order=' +
+              encodeURIComponent(
+                String(
+                  orderId
+                )
+              )
+            );
+
+
+          } catch (error) {
+
+            console.error(
+              'Brit.Tuna: Order creation failed.',
+              error
+            );
+
+
+            var message =
+              error &&
+              error.message
+
+                ? error.message
+
+                : 'Order could not be created. Please try again.';
+
+
+            showResult(
+              'Order failed: ' +
+              message
+            );
+
+
+            orderCreating =
+              false;
+
+
+            setOrderButtonLoading(
+              false
+            );
+
+          }
+
+
+        }
+
+      );
+
+
+      /* ==========================================
+         AUTH STATE CHANGE
+      ========================================== */
+
+      if (
+        window.supabaseClient &&
+        window.supabaseClient.auth
+      ) {
+
+        window.supabaseClient
+          .auth
+          .onAuthStateChange(
+
+            function (
+              event,
+              session
+            ) {
+
+              if (
+                event ===
+                  'SIGNED_OUT' ||
+                !session
+              ) {
+
+                if (
+                  checkoutContent &&
+                  !checkoutContent.hidden
+                ) {
+
+                  redirectToLogin();
+
+                }
+
+              }
+
+            }
+
+          );
+
+      }
+
+
+      /* ==========================================
+         START CHECKOUT
+      ========================================== */
+
+      initialiseCheckout();
+
+
+    })();
+
+  </script>
+
+
+</body>
+
+</html>
