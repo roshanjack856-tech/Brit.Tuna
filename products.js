@@ -2398,10 +2398,10 @@
         'featured-products'
       );
 
-    var bestsellerGrid =
-      document.getElementById(
-        'bestseller-products'
-      );
+var bestsellerGrid =
+  document.getElementById(
+    'bestsellers-grid'
+  );
 
 
     if (featuredGrid) {
