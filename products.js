@@ -2894,6 +2894,29 @@ var bestsellerGrid =
   }
 
 
+  var empty =
+    document.getElementById(
+      'empty-state'
+    );
+
+
+  var count =
+    document.getElementById(
+      'result-count'
+    );
+
+
+  var sortSelect =
+    document.getElementById(
+      'sort-select'
+    );
+
+
+  /*
+    Get category from URL
+    Example:
+    products.html?category=peanuts
+  */
   var category =
     new URLSearchParams(
       window.location.search
@@ -2902,39 +2925,145 @@ var bestsellerGrid =
     );
 
 
-  var list =
-    category
-      ? filter({
-          category:
-            normalizeCategory(
-              category
-            )
-        })
-      : getAll();
+  /*
+    Add Sort By options
+  */
+  if (sortSelect) {
+
+    sortSelect.innerHTML = '';
+
+    var sortOptions = [
+      {
+        id: 'default',
+        name: 'Sort: Featured'
+      },
+      {
+        id: 'price-asc',
+        name: 'Price: Low to High'
+      },
+      {
+        id: 'price-desc',
+        name: 'Price: High to Low'
+      },
+      {
+        id: 'name-asc',
+        name: 'Name: A to Z'
+      },
+      {
+        id: 'name-desc',
+        name: 'Name: Z to A'
+      }
+    ];
 
 
-  renderGrid(
-    grid,
-    list
-  );
+    sortOptions.forEach(
+      function (item) {
 
+        var option =
+          document.createElement(
+            'option'
+          );
 
-  var empty =
-    document.getElementById(
-      'empty-state'
+        option.value =
+          item.id;
+
+        option.textContent =
+          item.name;
+
+        sortSelect.appendChild(
+          option
+        );
+
+      }
     );
-
-
-  if (empty) {
-
-    empty.hidden =
-      list.length !== 0;
 
   }
 
 
-  grid.hidden =
-    list.length === 0;
+  /*
+    Render products
+  */
+  function render() {
+
+    var list =
+      filter({
+
+        category:
+          category
+            ? normalizeCategory(
+                category
+              )
+            : 'all',
+
+        price:
+          'all',
+
+        sort:
+          sortSelect
+            ? sortSelect.value
+            : 'default'
+
+      });
+
+
+    renderGrid(
+      grid,
+      list
+    );
+
+
+    /*
+      Result count
+    */
+    if (count) {
+
+      count.textContent =
+        'Showing ' +
+        list.length +
+        ' of ' +
+        cache.length +
+        ' products';
+
+    }
+
+
+    /*
+      Empty state
+    */
+    if (empty) {
+
+      empty.hidden =
+        list.length > 0;
+
+    }
+
+
+    /*
+      Product grid
+    */
+    grid.hidden =
+      list.length === 0;
+
+  }
+
+
+  /*
+    Sort change
+  */
+  if (sortSelect) {
+
+    sortSelect.addEventListener(
+      'change',
+      render
+    );
+
+  }
+
+
+  /*
+    Initial render
+  */
+  render();
 
 }
   /* ==========================================================
