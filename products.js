@@ -759,385 +759,613 @@
       }
     );
 
+/* ==========================================================
+   CONVERT SUPABASE PRODUCT
+========================================================== */
 
-  /* ==========================================================
-     CONVERT SUPABASE PRODUCT
-  ========================================================== */
+function fromRow(r) {
 
-  function fromRow(r) {
+  var slug =
+    slugify(r.name);
 
-    var slug =
-      slugify(r.name);
+  var id =
+    String(r.id);
 
-    var id =
-      String(r.id);
-
-    var category =
-      normalizeCategory(
-        r.category
-      );
-
-    var variants =
-      Array.isArray(
-        r.product_variants
-      )
-        ? r.product_variants
-        : [];
+  var category =
+    normalizeCategory(
+      r.category
+    );
 
 
-    /*
-      Keep active variants including stock 0.
+  /* ========================================================
+     PRODUCT IMAGES
+     Supports seller uploaded 2–6 images
+  ======================================================== */
 
-      This allows the product details page to
-      show that a specific pack is out of stock.
-    */
-
-    variants =
-      variants.filter(
-        function (variant) {
-          return (
-            variant.is_active !==
-            false
-          );
-        }
-      );
+  var productImages =
+    Array.isArray(
+      r.product_images
+    )
+      ? r.product_images.slice()
+      : [];
 
 
-    var packs =
-      variants.map(
-        function (variant) {
+  /*
+    Remove invalid image rows
+  */
 
-          return {
+  productImages =
+    productImages.filter(
+      function (image) {
 
-            /*
-              REAL product_variants.id
-            */
-
-            id:
-              String(
-                variant.id
-              ),
-
-            variantId:
-              Number(
-                variant.id
-              ),
-
-            productId:
-              Number(
-                r.id
-              ),
-
-            label:
-              String(
-                variant.pack_size ||
-                ''
-              ),
-
-            price:
-              Number(
-                variant.price
-              ),
-
-            stockQuantity:
-              Number(
-                variant.stock_quantity
-              ) || 0,
-
-            active:
-              variant.is_active !==
-              false
-
-          };
-
-        }
-      );
-
-
-    packs.sort(
-      function (a, b) {
         return (
-          Number(a.variantId) -
-          Number(b.variantId)
+          image &&
+          image.image_url
         );
+
       }
     );
 
 
-    var totalStock =
-      packs.reduce(
-        function (total, pack) {
+  /*
+    Sort images using sort_order
+  */
 
-          return (
-            total +
-            (
-              packHasStock(pack)
-                ? Number(
-                    pack.stockQuantity
-                  )
-                : 0
-            )
-          );
+  productImages.sort(
+    function (a, b) {
 
-        },
-        0
+      return (
+        Number(
+          a.sort_order || 0
+        ) -
+        Number(
+          b.sort_order || 0
+        )
       );
 
+    }
+  );
 
-    var stock =
-      'in_stock';
+
+  /*
+    Find primary image
+  */
+
+  var primaryImage =
+    productImages.find(
+      function (image) {
+
+        return (
+          image.is_primary === true
+        );
+
+      }
+    );
 
 
-    if (totalStock <= 0) {
+  /*
+    If no primary image exists,
+    use first uploaded image.
+  */
 
-      stock =
-        'out_of_stock';
+  if (
+    !primaryImage &&
+    productImages.length
+  ) {
 
-    } else if (totalStock <= 10) {
+    primaryImage =
+      productImages[0];
 
-      stock =
-        'low_stock';
+  }
+
+
+  /*
+    Clean image array used by:
+    - product cards
+    - hover image
+    - product details gallery
+  */
+
+  var images =
+    productImages.map(
+      function (image) {
+
+        return {
+
+          id:
+            image.id,
+
+          url:
+            image.image_url,
+
+          storagePath:
+            image.storage_path || '',
+
+          sortOrder:
+            Number(
+              image.sort_order || 0
+            ),
+
+          primary:
+            image.is_primary === true
+
+        };
+
+      }
+    );
+
+
+  /* ========================================================
+     PRODUCT VARIANTS
+  ======================================================== */
+
+  var variants =
+    Array.isArray(
+      r.product_variants
+    )
+      ? r.product_variants
+      : [];
+
+
+  /*
+    Keep active variants including stock 0.
+
+    This allows product details to show
+    specific packs as out of stock.
+  */
+
+  variants =
+    variants.filter(
+      function (variant) {
+
+        return (
+          variant.is_active !==
+          false
+        );
+
+      }
+    );
+
+
+  var packs =
+    variants.map(
+      function (variant) {
+
+        return {
+
+          /*
+            REAL product_variants.id
+          */
+
+          id:
+            String(
+              variant.id
+            ),
+
+          variantId:
+            Number(
+              variant.id
+            ),
+
+          productId:
+            Number(
+              r.id
+            ),
+
+          label:
+            String(
+              variant.pack_size ||
+              ''
+            ),
+
+          price:
+            Number(
+              variant.price
+            ),
+
+          stockQuantity:
+            Number(
+              variant.stock_quantity
+            ) || 0,
+
+          active:
+            variant.is_active !==
+            false
+
+        };
+
+      }
+    );
+
+
+  /*
+    Keep variants in ID order
+  */
+
+  packs.sort(
+    function (a, b) {
+
+      return (
+        Number(
+          a.variantId
+        ) -
+        Number(
+          b.variantId
+        )
+      );
 
     }
+  );
 
 
-    var info =
-      CAT_INFO[category] ||
-      {};
+  /* ========================================================
+     TOTAL STOCK
+  ======================================================== */
+
+  var totalStock =
+    packs.reduce(
+      function (total, pack) {
+
+        return (
+          total +
+          (
+            packHasStock(
+              pack
+            )
+              ? Number(
+                  pack.stockQuantity
+                )
+              : 0
+          )
+        );
+
+      },
+      0
+    );
 
 
-    return {
+  var stock =
+    'in_stock';
+
+
+  if (
+    totalStock <= 0
+  ) {
+
+    stock =
+      'out_of_stock';
+
+  } else if (
+    totalStock <= 10
+  ) {
+
+    stock =
+      'low_stock';
+
+  }
+
+
+  var info =
+    CAT_INFO[category] ||
+    {};
+
+
+  /* ========================================================
+     MAIN PRODUCT IMAGE
+
+     Priority:
+     1. product_images primary image
+     2. first product_images image
+     3. old products.image_url
+     4. category fallback image
+  ======================================================== */
+
+  var mainImage =
+    (
+      primaryImage &&
+      primaryImage.image_url
+    ) ||
+    r.image_url ||
+    catImage(
+      category,
+      r.name || ''
+    );
+
+
+  /*
+    Old products may only have products.image_url.
+
+    Add that old image to images[] so the
+    rest of the website can still use the
+    same gallery structure.
+  */
+
+  if (
+    !images.length &&
+    r.image_url
+  ) {
+
+    images.push({
 
       id:
-        id,
+        null,
 
-      databaseId:
-        Number(r.id),
+      url:
+        r.image_url,
 
-      source:
-        'supabase',
-
-      slug:
-        slug,
-
-      name:
-        r.name ||
-        'Product',
-
-      category:
-        category,
-
-      short:
-        r.description ||
+      storagePath:
         '',
 
-      description:
-        r.description ||
-        '',
+      sortOrder:
+        1,
 
-      image:
-        r.image_url ||
-        catImage(
+      primary:
+        true
+
+    });
+
+  }
+
+
+  /* ========================================================
+     RETURN NORMALIZED PRODUCT
+  ======================================================== */
+
+  return {
+
+    id:
+      id,
+
+    databaseId:
+      Number(
+        r.id
+      ),
+
+    source:
+      'supabase',
+
+    slug:
+      slug,
+
+    name:
+      r.name ||
+      'Product',
+
+    category:
+      category,
+
+    short:
+      r.description ||
+      '',
+
+    description:
+      r.description ||
+      '',
+
+
+    /*
+      MAIN IMAGE
+    */
+
+    image:
+      mainImage,
+
+
+    /*
+      ALL PRODUCT IMAGES
+    */
+
+    images:
+      images,
+
+
+    discount:
+      0,
+
+    stock:
+      stock,
+
+    featured:
+      false,
+
+    bestseller:
+      false,
+
+    wholesale:
+      false,
+
+    active:
+      r.is_active !==
+      false,
+
+    productType:
+      r.product_type ||
+      'own',
+
+    status:
+      r.status ||
+      '',
+
+    brandId:
+      r.brand_id ||
+      null,
+
+    sellerId:
+      r.seller_id ||
+      null,
+
+    affiliateUrl:
+      r.affiliate_url ||
+      '',
+
+    ingredients:
+      info.ingredients ||
+      '',
+
+    allergens:
+      info.allergens ||
+      '',
+
+    storage:
+      info.storage ||
+      '',
+
+    packs:
+      packs
+
+  };
+
+}
+
+/* ==========================================================
+   LOAD PRODUCTS FROM SUPABASE
+========================================================== */
+
+async function load() {
+
+  if (!window.supabaseClient) {
+
+    console.warn(
+      'Brit.Tuna: Supabase client unavailable. Using demo products.'
+    );
+
+    return cache;
+  }
+
+
+  try {
+
+    var result =
+      await window.supabaseClient
+        .from('products')
+        .select(`
+          id,
+          name,
+          description,
           category,
-          r.name || ''
-        ),
+          price,
+          image_url,
+          affiliate_url,
+          is_active,
+          brand_id,
+          seller_id,
+          product_type,
+          status,
+          created_at,
+          updated_at,
 
-      discount:
-        0,
-
-      stock:
-        stock,
-
-      featured:
-        false,
-
-      bestseller:
-        false,
-
-      wholesale:
-        false,
-
-      active:
-        r.is_active !==
-        false,
-
-      productType:
-        r.product_type ||
-        'own',
-
-      status:
-        r.status ||
-        '',
-
-      brandId:
-        r.brand_id ||
-        null,
-
-      sellerId:
-        r.seller_id ||
-        null,
-
-      affiliateUrl:
-        r.affiliate_url ||
-        '',
-
-      ingredients:
-        info.ingredients ||
-        '',
-
-      allergens:
-        info.allergens ||
-        '',
-
-      storage:
-        info.storage ||
-        '',
-
-      packs:
-        packs
-
-    };
-
-  }
-     /* ==========================================================
-     LOAD PRODUCTS FROM SUPABASE
-  ========================================================== */
-
-  async function load() {
-
-    if (!window.supabaseClient) {
-
-      console.warn(
-        'Brit.Tuna: Supabase client unavailable. Using demo products.'
-      );
-
-      return cache;
-    }
-
-
-    try {
-
-      var result =
-        await window.supabaseClient
-          .from('products')
-          .select(`
+          product_images (
             id,
-            name,
-            description,
-            category,
-            price,
+            product_id,
             image_url,
-            affiliate_url,
+            storage_path,
+            sort_order,
+            is_primary,
+            created_at
+          ),
+
+          product_variants (
+            id,
+            product_id,
+            pack_size,
+            price,
+            stock_quantity,
             is_active,
-            brand_id,
-            seller_id,
-            product_type,
-            status,
             created_at,
-            updated_at,
-            product_variants (
-              id,
-              product_id,
-              pack_size,
-              price,
-              stock_quantity,
-              is_active,
-              created_at,
-              updated_at
-            )
-          `)
-          .eq(
-            'status',
-            'active'
+            updated_at
           )
-          .eq(
-            'is_active',
-            true
-          )
-          .order(
-            'id',
-            {
-              ascending: true
-            }
-          );
-
-
-      if (result.error) {
-
-        console.warn(
-          'Brit.Tuna: Supabase products unavailable. Using demo products.',
-          result.error
-        );
-
-        return cache;
-      }
-
-
-      var rows =
-        result.data || [];
-
-
-      var databaseProducts =
-        rows
-          .map(fromRow)
-          .filter(
-            function (product) {
-
-              return (
-                product.active &&
-                product.status === 'active' &&
-                product.packs.length > 0
-              );
-
-            }
-          );
-
-
-      /*
-        Once Supabase contains usable active
-        products, use Supabase instead of
-        mixing them with demo products.
-      */
-
-      if (
-        databaseProducts.length > 0
-      ) {
-
-        cache =
-          databaseProducts;
-
-
-        console.log(
-          'Brit.Tuna: Loaded ' +
-          databaseProducts.length +
-          ' product(s) from Supabase.'
+        `)
+        .eq(
+          'status',
+          'active'
+        )
+        .eq(
+          'is_active',
+          true
+        )
+        .order(
+          'id',
+          {
+            ascending: true
+          }
         );
 
 
-        return cache;
-      }
-
+    if (result.error) {
 
       console.warn(
-        'Brit.Tuna: No active Supabase products with variants. Using demo catalogue.'
+        'Brit.Tuna: Supabase products unavailable. Using demo products.',
+        result.error
       );
 
-
       return cache;
+    }
 
 
-    } catch (error) {
+    var rows =
+      result.data || [];
 
-      console.warn(
-        'Brit.Tuna: Product loading failed. Using demo catalogue.',
-        error
+
+    var databaseProducts =
+      rows
+        .map(fromRow)
+        .filter(
+          function (product) {
+
+            return (
+              product.active &&
+              product.status === 'active' &&
+              product.packs.length > 0
+            );
+
+          }
+        );
+
+
+    /*
+      Once Supabase contains usable active
+      products, use Supabase instead of
+      mixing them with demo products.
+    */
+
+    if (
+      databaseProducts.length > 0
+    ) {
+
+      cache =
+        databaseProducts;
+
+
+      console.log(
+        'Brit.Tuna: Loaded ' +
+        databaseProducts.length +
+        ' product(s) from Supabase.'
       );
 
 
       return cache;
     }
-  }
 
+
+    console.warn(
+      'Brit.Tuna: No active Supabase products with variants. Using demo catalogue.'
+    );
+
+
+    return cache;
+
+
+  } catch (error) {
+
+    console.warn(
+      'Brit.Tuna: Product loading failed. Using demo catalogue.',
+      error
+    );
+
+
+    return cache;
+  }
+}
 
   /* ==========================================================
      GET PRODUCTS
