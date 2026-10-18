@@ -2163,31 +2163,275 @@
 
   }
 
+  /* ==========================================================
+     PAGE-SPECIFIC BACKGROUND SLIDESHOW
+
+     Each page gets its own set of free Unsplash images.
+     This prevents the same background photos appearing
+     throughout the whole Brit.Tuna website.
+  ========================================================== */
+
+  var PAGE_SLIDES = {
+
+    /* =========================
+       HOME
+       Marketplace / mixed products
+       ========================= */
+
+    'index.html': [
+      'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1543168256-418811576931?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=1600&q=75'
+    ],
+
+
+    /* =========================
+       SHOP
+       Grocery / supermarket
+       ========================= */
+
+    'shop.html': [
+      'https://images.unsplash.com/photo-1578916171728-46686eac8d58?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1601599561213-832382fd07ba?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1608686207856-001b95cf60ca?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1583258292688-d0213dc5a3a8?auto=format&fit=crop&w=1600&q=75'
+    ],
+
+
+    /* =========================
+       PRODUCTS
+       Food / grocery products
+       ========================= */
+
+    'products.html': [
+      'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1567892320421-1c657571ea4a?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1532336414038-cf19250c5757?auto=format&fit=crop&w=1600&q=75'
+    ],
+
+
+    /* =========================
+       PRODUCT DETAILS
+       Product / ingredients
+       ========================= */
+
+    'product-details.html': [
+      'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1567892320421-1c657571ea4a?auto=format&fit=crop&w=1600&q=75'
+    ],
+
+
+    /* =========================
+       SERVICES
+       Warehouse / wholesale
+       ========================= */
+
+    'services.html': [
+      'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1565793298595-6a879b1d9492?auto=format&fit=crop&w=1600&q=75'
+    ],
+
+
+    /* =========================
+       ABOUT
+       Agriculture / food
+       ========================= */
+
+    'about.html': [
+      'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1471194402529-8e0f5a675de6?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1499529112087-3cb3b73cec95?auto=format&fit=crop&w=1600&q=75'
+    ],
+
+
+    /* =========================
+       CONTACT
+       Customer service / business
+       ========================= */
+
+    'contact.html': [
+      'https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1600&q=75'
+    ],
+
+
+    /* =========================
+       FAQ
+       Help / customer support
+       ========================= */
+
+    'faq.html': [
+      'https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1556761175-4b46a572b786?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1600&q=75'
+    ],
+
+
+    /* =========================
+       CART
+       Shopping
+       ========================= */
+
+    'cart.html': [
+      'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1600&q=75'
+    ],
+
+
+    /* =========================
+       CHECKOUT
+       Package / delivery
+       ========================= */
+
+    'checkout.html': [
+      'https://images.unsplash.com/photo-1580674285054-bed31e145f59?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1586864387789-628af9feed72?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1586528116493-da8b2e22f845?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=1600&q=75'
+    ],
+
+
+    /* =========================
+       LOGIN
+       Clean professional
+       ========================= */
+
+    'login.html': [
+      'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1600&q=75'
+    ],
+
+
+    /* =========================
+       REGISTER
+       Business / marketplace
+       ========================= */
+
+    'register.html': [
+      'https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1600&q=75'
+    ],
+
+
+    /* =========================
+       ACCOUNT
+       Customer / shopping
+       ========================= */
+
+    'account.html': [
+      'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1556761175-4b46a572b786?auto=format&fit=crop&w=1600&q=75'
+    ],
+
+
+    /* =========================
+       MY ORDERS
+       Packages / logistics
+       ========================= */
+
+    'orders.html': [
+      'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1580674285054-bed31e145f59?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=1600&q=75'
+    ],
+
+
+    /* =========================
+       ORDER CONFIRMATION
+       Delivery / parcels
+       ========================= */
+
+    'order-confirmation.html': [
+      'https://images.unsplash.com/photo-1580674285054-bed31e145f59?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1600&q=75'
+    ],
+
+
+    /* =========================
+       PRIVACY POLICY
+       Clean / professional
+       ========================= */
+
+    'privacy-policy.html': [
+      'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1600&q=75'
+    ],
+
+
+    /* =========================
+       REFUND POLICY
+       Shopping / package
+       ========================= */
+
+    'refund-policy.html': [
+      'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1580674285054-bed31e145f59?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=1600&q=75'
+    ]
+
+  };
 
 
   /* ==========================================================
-     BACKGROUND SLIDESHOW
+     FALLBACK BACKGROUNDS
+
+     Used only if a new page is added later and that page
+     is not yet listed inside PAGE_SLIDES.
   ========================================================== */
 
-  var SLIDES = [
+  var DEFAULT_SLIDES = [
 
-    'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=1600&q=70',
+    'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1600&q=75',
 
-    'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=1600&q=70',
+    'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=1600&q=75',
 
-    'https://images.unsplash.com/photo-1567892320421-1c657571ea4a?auto=format&fit=crop&w=1600&q=70',
-
-    'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=1600&q=70',
-
-    'https://images.unsplash.com/photo-1532336414038-cf19250c5757?auto=format&fit=crop&w=1600&q=70'
+    'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1600&q=75'
 
   ];
 
 
+  /* Change background every 5 seconds */
 
   var SLIDE_MS =
-    1000;
+    5000;
 
+
+  /* ==========================================================
+     GET BACKGROUNDS FOR CURRENT PAGE
+  ========================================================== */
+
+  function getPageSlides() {
+
+    var file =
+      currentFile();
+
+
+    return (
+      PAGE_SLIDES[file] ||
+      DEFAULT_SLIDES
+    );
+
+  }
 
 
   /* ==========================================================
@@ -2195,6 +2439,20 @@
   ========================================================== */
 
   function setupPageBackground() {
+
+    var slides =
+      getPageSlides();
+
+
+    if (
+      !slides ||
+      !slides.length
+    ) {
+
+      return;
+
+    }
+
 
     var box =
       document.createElement(
@@ -2212,33 +2470,34 @@
     );
 
 
-
-    var start =
-      2;
-
-
-
     box.innerHTML =
-      SLIDES.map(
+      slides.map(
         function (src, i) {
 
           return (
 
-            '<img src="' +
-            src +
-            '" alt=""' +
-            (
-              i === start
-                ? ' class="active"'
-                : ''
-            ) +
-            '>'
+            '<img ' +
+              'src="' +
+              src +
+              '" ' +
+              'alt="" ' +
+              (
+                i === 0
+                  ? 'class="active" '
+                  : ''
+              ) +
+              'loading="' +
+              (
+                i === 0
+                  ? 'eager'
+                  : 'lazy'
+              ) +
+              '">' 
 
           );
 
         }
       ).join('');
-
 
 
     document.body.insertBefore(
@@ -2247,25 +2506,31 @@
     );
 
 
-
     var imgs =
       box.querySelectorAll(
         'img'
       );
 
 
-    var cur =
-      start;
+    if (
+      imgs.length <= 1
+    ) {
 
+      return;
+
+    }
+
+
+    var cur =
+      0;
 
 
     setInterval(
 
       function () {
 
-
         if (
-          !imgs.length
+          document.hidden
         ) {
 
           return;
@@ -2275,7 +2540,9 @@
 
         imgs[cur]
           .classList
-          .remove('active');
+          .remove(
+            'active'
+          );
 
 
         cur =
@@ -2285,8 +2552,9 @@
 
         imgs[cur]
           .classList
-          .add('active');
-
+          .add(
+            'active'
+          );
 
       },
 
@@ -2295,6 +2563,9 @@
     );
 
   }
+
+  
+
 
 
 
