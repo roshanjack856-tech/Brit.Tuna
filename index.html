@@ -2,185 +2,1070 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Brit.Tuna | Peanuts, Mango Pickles, Red Chilli &amp; Rice</title>
-  <meta name="description" content="Shop peanuts, mango pickles, red chilli and rice from Brit.Tuna. Retail and bulk enquiries welcome.">
-  <meta name="theme-color" content="#7a1f2b">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="responsive.css">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <title>
+    Brit.Tuna | Food, Grocery, Home & Lifestyle Marketplace
+  </title>
+
+  <meta
+    name="description"
+    content="Shop food, grocery, organic products, home and kitchen essentials, personal care and more at Brit.Tuna."
+  >
+
+  <meta
+    name="theme-color"
+    content="#1f5a3a"
+  >
+
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  >
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  >
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="responsive.css"
+  >
 </head>
+
+
 <body data-page="home">
 
-  <!-- Header, mobile menu and WhatsApp button are built by script.js -->
+  <!-- =====================================================
+       HEADER
+       Built by script.js
+  ====================================================== -->
+
   <div id="site-header"></div>
+
 
   <main id="main">
 
-    <!-- HERO (edit the headline here) -->
+
+    <!-- =====================================================
+         HERO
+    ====================================================== -->
+
     <section class="hero">
+
       <div class="container hero-inner">
-        <div>
-          <span class="eyebrow">Retail &amp; wholesale foods</span>
-          <h1>Quality Foods for Every Kitchen</h1>
-          <p>Shop peanuts, mango pickles, red chilli and rice. Retail packs and bulk enquiries welcome.</p>
+
+        <div class="hero-copy">
+
+          <span class="eyebrow">
+            Brit.Tuna Marketplace
+          </span>
+
+          <h1>
+            Quality Products for
+            Everyday Living
+          </h1>
+
+          <p>
+            Shop food, groceries, organic products,
+            home essentials, personal care and more
+            from Brit.Tuna and marketplace sellers.
+          </p>
+
           <div class="hero-actions">
-            <a class="btn btn-red" href="shop.html">Shop Now</a>
-            <a class="btn btn-light" href="products.html">Explore Products</a>
+
+            <a
+              class="btn btn-red"
+              href="shop.html"
+            >
+              Shop Now
+            </a>
+
+            <a
+              class="btn btn-light"
+              href="products.html"
+            >
+              Explore Products
+            </a>
+
           </div>
+
         </div>
-        <div class="hero-tiles" aria-label="Product categories">
-          <a class="hero-tile" style="--photo:url('https://images.unsplash.com/photo-1567892320421-1c657571ea4a?auto=format&fit=crop&w=600&q=70')" href="products.html?category=peanuts">Peanuts</a>
-          <a class="hero-tile" style="--photo:url('https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=600&q=70')" href="products.html?category=mango-pickles">Mango Pickles</a>
-          <a class="hero-tile" style="--photo:url('https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=600&q=70')" href="products.html?category=red-chilli">Red Chilli</a>
-          <a class="hero-tile" style="--photo:url('https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=70')" href="products.html?category=rice">Rice</a>
+
+
+        <!-- Existing main food categories -->
+
+        <div
+          class="hero-tiles"
+          aria-label="Popular food categories"
+        >
+
+          <a
+            class="hero-tile"
+            style="--photo:url('https://images.unsplash.com/photo-1567892320421-1c657571ea4a?auto=format&fit=crop&w=600&q=70')"
+            href="products.html?category=peanuts"
+          >
+            Peanuts
+          </a>
+
+
+          <a
+            class="hero-tile"
+            style="--photo:url('https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=600&q=70')"
+            href="products.html?category=mango-pickles"
+          >
+            Mango Pickles
+          </a>
+
+
+          <a
+            class="hero-tile"
+            style="--photo:url('https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=600&q=70')"
+            href="products.html?category=red-chilli"
+          >
+            Red Chilli
+          </a>
+
+
+          <a
+            class="hero-tile"
+            style="--photo:url('https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=70')"
+            href="products.html?category=rice"
+          >
+            Rice
+          </a>
+
         </div>
+
       </div>
+
     </section>
 
-    <!-- OFFERS (filled by products.js from products that have a discount) -->
-    <section class="section" id="offers">
+
+
+    <!-- =====================================================
+         MARKETPLACE CATEGORY NAVIGATION
+    ====================================================== -->
+
+    <section class="market-category-section">
+
       <div class="container">
-        <div class="section-head">
+
+        <div class="market-category-head">
+
           <div>
-            <h2 class="section-title">Today's Offers</h2>
-            <p class="section-sub">Save on our most loved peanuts, pickles, chilli and rice.</p>
+
+            <h2 class="section-title">
+              Explore Categories
+            </h2>
+
+            <p class="section-sub">
+              Find products across food, home,
+              personal care and everyday essentials.
+            </p>
+
           </div>
-          <a class="btn btn-red" href="shop.html">Shop all offers</a>
+
+          <a
+            href="shop.html"
+            class="market-view-all"
+          >
+            View all
+          </a>
+
         </div>
-        <div class="offer-strip" id="offers-grid"></div>
+
+
+        <div
+          class="market-category-scroll"
+          aria-label="Marketplace categories"
+        >
+
+
+          <!-- GROCERIES -->
+
+          <a
+            class="market-category-card"
+            href="shop.html?category=groceries"
+          >
+
+            <div class="market-category-image">
+
+              <img
+                src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=500&q=75"
+                alt="Groceries"
+                loading="lazy"
+              >
+
+            </div>
+
+            <span>
+              Groceries
+            </span>
+
+          </a>
+
+
+
+          <!-- RICE -->
+
+          <a
+            class="market-category-card"
+            href="products.html?category=rice"
+          >
+
+            <div class="market-category-image">
+
+              <img
+                src="https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=500&q=75"
+                alt="Rice and grains"
+                loading="lazy"
+              >
+
+            </div>
+
+            <span>
+              Rice &amp; Grains
+            </span>
+
+          </a>
+
+
+
+          <!-- SPICES -->
+
+          <a
+            class="market-category-card"
+            href="shop.html?category=spices"
+          >
+
+            <div class="market-category-image">
+
+              <img
+                src="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=500&q=75"
+                alt="Spices and masala"
+                loading="lazy"
+              >
+
+            </div>
+
+            <span>
+              Spices &amp; Masala
+            </span>
+
+          </a>
+
+
+
+          <!-- PICKLES -->
+
+          <a
+            class="market-category-card"
+            href="products.html?category=mango-pickles"
+          >
+
+            <div class="market-category-image">
+
+              <img
+                src="https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=500&q=75"
+                alt="Pickles"
+                loading="lazy"
+              >
+
+            </div>
+
+            <span>
+              Pickles
+            </span>
+
+          </a>
+
+
+
+          <!-- SNACKS -->
+
+          <a
+            class="market-category-card"
+            href="shop.html?category=snacks"
+          >
+
+            <div class="market-category-image">
+
+              <img
+                src="https://images.unsplash.com/photo-1599490659213-e2b9527bd087?auto=format&fit=crop&w=500&q=75"
+                alt="Snacks"
+                loading="lazy"
+              >
+
+            </div>
+
+            <span>
+              Snacks
+            </span>
+
+          </a>
+
+
+
+          <!-- ORGANIC -->
+
+          <a
+            class="market-category-card"
+            href="shop.html?category=organic"
+          >
+
+            <div class="market-category-image">
+
+              <img
+                src="https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=500&q=75"
+                alt="Organic foods"
+                loading="lazy"
+              >
+
+            </div>
+
+            <span>
+              Organic
+            </span>
+
+          </a>
+
+
+
+          <!-- HOME & KITCHEN -->
+
+          <a
+            class="market-category-card"
+            href="shop.html?category=home-kitchen"
+          >
+
+            <div class="market-category-image">
+
+              <img
+                src="https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=500&q=75"
+                alt="Home and kitchen"
+                loading="lazy"
+              >
+
+            </div>
+
+            <span>
+              Home &amp; Kitchen
+            </span>
+
+          </a>
+
+
+
+          <!-- PERSONAL CARE -->
+
+          <a
+            class="market-category-card"
+            href="shop.html?category=personal-care"
+          >
+
+            <div class="market-category-image">
+
+              <img
+                src="https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=500&q=75"
+                alt="Personal care"
+                loading="lazy"
+              >
+
+            </div>
+
+            <span>
+              Personal Care
+            </span>
+
+          </a>
+
+
+
+          <!-- BEAUTY -->
+
+          <a
+            class="market-category-card"
+            href="shop.html?category=beauty"
+          >
+
+            <div class="market-category-image">
+
+              <img
+                src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=500&q=75"
+                alt="Beauty and makeup"
+                loading="lazy"
+              >
+
+            </div>
+
+            <span>
+              Beauty
+            </span>
+
+          </a>
+
+
+
+          <!-- HOUSEHOLD -->
+
+          <a
+            class="market-category-card"
+            href="shop.html?category=household"
+          >
+
+            <div class="market-category-image">
+
+              <img
+                src="https://images.unsplash.com/photo-1583947215259-38e31be8751f?auto=format&fit=crop&w=500&q=75"
+                alt="Household products"
+                loading="lazy"
+              >
+
+            </div>
+
+            <span>
+              Household
+            </span>
+
+          </a>
+
+        </div>
+
       </div>
+
     </section>
 
-    <!-- FEATURED CATEGORIES (filled by products.js) -->
+
+
+    <!-- =====================================================
+         TODAY'S OFFERS
+         Filled by products.js
+    ====================================================== -->
+
+    <section
+      class="section"
+      id="offers"
+    >
+
+      <div class="container">
+
+        <div class="section-head">
+
+          <div>
+
+            <h2 class="section-title">
+              Today's Offers
+            </h2>
+
+            <p class="section-sub">
+              Discover current deals across Brit.Tuna products.
+            </p>
+
+          </div>
+
+
+          <a
+            class="btn btn-red"
+            href="shop.html"
+          >
+            Shop all offers
+          </a>
+
+        </div>
+
+
+        <div
+          class="offer-strip"
+          id="offers-grid"
+        ></div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         SHOP BY CATEGORY
+         Existing products.js uses category-grid.
+         DO NOT CHANGE THIS ID.
+    ====================================================== -->
+
     <section class="section">
+
       <div class="container">
+
         <div class="section-head">
+
           <div>
-            <h2 class="section-title">Shop by Category</h2>
-            <p class="section-sub">Pick a category to see all available products.</p>
+
+            <h2 class="section-title">
+              Shop by Food Category
+            </h2>
+
+            <p class="section-sub">
+              Browse available products from our current catalogue.
+            </p>
+
           </div>
+
         </div>
-        <div class="cat-grid" id="category-grid"></div>
+
+
+        <div
+          class="cat-grid"
+          id="category-grid"
+        ></div>
+
       </div>
+
     </section>
 
-    <!-- BESTSELLERS (filled by products.js) -->
+
+
+    <!-- =====================================================
+         POPULAR BRANDS
+         Demo UI only.
+         Replace with real approved brands later.
+    ====================================================== -->
+
+    <section class="market-brands-section">
+
+      <div class="container">
+
+        <div class="section-head">
+
+          <div>
+
+            <h2 class="section-title">
+              Popular Brands
+            </h2>
+
+            <p class="section-sub">
+              Discover products from brands and sellers
+              available on Brit.Tuna.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div
+          class="market-brand-scroll"
+          aria-label="Popular brands"
+        >
+
+
+          <div class="market-brand-card">
+
+            <span class="brand-demo-label">
+              BRIT.TUNA
+            </span>
+
+          </div>
+
+
+          <div class="market-brand-card">
+
+            <span>
+              Grocery Brands
+            </span>
+
+          </div>
+
+
+          <div class="market-brand-card">
+
+            <span>
+              Organic Brands
+            </span>
+
+          </div>
+
+
+          <div class="market-brand-card">
+
+            <span>
+              Home Brands
+            </span>
+
+          </div>
+
+
+          <div class="market-brand-card">
+
+            <span>
+              Personal Care
+            </span>
+
+          </div>
+
+
+          <div class="market-brand-card">
+
+            <span>
+              Seller Brands
+            </span>
+
+          </div>
+
+
+        </div>
+
+
+        <p class="market-demo-note">
+          Brand names shown here are demo categories.
+          Real approved seller brands can be connected
+          from the database later.
+        </p>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         BESTSELLERS
+         Filled by products.js.
+         DO NOT CHANGE ID.
+    ====================================================== -->
+
     <section class="section section-alt">
+
       <div class="container">
+
         <div class="section-head">
+
           <div>
-            <h2 class="section-title">Bestselling Products</h2>
-            <p class="section-sub">Our customers' favourites, packed fresh.</p>
+
+            <h2 class="section-title">
+              Bestselling Products
+            </h2>
+
+            <p class="section-sub">
+              Popular products available on Brit.Tuna.
+            </p>
+
           </div>
-          <a class="btn btn-outline" href="shop.html">View all products</a>
+
+
+          <a
+            class="btn btn-outline"
+            href="shop.html"
+          >
+            View all products
+          </a>
+
         </div>
-        <div class="product-grid" id="bestsellers-grid">
-          <p class="loading">Loading products…</p>
+
+
+        <div
+          class="product-grid"
+          id="bestsellers-grid"
+        >
+
+          <p class="loading">
+            Loading products…
+          </p>
+
         </div>
+
       </div>
+
     </section>
 
-    <!-- WHY CHOOSE (edit these points to match your real business) -->
+
+
+    <!-- =====================================================
+         WHY CHOOSE
+    ====================================================== -->
+
     <section class="section">
+
       <div class="container">
+
         <div class="section-head">
+
           <div>
-            <h2 class="section-title">Why Choose Brit.Tuna</h2>
-            <p class="section-sub">Fresh packs, fair prices and friendly service.</p>
+
+            <h2 class="section-title">
+              Why Choose Brit.Tuna
+            </h2>
+
+            <p class="section-sub">
+              A simple marketplace experience for
+              everyday shopping.
+            </p>
+
           </div>
+
         </div>
+
+
         <div class="card-grid">
-          <div class="info-card"><span class="ic-icon" aria-hidden="true">🛒</span><h3>Simple shopping</h3><p>Browse by category, pick a pack size and add to cart in a few clicks.</p></div>
-          <div class="info-card"><span class="ic-icon" aria-hidden="true">₹</span><h3>Clear prices in rupees</h3><p>Every pack size shows its price in Indian Rupees.</p></div>
-          <div class="info-card"><span class="ic-icon" aria-hidden="true">📦</span><h3>Retail and bulk</h3><p>Choose everyday packs, or contact us for wholesale and bulk quantities.</p></div>
-          <div class="info-card"><span class="ic-icon" aria-hidden="true">💬</span><h3>Ask on WhatsApp</h3><p>Message us with questions about any product before you order.</p></div>
+
+
+          <div class="info-card">
+
+            <span
+              class="ic-icon"
+              aria-hidden="true"
+            >
+              🛒
+            </span>
+
+            <h3>
+              Simple Shopping
+            </h3>
+
+            <p>
+              Browse categories, choose available
+              variants and add products to your cart.
+            </p>
+
+          </div>
+
+
+
+          <div class="info-card">
+
+            <span
+              class="ic-icon"
+              aria-hidden="true"
+            >
+              ₹
+            </span>
+
+            <h3>
+              Clear Prices
+            </h3>
+
+            <p>
+              Product and pack prices are clearly
+              displayed in Indian Rupees.
+            </p>
+
+          </div>
+
+
+
+          <div class="info-card">
+
+            <span
+              class="ic-icon"
+              aria-hidden="true"
+            >
+              📦
+            </span>
+
+            <h3>
+              Retail &amp; Bulk
+            </h3>
+
+            <p>
+              Shop retail products or contact us
+              for wholesale and bulk enquiries.
+            </p>
+
+          </div>
+
+
+
+          <div class="info-card">
+
+            <span
+              class="ic-icon"
+              aria-hidden="true"
+            >
+              💬
+            </span>
+
+            <h3>
+              WhatsApp Support
+            </h3>
+
+            <p>
+              Ask questions about products,
+              availability and bulk quantities.
+            </p>
+
+          </div>
+
+
         </div>
+
       </div>
+
     </section>
 
-    <!-- WHOLESALE ENQUIRY -->
-    <section class="section" style="padding-top:0">
+
+
+    <!-- =====================================================
+         WHOLESALE
+    ====================================================== -->
+
+    <section
+      class="section"
+      style="padding-top:0"
+    >
+
       <div class="container">
+
         <div class="banner">
+
           <div>
-            <h2>Wholesale &amp; Bulk Enquiries</h2>
-            <p>Shops, caterers and food businesses can ask about bulk supply.</p>
+
+            <h2>
+              Wholesale &amp; Bulk Enquiries
+            </h2>
+
+            <p>
+              Shops, retailers, caterers and businesses
+              can contact Brit.Tuna about bulk supply.
+            </p>
+
           </div>
-          <div class="hero-actions" style="margin:0">
-            <a class="btn btn-light" href="contact.html">Send an enquiry</a>
-            <a class="btn btn-whatsapp" data-whatsapp data-message="Hello Brit.Tuna, I have a wholesale / bulk enquiry." href="#">WhatsApp us</a>
+
+
+          <div
+            class="hero-actions"
+            style="margin:0"
+          >
+
+            <a
+              class="btn btn-light"
+              href="contact.html"
+            >
+              Send an enquiry
+            </a>
+
+
+            <a
+              class="btn btn-whatsapp"
+              data-whatsapp
+              data-message="Hello Brit.Tuna, I have a wholesale / bulk enquiry."
+              href="#"
+            >
+              WhatsApp us
+            </a>
+
           </div>
+
         </div>
+
       </div>
+
     </section>
 
-    <!-- FAQ PREVIEW (edit answers once you confirm your policies) -->
+
+
+    <!-- =====================================================
+         FAQ
+    ====================================================== -->
+
     <section class="section section-alt">
+
       <div class="container">
+
         <div class="section-head">
+
           <div>
-            <h2 class="section-title">Frequently Asked Questions</h2>
-            <p class="section-sub">Quick answers about ordering, bulk supply and delivery.</p>
+
+            <h2 class="section-title">
+              Frequently Asked Questions
+            </h2>
+
+            <p class="section-sub">
+              Quick answers about shopping,
+              bulk supply and delivery.
+            </p>
+
           </div>
-          <a class="btn btn-outline" href="faq.html">See all FAQs</a>
+
+
+          <a
+            class="btn btn-outline"
+            href="faq.html"
+          >
+            See all FAQs
+          </a>
+
         </div>
+
+
         <div class="prose">
+
+
           <div class="faq-item">
-            <button type="button" class="faq-q" aria-expanded="false">How do I place an order?</button>
-            <div class="faq-a" hidden>Add products to your cart and go to checkout. You can also order directly on WhatsApp using the button on any product.</div>
+
+            <button
+              type="button"
+              class="faq-q"
+              aria-expanded="false"
+            >
+              How do I place an order?
+            </button>
+
+            <div
+              class="faq-a"
+              hidden
+            >
+              Choose an available product and pack size,
+              add it to your cart and continue to checkout.
+            </div>
+
           </div>
+
+
+
           <div class="faq-item">
-            <button type="button" class="faq-q" aria-expanded="false">Do you accept bulk or wholesale orders?</button>
-            <div class="faq-a" hidden>Wholesale products are listed in the shop. Contact us on WhatsApp or through the contact form for current bulk rates, minimum quantities and availability.</div>
+
+            <button
+              type="button"
+              class="faq-q"
+              aria-expanded="false"
+            >
+              Do you accept bulk or wholesale orders?
+            </button>
+
+            <div
+              class="faq-a"
+              hidden
+            >
+              Contact Brit.Tuna for current bulk
+              availability, quantities and pricing.
+            </div>
+
           </div>
+
+
+
           <div class="faq-item">
-            <button type="button" class="faq-q" aria-expanded="false">What are the shipping and delivery terms?</button>
-            <div class="faq-a" hidden>Delivery charges and the estimated delivery time are shown at checkout before you pay. Message us on WhatsApp to check delivery to your area.</div>
+
+            <button
+              type="button"
+              class="faq-q"
+              aria-expanded="false"
+            >
+              What are the shipping and delivery terms?
+            </button>
+
+            <div
+              class="faq-a"
+              hidden
+            >
+              Available shipping options, charges and
+              delivery estimates will be shown during
+              the ordering process when configured.
+            </div>
+
           </div>
+
+
         </div>
+
       </div>
+
     </section>
 
-    <!-- WHATSAPP CTA -->
+
+
+    <!-- =====================================================
+         WHATSAPP CTA
+    ====================================================== -->
+
     <section class="section">
+
       <div class="container">
+
         <div class="banner banner-green">
+
           <div>
-            <h2>Questions? Chat with us on WhatsApp</h2>
-            <p>Ask about products, pack sizes or bulk quantities. A WhatsApp message is an enquiry, not a confirmed order.</p>
+
+            <h2>
+              Questions? Chat with us on WhatsApp
+            </h2>
+
+            <p>
+              Ask about products, pack sizes,
+              availability or bulk quantities.
+            </p>
+
           </div>
-          <a class="btn btn-whatsapp" data-whatsapp data-message="Hello Brit.Tuna, I have a question." href="#">Chat on WhatsApp</a>
+
+
+          <a
+            class="btn btn-whatsapp"
+            data-whatsapp
+            data-message="Hello Brit.Tuna, I have a question."
+            href="#"
+          >
+            Chat on WhatsApp
+          </a>
+
         </div>
+
       </div>
+
     </section>
+
 
   </main>
 
+
+
+  <!-- =====================================================
+       FOOTER
+  ====================================================== -->
+
   <div id="site-footer"></div>
 
-  <!-- Load order matters: config → supabase-config → products → cart → supabase → script -->
- <div id="site-footer"></div>
 
-<!-- 1. Supabase JavaScript Library -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- 2. Brit.Tuna Configuration -->
-<script src="config.js"></script>
+  <!-- =====================================================
+       JAVASCRIPT
+       Keep this order.
+  ====================================================== -->
 
-<!-- 3. Create Supabase Client -->
-<script src="supabase.js"></script>
+  <!-- Supabase Library -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
 
-<!-- 4. Product Data -->
-<script src="products.js"></script>
+  <!-- Configuration -->
+  <script src="config.js"></script>
 
-<!-- 5. Cart -->
-<script src="cart.js"></script>
+  <!-- Supabase Client -->
+  <script src="supabase.js"></script>
 
-<!-- 6. Shared Website UI -->
-<script src="script.js"></script>
+  <!-- Products -->
+  <script src="products.js"></script>
+
+  <!-- Cart -->
+  <script src="cart.js"></script>
+
+  <!-- Shared Website UI -->
+  <script src="script.js"></script>
+
 
 </body>
 </html>
