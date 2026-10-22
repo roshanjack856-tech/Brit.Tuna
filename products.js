@@ -3569,250 +3569,720 @@ var bestsellerGrid =
       );
 
 
-    /* ======================================================
-       DETAILS HTML
-    ====================================================== */
+   /* ======================================================
+   DETAILS HTML
+====================================================== */
 
-    box.innerHTML =
-      '<div class="product-detail-grid">' +
+/*
+  PRODUCT IMAGE GALLERY
+
+  Supabase product_images இருந்தால் அதை பயன்படுத்தும்.
+  இல்லையெனில் பழைய single product image பயன்படுத்தும்.
+*/
+
+var detailImages =
+  Array.isArray(p.images)
+    ? p.images.filter(
+        function (image) {
+          return (
+            image &&
+            image.url
+          );
+        }
+      )
+    : [];
 
 
-      /* IMAGE */
+/*
+  Old products / fallback image
+*/
 
-      '<div class="product-detail-media">' +
+if (!detailImages.length) {
 
-      '<div class="product-detail-main-image">' +
+  detailImages = [
+    {
+      id: null,
+      url: imageFor(p),
+      primary: true
+    }
+  ];
 
-      '<img id="pd-image" src="' +
-      imageFor(p) +
-      '" alt="' +
-      U.escapeHtml(
-        p.name
-      ) +
-      '" data-pid="' +
-      U.escapeHtml(
-        String(
-          p.id
+}
+
+
+/*
+  Main image
+*/
+
+var mainImageUrl =
+  imageFor(p);
+
+
+/*
+  Find which thumbnail is the main image
+*/
+
+var mainImageIndex =
+  detailImages.findIndex(
+    function (image) {
+
+      return (
+        image.url ===
+        mainImageUrl
+      );
+
+    }
+  );
+
+
+if (mainImageIndex < 0) {
+
+  mainImageIndex = 0;
+
+  mainImageUrl =
+    detailImages[0].url;
+
+}
+
+
+/*
+  Create thumbnail buttons
+*/
+
+var thumbnailHtml =
+  detailImages
+    .map(
+      function (image, index) {
+
+        return (
+          '<button ' +
+          'type="button" ' +
+          'class="product-detail-thumbnail' +
+          (
+            index === mainImageIndex
+              ? ' active'
+              : ''
+          ) +
+          '" ' +
+          'data-image-url="' +
+          U.escapeHtml(
+            image.url
+          ) +
+          '" ' +
+          'aria-label="View ' +
+          U.escapeHtml(
+            p.name
+          ) +
+          ' image ' +
+          (index + 1) +
+          '">' +
+
+          '<img ' +
+          'src="' +
+          U.escapeHtml(
+            image.url
+          ) +
+          '" ' +
+          'alt="' +
+          U.escapeHtml(
+            p.name
+          ) +
+          ' image ' +
+          (index + 1) +
+          '">' +
+
+          '</button>'
+        );
+
+      }
+    )
+    .join('');
+
+
+/* ======================================================
+   BUILD PRODUCT DETAILS
+====================================================== */
+
+box.innerHTML =
+  '<div class="product-detail-grid">' +
+
+
+  /* ====================================================
+     LEFT — PRODUCT IMAGES
+  ==================================================== */
+
+  '<div class="product-detail-media">' +
+
+
+  /* MAIN IMAGE */
+
+  '<div class="product-detail-main-image">' +
+
+  '<img ' +
+  'id="pd-image" ' +
+  'src="' +
+  U.escapeHtml(
+    mainImageUrl
+  ) +
+  '" ' +
+  'alt="' +
+  U.escapeHtml(
+    p.name
+  ) +
+  '" ' +
+  'data-pid="' +
+  U.escapeHtml(
+    String(
+      p.id
+    )
+  ) +
+  '">' +
+
+
+  /* DISCOUNT BADGE */
+
+  (
+    p.discount
+      ? '<span class="pc-badge product-detail-badge">' +
+        p.discount +
+        '% OFF</span>'
+      : ''
+  ) +
+
+  '</div>' +
+
+
+  /* THUMBNAILS */
+
+  '<div class="product-detail-thumbnails" id="pd-thumbnails">' +
+
+  thumbnailHtml +
+
+  '</div>' +
+
+
+  '</div>' +
+
+
+  /* ====================================================
+     RIGHT — PRODUCT INFORMATION
+  ==================================================== */
+
+  '<div class="product-detail-content">' +
+
+
+  /* CATEGORY */
+
+  '<p class="product-detail-category">' +
+
+  U.escapeHtml(
+    cat
+      ? cat.name
+      : p.category || ''
+  ) +
+
+  '</p>' +
+
+
+  /* PRODUCT NAME */
+
+  '<h1 class="product-detail-title">' +
+
+  U.escapeHtml(
+    p.name
+  ) +
+
+  '</h1>' +
+
+
+  /* SHORT DESCRIPTION */
+
+  (
+    p.short
+      ? '<p class="product-detail-short">' +
+        U.escapeHtml(
+          p.short
+        ) +
+        '</p>'
+      : ''
+  ) +
+
+
+  /* ====================================================
+     PRICE
+  ==================================================== */
+
+  '<div class="product-detail-price">' +
+
+  '<span id="pd-price" class="price-now">' +
+
+  U.formatINR(
+    selectedNow
+  ) +
+
+  '</span>' +
+
+
+  '<span id="pd-mrp" class="price-old">' +
+
+  (
+    p.discount
+      ? U.formatINR(
+          selectedMrp
         )
-      ) +
-      '">' +
+      : ''
+  ) +
 
-      (
-        p.discount
-          ? '<span class="pc-badge">' +
-            p.discount +
-            '% OFF</span>'
-          : ''
-      ) +
+  '</span>' +
 
-      '</div>' +
 
-      '</div>' +
+  (
+    p.discount
+      ? '<span class="product-detail-discount">' +
+        p.discount +
+        '% OFF</span>'
+      : ''
+  ) +
 
+  '</div>' +
 
-      /* CONTENT */
 
-      '<div class="product-detail-content">' +
+  /* ====================================================
+     STOCK
+  ==================================================== */
 
-      '<p class="pc-cat">' +
-      U.escapeHtml(
-        cat
-          ? cat.name
-          : ''
-      ) +
-      '</p>' +
+  '<p id="pd-stock" class="stock stock-' +
 
-      '<h1>' +
-      U.escapeHtml(
-        p.name
-      ) +
-      '</h1>' +
+  (
+    packHasStock(
+      selectedPack
+    )
+      ? 'in_stock'
+      : 'out_of_stock'
+  ) +
 
-      '<p class="product-detail-short">' +
-      U.escapeHtml(
-        p.short
-      ) +
-      '</p>' +
+  '">' +
 
+  U.escapeHtml(
+    detailStockText
+  ) +
 
-      /* PRICE */
+  '</p>' +
 
-      '<div class="product-detail-price">' +
 
-      '<span id="pd-price" class="price-now">' +
-      U.formatINR(
-        selectedNow
-      ) +
-      '</span> ' +
+  /* ====================================================
+     PACK SIZE
+  ==================================================== */
 
-      '<span id="pd-mrp" class="price-old">' +
+  '<div class="product-pack-section">' +
 
-      (
-        p.discount
-          ? U.formatINR(
-              selectedMrp
-            )
-          : ''
-      ) +
+  '<h3>Select pack size</h3>' +
 
-      '</span>' +
+  '<div class="pack-options">' +
 
-      '</div>' +
+  packOptions +
 
+  '</div>' +
 
-      /* SELECTED STOCK */
+  '</div>' +
 
-      '<p id="pd-stock" class="stock stock-' +
-      (
-        packHasStock(
-          selectedPack
-        )
-          ? 'in_stock'
-          : 'out_of_stock'
-      ) +
-      '">' +
 
-      U.escapeHtml(
-        detailStockText
-      ) +
+  /* ====================================================
+     QUANTITY
+  ==================================================== */
 
-      '</p>' +
+  '<div class="product-qty-section">' +
 
+  '<h3>Quantity</h3>' +
 
-      /* PACK SELECTOR */
+  '<div class="qty-control">' +
 
-      '<div class="product-pack-section">' +
+  '<button ' +
+  'type="button" ' +
+  'id="qty-dec" ' +
+  'aria-label="Decrease quantity">' +
+  '−' +
+  '</button>' +
 
-      '<h3>Select pack size</h3>' +
+  '<input ' +
+  'id="qty-input" ' +
+  'type="number" ' +
+  'min="1" ' +
+  'max="99" ' +
+  'value="1" ' +
+  'inputmode="numeric" ' +
+  'aria-label="Quantity">' +
 
-      '<div class="pack-options">' +
-      packOptions +
-      '</div>' +
+  '<button ' +
+  'type="button" ' +
+  'id="qty-inc" ' +
+  'aria-label="Increase quantity">' +
+  '+' +
+  '</button>' +
 
-      '</div>' +
+  '</div>' +
 
+  '</div>' +
 
-      /* QUANTITY */
 
-      '<div class="product-qty-section">' +
+  /* ====================================================
+     TOTAL
+  ==================================================== */
 
-      '<h3>Quantity</h3>' +
+  '<div class="product-detail-total">' +
 
-      '<div class="qty-control">' +
+  '<span>Total</span>' +
 
-      '<button type="button" id="qty-dec" aria-label="Decrease quantity">−</button>' +
+  '<strong id="pd-total">' +
 
-      '<input id="qty-input" type="number" min="1" max="99" value="1" inputmode="numeric" aria-label="Quantity">' +
+  U.formatINR(
+    selectedNow
+  ) +
 
-      '<button type="button" id="qty-inc" aria-label="Increase quantity">+</button>' +
+  '</strong>' +
 
-      '</div>' +
+  '</div>' +
 
-      '</div>' +
 
+  /* ====================================================
+     ACTION BUTTONS
+  ==================================================== */
 
-      /* TOTAL */
+  '<div class="product-detail-actions">' +
 
-      '<div class="product-detail-total">' +
 
-      '<span>Total</span>' +
+  /* ADD TO CART */
 
-      '<strong id="pd-total">' +
-      U.formatINR(
-        selectedNow
-      ) +
-      '</strong>' +
+  '<button ' +
+  'type="button" ' +
+  'id="pd-add" ' +
+  'class="btn btn-primary"' +
 
-      '</div>' +
+  (
+    allOut
+      ? ' disabled'
+      : ''
+  ) +
 
+  '>' +
 
-      /* ACTIONS */
+  (
+    allOut
+      ? 'Out of stock'
+      : 'Add to Cart'
+  ) +
 
-      '<div class="product-detail-actions">' +
+  '</button>' +
 
-      '<button type="button" id="pd-add" class="btn btn-primary"' +
 
-      (
-        allOut
-          ? ' disabled'
-          : ''
-      ) +
+  /* BUY NOW */
 
-      '>' +
+  '<button ' +
+  'type="button" ' +
+  'id="pd-buy-now" ' +
+  'class="btn btn-buy-now"' +
 
-      (
-        allOut
-          ? 'Out of stock'
-          : 'Add to Cart'
-      ) +
+  (
+    allOut
+      ? ' disabled'
+      : ''
+  ) +
 
-      '</button>' +
+  '>' +
 
-      '<a id="pd-whatsapp" class="btn btn-whatsapp" href="' +
-      U.whatsappLink(
-        detailsWhatsappMessage
-      ) +
-      '" target="_blank" rel="noopener">WhatsApp</a>' +
+  (
+    allOut
+      ? 'Unavailable'
+      : 'Buy Now'
+  ) +
 
-      '</div>' +
+  '</button>' +
 
+  '</div>' +
 
-      /* DESCRIPTION */
 
-      '<div class="product-detail-description">' +
+  /* ====================================================
+     WHATSAPP
+  ==================================================== */
 
-      '<h2>Product Details</h2>' +
+  '<a ' +
+  'id="pd-whatsapp" ' +
+  'class="btn btn-whatsapp product-detail-whatsapp" ' +
+  'href="' +
 
-      '<p>' +
-      U.escapeHtml(
-        p.description
-      ) +
-      '</p>' +
+  U.whatsappLink(
+    detailsWhatsappMessage
+  ) +
 
-      '</div>' +
+  '" ' +
+  'target="_blank" ' +
+  'rel="noopener">' +
 
+  'Order on WhatsApp' +
 
-      (
-        p.ingredients
-          ? '<div class="product-info-row">' +
-            '<strong>Ingredients:</strong> ' +
-            U.escapeHtml(
-              p.ingredients
-            ) +
-            '</div>'
-          : ''
-      ) +
+  '</a>' +
 
 
-      (
-        p.allergens
-          ? '<div class="product-info-row">' +
-            '<strong>Allergen information:</strong> ' +
-            U.escapeHtml(
-              p.allergens
-            ) +
-            '</div>'
-          : ''
-      ) +
+  /* ====================================================
+     PRODUCT HIGHLIGHTS
+  ==================================================== */
 
+  '<div class="product-highlights">' +
 
-      (
-        p.storage
-          ? '<div class="product-info-row">' +
-            '<strong>Storage:</strong> ' +
-            U.escapeHtml(
-              p.storage
-            ) +
-            '</div>'
-          : ''
-      ) +
+  '<h2>Product Highlights</h2>' +
 
+  '<div class="product-highlight-grid">' +
 
-      '</div>' +
 
-      '</div>';
+  /* CATEGORY */
 
+  '<div class="product-highlight-item">' +
 
+  '<span>Category</span>' +
+
+  '<strong>' +
+
+  U.escapeHtml(
+    cat
+      ? cat.name
+      : p.category || '—'
+  ) +
+
+  '</strong>' +
+
+  '</div>' +
+
+
+  /* PACK SIZE */
+
+  '<div class="product-highlight-item">' +
+
+  '<span>Pack Size</span>' +
+
+  '<strong id="pd-highlight-pack">' +
+
+  U.escapeHtml(
+    selectedPack.label
+  ) +
+
+  '</strong>' +
+
+  '</div>' +
+
+
+  /* AVAILABILITY */
+
+  '<div class="product-highlight-item">' +
+
+  '<span>Availability</span>' +
+
+  '<strong id="pd-highlight-stock">' +
+
+  U.escapeHtml(
+    detailStockText
+  ) +
+
+  '</strong>' +
+
+  '</div>' +
+
+
+  /* PRODUCT TYPE */
+
+  (
+    p.productType
+      ? '<div class="product-highlight-item">' +
+
+        '<span>Product Type</span>' +
+
+        '<strong>' +
+
+        U.escapeHtml(
+          p.productType
+        ) +
+
+        '</strong>' +
+
+        '</div>'
+      : ''
+  ) +
+
+
+  '</div>' +
+
+  '</div>' +
+
+
+  /* ====================================================
+     PRODUCT DESCRIPTION
+  ==================================================== */
+
+  '<div class="product-detail-description">' +
+
+  '<h2>Product Details</h2>' +
+
+  '<p>' +
+
+  U.escapeHtml(
+    p.description ||
+    p.short ||
+    ''
+  ) +
+
+  '</p>' +
+
+  '</div>' +
+
+
+  /* ====================================================
+     INGREDIENTS
+  ==================================================== */
+
+  (
+    p.ingredients
+      ? '<div class="product-info-row">' +
+
+        '<strong>Ingredients</strong>' +
+
+        '<span>' +
+
+        U.escapeHtml(
+          p.ingredients
+        ) +
+
+        '</span>' +
+
+        '</div>'
+      : ''
+  ) +
+
+
+  /* ====================================================
+     ALLERGEN
+  ==================================================== */
+
+  (
+    p.allergens
+      ? '<div class="product-info-row">' +
+
+        '<strong>Allergen Information</strong>' +
+
+        '<span>' +
+
+        U.escapeHtml(
+          p.allergens
+        ) +
+
+        '</span>' +
+
+        '</div>'
+      : ''
+  ) +
+
+
+  /* ====================================================
+     STORAGE
+  ==================================================== */
+
+  (
+    p.storage
+      ? '<div class="product-info-row">' +
+
+        '<strong>Storage</strong>' +
+
+        '<span>' +
+
+        U.escapeHtml(
+          p.storage
+        ) +
+
+        '</span>' +
+
+        '</div>'
+      : ''
+  ) +
+
+
+  '</div>' +
+
+  '</div>';
+
+
+/* ======================================================
+   PRODUCT IMAGE THUMBNAIL CLICK
+====================================================== */
+
+var pdMainImage =
+  document.getElementById(
+    'pd-image'
+  );
+
+
+var pdThumbnailButtons =
+  box.querySelectorAll(
+    '.product-detail-thumbnail'
+  );
+
+
+pdThumbnailButtons.forEach(
+  function (button) {
+
+    button.addEventListener(
+      'click',
+      function () {
+
+        var imageUrl =
+          button.getAttribute(
+            'data-image-url'
+          );
+
+
+        if (
+          !imageUrl ||
+          !pdMainImage
+        ) {
+
+          return;
+
+        }
+
+
+        /*
+          Change large image
+        */
+
+        pdMainImage.src =
+          imageUrl;
+
+
+        /*
+          Remove active thumbnail
+        */
+
+        pdThumbnailButtons.forEach(
+          function (item) {
+
+            item.classList.remove(
+              'active'
+            );
+
+          }
+        );
+
+
+        /*
+          Selected thumbnail active
+        */
+
+        button.classList.add(
+          'active'
+        );
+
+      }
+    );
+
+  }
+);
     /* ======================================================
        DETAILS ELEMENTS
     ====================================================== */
