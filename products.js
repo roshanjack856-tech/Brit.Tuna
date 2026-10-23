@@ -2201,6 +2201,12 @@ function imageFor(p) {
 
 function productUrl(p) {
 
+  if (!p || p.id === null || p.id === undefined) {
+
+    return 'product-details.html';
+
+  }
+
   return (
     'product-details.html?id=' +
     encodeURIComponent(
@@ -2211,7 +2217,6 @@ function productUrl(p) {
   );
 
 }
-
 
   /* ==========================================================
      PRODUCT CARD
