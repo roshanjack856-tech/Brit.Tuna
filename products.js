@@ -1833,7 +1833,9 @@ async function load() {
 function imageFor(p) {
 
   /*
-    1. Prefer seller uploaded product_images.
+    ======================================================
+    1. SELLER-UPLOADED PRODUCT IMAGES
+    ======================================================
   */
 
   if (
@@ -1842,46 +1844,71 @@ function imageFor(p) {
     p.images.length
   ) {
 
-    var primary =
+    /*
+      First preference:
+      seller-selected primary image.
+    */
+
+    var primaryImage =
       p.images.find(
         function (image) {
+
           return (
             image &&
             image.primary === true &&
-            image.url
+            typeof image.url === 'string' &&
+            image.url.trim() !== ''
           );
+
         }
       );
 
-    if (primary) {
-      return primary.url;
+
+    if (primaryImage) {
+
+      return primaryImage.url;
+
     }
 
 
-    var firstValid =
+    /*
+      Second preference:
+      first valid uploaded image.
+    */
+
+    var firstImage =
       p.images.find(
         function (image) {
+
           return (
             image &&
-            image.url
+            typeof image.url === 'string' &&
+            image.url.trim() !== ''
           );
+
         }
       );
 
-    if (firstValid) {
-      return firstValid.url;
+
+    if (firstImage) {
+
+      return firstImage.url;
+
     }
 
   }
 
 
   /*
-    2. Old single product image.
+    ======================================================
+    2. OLD products.image_url
+    ======================================================
   */
 
   if (
     p &&
-    p.image
+    typeof p.image === 'string' &&
+    p.image.trim() !== ''
   ) {
 
     return p.image;
@@ -1890,15 +1917,20 @@ function imageFor(p) {
 
 
   /*
-    3. Generated category placeholder.
+    ======================================================
+    3. CATEGORY PLACEHOLDER
+    ======================================================
   */
 
   var cat =
     getCategory(
       p.category
     ) || {
-      icon: '🛒',
-      color: '#f3ead4'
+      icon:
+        '🛒',
+
+      color:
+        '#f3ead4'
     };
 
 
@@ -1930,7 +1962,6 @@ function imageFor(p) {
   );
 
 }
- 
   /* ==========================================================
      FILTER / SEARCH / SORT
   ========================================================== */
@@ -3622,80 +3653,180 @@ var bestsellerGrid =
    DETAILS HTML
 ====================================================== */
 
-/*
-  PRODUCT IMAGE GALLERY
+/* ======================================================
+   PRODUCT IMAGE GALLERY
+====================================================== */
 
-  Supabase product_images இருந்தால் அதை பயன்படுத்தும்.
-  இல்லையெனில் பழைய single product image பயன்படுத்தும்.
+/*
+  Seller uploaded images come from:
+
+  Supabase
+      ↓
+  product_images
+      ↓
+  fromRow()
+      ↓
+  p.images
 */
 
-var detailImages =
-  Array.isArray(p.images)
-    ? p.images.filter(
-        function (image) {
-          return (
-            image &&
-            image.url
-          );
-        }
-      )
-    : [];
+
+var detailImages = [];
 
 
 /*
-  Old products / fallback image
+  ======================================================
+  GET VALID SELLER-UPLOADED IMAGES
+  ======================================================
+*/
+
+if (
+  Array.isArray(p.images)
+) {
+
+  detailImages =
+    p.images
+      .filter(
+        function (image) {
+
+          return (
+            image &&
+            typeof image.url === 'string' &&
+            image.url.trim() !== ''
+          );
+
+        }
+      )
+      .map(
+        function (image) {
+
+          return {
+
+            id:
+              image.id || null,
+
+            url:
+              String(
+                image.url
+              ).trim(),
+
+            storagePath:
+              image.storagePath || '',
+
+            sortOrder:
+              Number(
+                image.sortOrder || 0
+              ),
+
+            primary:
+              image.primary === true
+
+          };
+
+        }
+      );
+
+}
+
+
+/*
+  ======================================================
+  SORT IMAGES
+
+  1. Primary image first
+  2. Then sort_order
+  ======================================================
+*/
+
+detailImages.sort(
+  function (a, b) {
+
+    if (
+      a.primary === true &&
+      b.primary !== true
+    ) {
+
+      return -1;
+
+    }
+
+
+    if (
+      a.primary !== true &&
+      b.primary === true
+    ) {
+
+      return 1;
+
+    }
+
+
+    return (
+      Number(
+        a.sortOrder || 0
+      ) -
+      Number(
+        b.sortOrder || 0
+      )
+    );
+
+  }
+);
+
+
+/*
+  ======================================================
+  OLD PRODUCT FALLBACK
+
+  If product_images does not contain anything,
+  use products.image_url / generated placeholder.
+  ======================================================
 */
 
 if (!detailImages.length) {
 
-  detailImages = [
-    {
-      id: null,
-      url: imageFor(p),
-      primary: true
-    }
-  ];
+  detailImages.push({
+
+    id:
+      null,
+
+    url:
+      imageFor(p),
+
+    storagePath:
+      '',
+
+    sortOrder:
+      1,
+
+    primary:
+      true
+
+  });
 
 }
 
 
 /*
-  Main image
-*/
+  ======================================================
+  MAIN IMAGE
 
-var mainImageUrl =
-  imageFor(p);
-
-
-/*
-  Find which thumbnail is the main image
+  Because primary image was sorted first,
+  detailImages[0] is the main image.
+  ======================================================
 */
 
 var mainImageIndex =
-  detailImages.findIndex(
-    function (image) {
-
-      return (
-        image.url ===
-        mainImageUrl
-      );
-
-    }
-  );
+  0;
 
 
-if (mainImageIndex < 0) {
-
-  mainImageIndex = 0;
-
-  mainImageUrl =
-    detailImages[0].url;
-
-}
+var mainImageUrl =
+  detailImages[0].url;
 
 
 /*
-  Create thumbnail buttons
+  ======================================================
+  CREATE THUMBNAILS
+  ======================================================
 */
 
 var thumbnailHtml =
@@ -3705,19 +3836,29 @@ var thumbnailHtml =
 
         return (
           '<button ' +
+
           'type="button" ' +
+
           'class="product-detail-thumbnail' +
+
           (
             index === mainImageIndex
               ? ' active'
               : ''
           ) +
+
           '" ' +
+
+          'data-image-index="' +
+          index +
+          '" ' +
+
           'data-image-url="' +
           U.escapeHtml(
             image.url
           ) +
           '" ' +
+
           'aria-label="View ' +
           U.escapeHtml(
             p.name
@@ -3726,19 +3867,33 @@ var thumbnailHtml =
           (index + 1) +
           '">' +
 
+
           '<img ' +
+
           'src="' +
           U.escapeHtml(
             image.url
           ) +
           '" ' +
+
           'alt="' +
           U.escapeHtml(
             p.name
           ) +
           ' image ' +
           (index + 1) +
+          '" ' +
+
+          'loading="lazy" ' +
+
+          'data-pid="' +
+          U.escapeHtml(
+            String(
+              p.id
+            )
+          ) +
           '">' +
+
 
           '</button>'
         );
@@ -3746,8 +3901,6 @@ var thumbnailHtml =
       }
     )
     .join('');
-
-
 /* ======================================================
    BUILD PRODUCT DETAILS
 ====================================================== */
@@ -4278,6 +4431,7 @@ pdThumbnailButtons.forEach(
 
     button.addEventListener(
       'click',
+
       function () {
 
         var imageUrl =
@@ -4297,7 +4451,7 @@ pdThumbnailButtons.forEach(
 
 
         /*
-          Change large image
+          Change large product image.
         */
 
         pdMainImage.src =
@@ -4305,7 +4459,8 @@ pdThumbnailButtons.forEach(
 
 
         /*
-          Remove active thumbnail
+          Remove active state
+          from all thumbnails.
         */
 
         pdThumbnailButtons.forEach(
@@ -4320,7 +4475,8 @@ pdThumbnailButtons.forEach(
 
 
         /*
-          Selected thumbnail active
+          Add active state
+          to selected thumbnail.
         */
 
         button.classList.add(
