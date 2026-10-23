@@ -2199,16 +2199,18 @@ function imageFor(p) {
   }
 
 
-  function productUrl(p) {
+function productUrl(p) {
 
-    return (
-      'product-details.html?slug=' +
-      encodeURIComponent(
-        p.slug
+  return (
+    'product-details.html?id=' +
+    encodeURIComponent(
+      String(
+        p.id
       )
-    );
+    )
+  );
 
-  }
+}
 
 
   /* ==========================================================
@@ -3380,146 +3382,199 @@ var bestsellerGrid =
 
   function initDetails() {
 
-    var box =
-      document.getElementById(
-        'product-detail'
-      );
+  var box =
+    document.getElementById(
+      'product-detail'
+    );
 
 
-    if (!box) {
+  if (!box) {
 
-      return;
+    return;
 
-    }
-
-
-    var params =
-      new URLSearchParams(
-        window.location.search
-      );
+  }
 
 
-    var slug =
-      params.get(
-        'slug'
-      );
+  /* ======================================================
+     READ PRODUCT FROM URL
+     
+     New links:
+     product-details.html?id=7
+
+     Old slug links are still supported:
+     product-details.html?slug=t-shirt
+  ====================================================== */
+
+  var params =
+    new URLSearchParams(
+      window.location.search
+    );
 
 
-    var id =
-      params.get(
-        'id'
-      );
+  var id =
+    params.get(
+      'id'
+    );
 
 
-    var p =
-      slug
-        ? getBySlug(slug)
-        : getById(id);
+  var slug =
+    params.get(
+      'slug'
+    );
 
 
-    if (!p) {
+  /*
+    IMPORTANT FIX:
 
-      box.innerHTML =
-        '<div class="empty-state">' +
+    Always use the unique product ID first.
 
-        '<h2>Product not found</h2>' +
+    This prevents duplicate product names such as:
 
-        '<p>This product may no longer be available.</p>' +
+    t shirt
+    t shirt
 
-        '<a class="btn btn-primary" href="shop.html">Back to Shop</a>' +
+    from opening the wrong Supabase product.
+  */
 
-        '</div>';
-
-
-      return;
-
-    }
-
-
-    if (
-      !p.packs ||
-      !p.packs.length
-    ) {
-
-      box.innerHTML =
-        '<div class="empty-state">' +
-
-        '<h2>Product unavailable</h2>' +
-
-        '<p>No active pack sizes are currently available for this product.</p>' +
-
-        '<a class="btn btn-primary" href="shop.html">Back to Shop</a>' +
-
-        '</div>';
+  var p =
+    id
+      ? getById(id)
+      : (
+          slug
+            ? getBySlug(slug)
+            : null
+        );
 
 
-      return;
+  /* ======================================================
+     PRODUCT NOT FOUND
+  ====================================================== */
 
-    }
+  if (!p) {
 
+    box.innerHTML =
+      '<div class="empty-state">' +
 
-    var cat =
-      getCategory(
-        p.category
-      );
+      '<h2>Product not found</h2>' +
 
+      '<p>This product may no longer be available.</p>' +
 
-    /*
-      IMPORTANT FIX:
+      '<a class="btn btn-primary" href="shop.html">Back to Shop</a>' +
 
-      Select first IN-STOCK pack.
-
-      Premium Peanuts example:
-
-      250g = stock 0
-      500g = stock 40
-
-      Default becomes 500g.
-    */
-
-    var selectedPack =
-      firstAvailablePack(
-        p
-      );
+      '</div>';
 
 
-    /*
-      If everything is out of stock,
-      keep first pack for display only.
-    */
+    return;
 
-    if (!selectedPack) {
-
-      selectedPack =
-        p.packs[0];
-
-    }
+  }
 
 
-    var state = {
+  /* ======================================================
+     NO PRODUCT VARIANTS / PACKS
+  ====================================================== */
 
-      packId:
-        String(
-          selectedPack.id
-        ),
+  if (
+    !p.packs ||
+    !p.packs.length
+  ) {
 
-      qty:
-        1
+    box.innerHTML =
+      '<div class="empty-state">' +
 
-    };
+      '<h2>Product unavailable</h2>' +
 
+      '<p>No active pack sizes are currently available for this product.</p>' +
 
-    var productStatus =
-      productStockStatus(
-        p
-      );
+      '<a class="btn btn-primary" href="shop.html">Back to Shop</a>' +
 
-
-    var allOut =
-      productStatus ===
-      'out_of_stock';
+      '</div>';
 
 
+    return;
+
+  }
+
+
+  /* ======================================================
+     PRODUCT CATEGORY
+  ====================================================== */
+
+  var cat =
+    getCategory(
+      p.category
+    );
+
+
+  /* ======================================================
+     SELECT DEFAULT PACK
+
+     IMPORTANT:
+
+     Do not automatically use p.packs[0].
+
+     First choose a pack that actually has stock.
+
+     Example:
+
+     XL  = stock 0
+     XXL = stock 20
+
+     Result:
+     XXL will automatically be selected.
+  ====================================================== */
+
+  var selectedPack =
+    firstAvailablePack(
+      p
+    );
+
+
+  /*
+    If ALL variants are out of stock,
+    keep the first variant only for display.
+
+    Add to Cart / Buy Now can remain disabled.
+  */
+
+  if (!selectedPack) {
+
+    selectedPack =
+      p.packs[0];
+
+  }
+
+
+  /* ======================================================
+     PRODUCT DETAILS STATE
+  ====================================================== */
+
+  var state = {
+
+    packId:
+      String(
+        selectedPack.id
+      ),
+
+    qty:
+      1
+
+  };
+
+
+  /* ======================================================
+     PRODUCT STOCK STATUS
+  ====================================================== */
+
+  var productStatus =
+    productStockStatus(
+      p
+    );
+
+
+  var allOut =
+    productStatus ===
+    'out_of_stock';
+     
     /* ======================================================
        PACK OPTIONS
 
