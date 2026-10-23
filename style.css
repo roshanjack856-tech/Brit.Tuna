@@ -4137,3 +4137,54 @@ button {
   }
 
 }
+/* ==========================================================
+   PRODUCT DETAILS — LONG TEXT OVERFLOW FIX
+   ========================================================== */
+
+.product-detail-grid {
+  min-width: 0;
+}
+
+.product-detail-content {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Product name */
+.product-detail-title {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Short description */
+.product-detail-short {
+  width: 100%;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.6;
+}
+
+/* Full product description */
+.product-detail-description,
+.product-detail-description p {
+  width: 100%;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Other product information */
+.product-info-row,
+.product-info-row span,
+.product-highlights,
+.product-highlight-item {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
