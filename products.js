@@ -1830,58 +1830,107 @@ async function load() {
 
   }
 
+function imageFor(p) {
 
-  function imageFor(p) {
+  /*
+    1. Prefer seller uploaded product_images.
+  */
 
-    if (p.image) {
+  if (
+    p &&
+    Array.isArray(p.images) &&
+    p.images.length
+  ) {
 
-      return p.image;
+    var primary =
+      p.images.find(
+        function (image) {
+          return (
+            image &&
+            image.primary === true &&
+            image.url
+          );
+        }
+      );
 
+    if (primary) {
+      return primary.url;
     }
 
 
-    var cat =
-      getCategory(
-        p.category
-      ) || {
-        icon:
-          '🛒',
+    var firstValid =
+      p.images.find(
+        function (image) {
+          return (
+            image &&
+            image.url
+          );
+        }
+      );
 
-        color:
-          '#f3ead4'
-      };
-
-
-    var svg =
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">' +
-
-      '<rect width="400" height="300" fill="' +
-      cat.color +
-      '"/>' +
-
-      '<text x="200" y="165" font-size="110" text-anchor="middle">' +
-      cat.icon +
-      '</text>' +
-
-      '<text x="200" y="262" font-size="22" text-anchor="middle" fill="#7a1f2b" font-family="sans-serif">' +
-      xmlEscape(
-        p.name
-      ) +
-      '</text>' +
-
-      '</svg>';
-
-
-    return (
-      'data:image/svg+xml;charset=utf-8,' +
-      encodeURIComponent(
-        svg
-      )
-    );
+    if (firstValid) {
+      return firstValid.url;
+    }
 
   }
 
 
+  /*
+    2. Old single product image.
+  */
+
+  if (
+    p &&
+    p.image
+  ) {
+
+    return p.image;
+
+  }
+
+
+  /*
+    3. Generated category placeholder.
+  */
+
+  var cat =
+    getCategory(
+      p.category
+    ) || {
+      icon: '🛒',
+      color: '#f3ead4'
+    };
+
+
+  var svg =
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">' +
+
+    '<rect width="400" height="300" fill="' +
+    cat.color +
+    '"/>' +
+
+    '<text x="200" y="165" font-size="110" text-anchor="middle">' +
+    cat.icon +
+    '</text>' +
+
+    '<text x="200" y="262" font-size="22" text-anchor="middle" fill="#7a1f2b" font-family="sans-serif">' +
+    xmlEscape(
+      p.name
+    ) +
+    '</text>' +
+
+    '</svg>';
+
+
+  return (
+    'data:image/svg+xml;charset=utf-8,' +
+    encodeURIComponent(
+      svg
+    )
+  );
+
+}
+ 
   /* ==========================================================
      FILTER / SEARCH / SORT
   ========================================================== */
