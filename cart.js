@@ -6,6 +6,7 @@
    - Cart is stored in localStorage.
    - Login is required before Add to Cart.
    - Product/variant prices come from BTProducts.
+   - Stock comes from product variants.
    - This does NOT create a real order.
    - Backend must verify price and stock before payment.
    ========================================================== */
@@ -283,6 +284,38 @@
   }
 
   /* ==========================================================
+     PRODUCT STOCK STATUS
+
+     IMPORTANT:
+     Use BTProducts.productStockStatus()
+     instead of relying only on product.stock.
+
+     Supabase product stock is calculated
+     from product_variants.
+  ========================================================== */
+
+  function getProductStockStatus(product) {
+    if (!product) {
+      return 'out_of_stock';
+    }
+
+    if (
+      window.BTProducts &&
+      typeof window.BTProducts.productStockStatus ===
+        'function'
+    ) {
+      return window.BTProducts.productStockStatus(
+        product
+      );
+    }
+
+    return (
+      product.stock ||
+      'in_stock'
+    );
+  }
+
+  /* ==========================================================
      VALID CART ITEMS
 
      Validation happens AFTER products are ready.
@@ -496,9 +529,16 @@
       return false;
     }
 
+    /*
+      IMPORTANT FIX:
+      Supabase product stock is calculated
+      from product variants.
+    */
+
     if (
-      variant.product.stock ===
-      'out_of_stock'
+      getProductStockStatus(
+        variant.product
+      ) === 'out_of_stock'
     ) {
       return false;
     }
@@ -640,9 +680,16 @@
         variant.pack
       );
 
+    /*
+      IMPORTANT FIX:
+      Check calculated product stock +
+      selected variant stock.
+    */
+
     if (
-      variant.product.stock ===
-        'out_of_stock' ||
+      getProductStockStatus(
+        variant.product
+      ) === 'out_of_stock' ||
       (
         stock !== null &&
         stock <= 0
@@ -800,6 +847,23 @@
       return false;
     }
 
+    /*
+      Product became completely unavailable.
+    */
+
+    if (
+      getProductStockStatus(
+        variant.product
+      ) === 'out_of_stock'
+    ) {
+      remove(
+        productId,
+        packId
+      );
+
+      return false;
+    }
+
     var nextQty =
       safeQtyForPack(
         qty,
@@ -820,6 +884,9 @@
     var items =
       readRaw();
 
+    var found =
+      false;
+
     items.forEach(
       function (item) {
         if (
@@ -832,9 +899,16 @@
         ) {
           item.qty =
             nextQty;
+
+          found =
+            true;
         }
       }
     );
+
+    if (!found) {
+      return false;
+    }
 
     write(
       items
@@ -934,10 +1008,22 @@
         /*
           Product may have been removed,
           disabled or variant deleted.
-          Skip it safely.
         */
 
         if (!variant) {
+          return;
+        }
+
+        /*
+          Do not render products that are
+          completely out of stock.
+        */
+
+        if (
+          getProductStockStatus(
+            variant.product
+          ) === 'out_of_stock'
+        ) {
           return;
         }
 
@@ -1051,6 +1137,11 @@
         line.product
       );
 
+    var imageUrl =
+      window.BTProducts.imageFor(
+        line.product
+      );
+
     var stock =
       availableStock(
         line.pack
@@ -1090,12 +1181,14 @@
       '">' +
 
       '<a class="cart-img" href="' +
-      url +
+      escapeHtml(
+        url
+      ) +
       '">' +
 
       '<img src="' +
-      window.BTProducts.imageFor(
-        line.product
+      escapeHtml(
+        imageUrl
       ) +
 
       '" alt="' +
@@ -1103,7 +1196,17 @@
         line.product.name
       ) +
 
-      '" width="96" height="72">' +
+      '" width="96" height="72" ' +
+
+      'loading="lazy" ' +
+
+      'data-pid="' +
+      escapeHtml(
+        String(
+          line.product.id
+        )
+      ) +
+      '">' +
 
       '</a>' +
 
@@ -1112,7 +1215,9 @@
       '<h3>' +
 
       '<a href="' +
-      url +
+      escapeHtml(
+        url
+      ) +
       '">' +
 
       escapeHtml(
@@ -1180,6 +1285,8 @@
       '" ' +
 
       'data-action="set" ' +
+
+      'inputmode="numeric" ' +
 
       'aria-label="Quantity for ' +
       escapeHtml(
@@ -1489,6 +1596,7 @@
       */
 
       renderAll();
+
       return;
     }
 
@@ -1511,6 +1619,7 @@
 
   document.addEventListener(
     'click',
+
     function (event) {
       var button =
         event.target.closest(
@@ -1593,7 +1702,8 @@
         /*
           Quantity 1 -> minus:
           keep minimum quantity at 1.
-          Customer can use Remove button.
+
+          Customer can use Remove.
         */
 
         setQty(
@@ -1614,6 +1724,7 @@
 
   document.addEventListener(
     'change',
+
     function (event) {
       var input =
         event.target.closest(
@@ -1656,6 +1767,7 @@
 
   document.addEventListener(
     'bt:cart-changed',
+
     function () {
       renderAll();
     }
@@ -1667,6 +1779,7 @@
 
   window.addEventListener(
     'storage',
+
     function (event) {
       if (
         event.key === KEY
@@ -1688,6 +1801,7 @@
 
   document.addEventListener(
     'DOMContentLoaded',
+
     function () {
       initializeCart()
         .catch(function (error) {
@@ -1739,4 +1853,5 @@
     initialize:
       initializeCart
   };
+
 })();
