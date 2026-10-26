@@ -8,6 +8,7 @@
    - FAQ accordion
    - Toast messages
    - Cart badge
+   - Wishlist badge
    - Supabase authentication header
    - Logged-in account display
    ========================================================== */
@@ -69,6 +70,13 @@
         '<circle cx="9" cy="21" r="1"/>' +
         '<circle cx="20" cy="21" r="1"/>' +
         '<path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/>',
+        22
+      ),
+
+
+    wishlist:
+      icon(
+        '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>',
         22
       ),
 
@@ -303,6 +311,26 @@
 
             '<span class="icon-text">' +
               'Sign in' +
+            '</span>' +
+
+          '</a>' +
+
+
+
+          /* WISHLIST */
+
+          '<a ' +
+            'class="icon-link wishlist-link" ' +
+            'href="wishlist.html" ' +
+            'aria-label="My wishlist">' +
+
+            ICON.wishlist +
+
+            '<span ' +
+              'class="wishlist-count" ' +
+              'data-wishlist-count ' +
+              'hidden>' +
+              '0' +
             '</span>' +
 
           '</a>' +
@@ -587,6 +615,26 @@
 
 
               '<a ' +
+                'class="icon-link wishlist-link" ' +
+                'href="wishlist.html" ' +
+                'aria-label="My wishlist">' +
+
+                ICON.wishlist +
+
+                '<span ' +
+                  'class="wishlist-count" ' +
+                  'data-wishlist-count ' +
+                  'hidden>' +
+
+                  '0' +
+
+                '</span>' +
+
+              '</a>' +
+
+
+
+              '<a ' +
                 'class="icon-link cart-link" ' +
                 'href="cart.html" ' +
                 'aria-label="Shopping cart">' +
@@ -693,6 +741,20 @@
 
 
             '<ul id="mobile-account-menu">' +
+
+
+              '<li>' +
+
+                '<a ' +
+                  'class="drawer-link" ' +
+                  'href="wishlist.html">' +
+
+                  '♡ My Wishlist' +
+
+                '</a>' +
+
+              '</li>' +
+
 
 
               '<li id="mobile-signin-item">' +
@@ -947,8 +1009,6 @@
 
 
 
-    /* CLOSE WHEN LINK CLICKED */
-
     menu.addEventListener(
       'click',
       function (e) {
@@ -966,8 +1026,6 @@
 
 
 
-    /* EXPAND CATEGORIES */
-
     menu.addEventListener(
       'click',
       function (e) {
@@ -980,7 +1038,9 @@
 
 
         if (!toggle) {
+
           return;
+
         }
 
 
@@ -1016,15 +1076,15 @@
 
 
 
-    /* ESCAPE + FOCUS */
-
     document.addEventListener(
       'keydown',
       function (e) {
 
 
         if (!isOpen()) {
+
           return;
+
         }
 
 
@@ -1069,7 +1129,9 @@
 
 
         if (!visible.length) {
+
           return;
+
         }
 
 
@@ -1109,8 +1171,6 @@
     );
 
 
-
-    /* DESKTOP RESIZE */
 
     window.addEventListener(
       'resize',
@@ -1518,6 +1578,90 @@
 
 
   /* ==========================================================
+     WISHLIST BADGE
+  ========================================================== */
+
+  function updateWishlistBadge() {
+
+    var n =
+      (
+        window.BTWishlist &&
+        typeof window.BTWishlist.count ===
+          'function'
+      )
+        ? window.BTWishlist.count()
+        : 0;
+
+
+    var badges =
+      document.querySelectorAll(
+        '[data-wishlist-count]'
+      );
+
+
+    Array.prototype.forEach.call(
+      badges,
+      function (badge) {
+
+        badge.textContent =
+          n;
+
+
+        badge.hidden =
+          n === 0;
+
+      }
+    );
+
+  }
+
+
+
+  /* ==========================================================
+     INITIALIZE WISHLIST HEADER
+  ========================================================== */
+
+  function initializeWishlistHeader() {
+
+    updateWishlistBadge();
+
+
+    if (
+      !window.BTWishlist ||
+      typeof window.BTWishlist.initialize !==
+        'function'
+    ) {
+
+      return;
+
+    }
+
+
+    window.BTWishlist
+      .initialize()
+      .then(
+        function () {
+
+          updateWishlistBadge();
+
+        }
+      )
+      .catch(
+        function (error) {
+
+          console.error(
+            'Brit.Tuna header wishlist initialization error:',
+            error
+          );
+
+        }
+      );
+
+  }
+
+
+
+  /* ==========================================================
      WHATSAPP LINKS
   ========================================================== */
 
@@ -1599,7 +1743,9 @@
 
 
         if (!q) {
+
           return;
+
         }
 
 
@@ -1678,8 +1824,6 @@
 
 
 
-    /* DESKTOP */
-
     if (accountLink) {
 
       accountLink.href =
@@ -1711,8 +1855,6 @@
     }
 
 
-
-    /* MOBILE */
 
     if (mobileSignIn) {
 
@@ -1792,8 +1934,6 @@
 
 
 
-    /* GET USER NAME */
-
     var userName =
       'My Account';
 
@@ -1811,8 +1951,6 @@
     }
 
 
-
-    /* DESKTOP */
 
     if (accountLink) {
 
@@ -1837,8 +1975,6 @@
 
 
 
-    /* HIDE CREATE ACCOUNT */
-
     if (registerLink) {
 
       registerLink.hidden =
@@ -1847,8 +1983,6 @@
     }
 
 
-
-    /* MOBILE */
 
     if (mobileSignIn) {
 
@@ -2163,20 +2297,13 @@
 
   }
 
+
+
   /* ==========================================================
      PAGE-SPECIFIC BACKGROUND SLIDESHOW
-
-     Each page gets its own set of free Unsplash images.
-     This prevents the same background photos appearing
-     throughout the whole Brit.Tuna website.
   ========================================================== */
 
   var PAGE_SLIDES = {
-
-    /* =========================
-       HOME
-       Marketplace / mixed products
-       ========================= */
 
     'index.html': [
       'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1600&q=75',
@@ -2187,11 +2314,6 @@
     ],
 
 
-    /* =========================
-       SHOP
-       Grocery / supermarket
-       ========================= */
-
     'shop.html': [
       'https://images.unsplash.com/photo-1578916171728-46686eac8d58?auto=format&fit=crop&w=1600&q=75',
       'https://images.unsplash.com/photo-1601599561213-832382fd07ba?auto=format&fit=crop&w=1600&q=75',
@@ -2200,11 +2322,6 @@
       'https://images.unsplash.com/photo-1583258292688-d0213dc5a3a8?auto=format&fit=crop&w=1600&q=75'
     ],
 
-
-    /* =========================
-       PRODUCTS
-       Food / grocery products
-       ========================= */
 
     'products.html': [
       'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=1600&q=75',
@@ -2215,11 +2332,6 @@
     ],
 
 
-    /* =========================
-       PRODUCT DETAILS
-       Product / ingredients
-       ========================= */
-
     'product-details.html': [
       'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=1600&q=75',
       'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=1600&q=75',
@@ -2227,11 +2339,6 @@
       'https://images.unsplash.com/photo-1567892320421-1c657571ea4a?auto=format&fit=crop&w=1600&q=75'
     ],
 
-
-    /* =========================
-       SERVICES
-       Warehouse / wholesale
-       ========================= */
 
     'services.html': [
       'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1600&q=75',
@@ -2241,11 +2348,6 @@
     ],
 
 
-    /* =========================
-       ABOUT
-       Agriculture / food
-       ========================= */
-
     'about.html': [
       'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1600&q=75',
       'https://images.unsplash.com/photo-1471194402529-8e0f5a675de6?auto=format&fit=crop&w=1600&q=75',
@@ -2253,11 +2355,6 @@
       'https://images.unsplash.com/photo-1499529112087-3cb3b73cec95?auto=format&fit=crop&w=1600&q=75'
     ],
 
-
-    /* =========================
-       CONTACT
-       Customer service / business
-       ========================= */
 
     'contact.html': [
       'https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1600&q=75',
@@ -2267,22 +2364,12 @@
     ],
 
 
-    /* =========================
-       FAQ
-       Help / customer support
-       ========================= */
-
     'faq.html': [
       'https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1600&q=75',
       'https://images.unsplash.com/photo-1556761175-4b46a572b786?auto=format&fit=crop&w=1600&q=75',
       'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1600&q=75'
     ],
 
-
-    /* =========================
-       CART
-       Shopping
-       ========================= */
 
     'cart.html': [
       'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1600&q=75',
@@ -2292,10 +2379,12 @@
     ],
 
 
-    /* =========================
-       CHECKOUT
-       Package / delivery
-       ========================= */
+    'wishlist.html': [
+      'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1600&q=75',
+      'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=1600&q=75'
+    ],
+
 
     'checkout.html': [
       'https://images.unsplash.com/photo-1580674285054-bed31e145f59?auto=format&fit=crop&w=1600&q=75',
@@ -2305,22 +2394,12 @@
     ],
 
 
-    /* =========================
-       LOGIN
-       Clean professional
-       ========================= */
-
     'login.html': [
       'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1600&q=75',
       'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1600&q=75',
       'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1600&q=75'
     ],
 
-
-    /* =========================
-       REGISTER
-       Business / marketplace
-       ========================= */
 
     'register.html': [
       'https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1600&q=75',
@@ -2329,22 +2408,12 @@
     ],
 
 
-    /* =========================
-       ACCOUNT
-       Customer / shopping
-       ========================= */
-
     'account.html': [
       'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1600&q=75',
       'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1600&q=75',
       'https://images.unsplash.com/photo-1556761175-4b46a572b786?auto=format&fit=crop&w=1600&q=75'
     ],
 
-
-    /* =========================
-       MY ORDERS
-       Packages / logistics
-       ========================= */
 
     'orders.html': [
       'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1600&q=75',
@@ -2354,11 +2423,6 @@
     ],
 
 
-    /* =========================
-       ORDER CONFIRMATION
-       Delivery / parcels
-       ========================= */
-
     'order-confirmation.html': [
       'https://images.unsplash.com/photo-1580674285054-bed31e145f59?auto=format&fit=crop&w=1600&q=75',
       'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?auto=format&fit=crop&w=1600&q=75',
@@ -2366,22 +2430,12 @@
     ],
 
 
-    /* =========================
-       PRIVACY POLICY
-       Clean / professional
-       ========================= */
-
     'privacy-policy.html': [
       'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1600&q=75',
       'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1600&q=75',
       'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1600&q=75'
     ],
 
-
-    /* =========================
-       REFUND POLICY
-       Shopping / package
-       ========================= */
 
     'refund-policy.html': [
       'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1600&q=75',
@@ -2392,11 +2446,9 @@
   };
 
 
+
   /* ==========================================================
      FALLBACK BACKGROUNDS
-
-     Used only if a new page is added later and that page
-     is not yet listed inside PAGE_SLIDES.
   ========================================================== */
 
   var DEFAULT_SLIDES = [
@@ -2410,10 +2462,10 @@
   ];
 
 
-  /* Change background every 5 seconds */
 
   var SLIDE_MS =
     5000;
+
 
 
   /* ==========================================================
@@ -2432,6 +2484,7 @@
     );
 
   }
+
 
 
   /* ==========================================================
@@ -2492,7 +2545,7 @@
                   ? 'eager'
                   : 'lazy'
               ) +
-              '">' 
+              '">'
 
           );
 
@@ -2563,9 +2616,6 @@
     );
 
   }
-
-  
-
 
 
 
@@ -2687,6 +2737,8 @@
 
     updateCartBadge();
 
+    initializeWishlistHeader();
+
 
 
     /* SUPABASE AUTH */
@@ -2712,9 +2764,24 @@
 
 
 
+  /* ==========================================================
+     CART CHANGED
+  ========================================================== */
+
   document.addEventListener(
     'bt:cart-changed',
     updateCartBadge
+  );
+
+
+
+  /* ==========================================================
+     WISHLIST CHANGED
+  ========================================================== */
+
+  document.addEventListener(
+    'bt:wishlist-change',
+    updateWishlistBadge
   );
 
 
@@ -2730,6 +2797,9 @@
 
     updateCartBadge:
       updateCartBadge,
+
+    updateWishlistBadge:
+      updateWishlistBadge,
 
     updateAccountLink:
       updateAccountLink
