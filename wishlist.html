@@ -19,7 +19,7 @@
 
   <meta
     name="theme-color"
-    content="#1f5a3a"
+    content="#7a1f2b"
   >
 
   <link
@@ -64,21 +64,27 @@
     .wishlist-message {
       padding: 18px;
       margin-bottom: 24px;
+
       border-radius: 14px;
+
       background: #f7f4eb;
+
       color: #34423a;
+
       text-align: center;
     }
 
 
     .wishlist-message.error {
       background: #fff0ed;
+
       color: #9c2f25;
     }
 
 
     .wishlist-message.success {
       background: #edf7f0;
+
       color: #1f5a3a;
     }
 
@@ -89,11 +95,13 @@
 
     .wishlist-grid {
       display: grid;
+
       grid-template-columns:
         repeat(
           3,
           minmax(0, 1fr)
         );
+
       gap: 22px;
     }
 
@@ -104,22 +112,25 @@
 
     .wishlist-card {
       position: relative;
+
       display: flex;
       flex-direction: column;
+
       min-width: 0;
+
       overflow: hidden;
 
       background: #ffffff;
 
       border:
         1px solid
-        rgba(31, 90, 58, 0.12);
+        rgba(122, 31, 43, 0.14);
 
       border-radius: 18px;
 
       box-shadow:
         0 8px 30px
-        rgba(25, 50, 35, 0.06);
+        rgba(74, 17, 25, 0.07);
 
       transition:
         transform 0.2s ease,
@@ -128,11 +139,12 @@
 
 
     .wishlist-card:hover {
-      transform: translateY(-3px);
+      transform:
+        translateY(-3px);
 
       box-shadow:
         0 12px 34px
-        rgba(25, 50, 35, 0.1);
+        rgba(74, 17, 25, 0.12);
     }
 
 
@@ -142,18 +154,26 @@
 
     .wishlist-image-link {
       position: relative;
+
       display: block;
+
       width: 100%;
-      aspect-ratio: 1 / 0.78;
+
+      aspect-ratio:
+        1 / 0.78;
+
       overflow: hidden;
+
       background: #f7f4eb;
     }
 
 
     .wishlist-image {
       display: block;
+
       width: 100%;
       height: 100%;
+
       object-fit: cover;
 
       transition:
@@ -163,7 +183,8 @@
 
     .wishlist-card:hover
     .wishlist-image {
-      transform: scale(1.035);
+      transform:
+        scale(1.035);
     }
 
 
@@ -173,7 +194,9 @@
 
     .wishlist-remove {
       position: absolute;
-      z-index: 3;
+
+      z-index: 5;
+
       top: 12px;
       right: 12px;
 
@@ -181,6 +204,7 @@
       height: 42px;
 
       display: inline-flex;
+
       align-items: center;
       justify-content: center;
 
@@ -188,38 +212,49 @@
 
       border:
         1px solid
-        rgba(0, 0, 0, 0.08);
+        rgba(122, 31, 43, 0.15);
 
       border-radius: 50%;
 
       background:
-        rgba(255, 255, 255, 0.95);
+        rgba(255, 248, 236, 0.96);
 
-      color: #c73333;
+      color: #7a1f2b;
 
-      font-size: 1.3rem;
+      font-size: 1.35rem;
+
+      line-height: 1;
 
       cursor: pointer;
 
       box-shadow:
         0 4px 16px
-        rgba(0, 0, 0, 0.1);
+        rgba(74, 17, 25, 0.15);
 
       transition:
         transform 0.2s ease,
-        background 0.2s ease;
+        background 0.2s ease,
+        color 0.2s ease;
     }
 
 
     .wishlist-remove:hover {
-      transform: scale(1.07);
-      background: #fff0f0;
+      transform:
+        scale(1.07);
+
+      background:
+        #7a1f2b;
+
+      color: #ffffff;
     }
 
 
     .wishlist-remove:disabled {
       opacity: 0.6;
+
       cursor: wait;
+
+      transform: none;
     }
 
 
@@ -229,8 +264,11 @@
 
     .wishlist-card-content {
       display: flex;
+
       flex-direction: column;
+
       flex: 1;
+
       padding: 18px;
     }
 
@@ -241,9 +279,11 @@
       color: #788078;
 
       font-size: 0.78rem;
+
       font-weight: 700;
 
       text-transform: uppercase;
+
       letter-spacing: 0.04em;
     }
 
@@ -253,13 +293,14 @@
 
       margin-bottom: 9px;
 
-      color: #173d29;
+      color: #4a1119;
 
       font-family:
         "Fraunces",
         serif;
 
       font-size: 1.15rem;
+
       font-weight: 700;
 
       line-height: 1.35;
@@ -271,17 +312,20 @@
 
 
     .wishlist-name:hover {
-      color: #1f5a3a;
+      color: #7a1f2b;
+
       text-decoration: underline;
     }
 
 
     .wishlist-description {
-      margin: 0 0 14px;
+      margin:
+        0 0 14px;
 
       color: #6d746f;
 
       font-size: 0.9rem;
+
       line-height: 1.55;
 
       overflow-wrap: anywhere;
@@ -294,11 +338,13 @@
 
     .wishlist-price {
       margin-top: auto;
+
       margin-bottom: 8px;
 
-      color: #1f5a3a;
+      color: #d9480f;
 
       font-size: 1.2rem;
+
       font-weight: 700;
     }
 
@@ -318,6 +364,7 @@
 
     .wishlist-stock {
       display: inline-flex;
+
       width: fit-content;
 
       margin-bottom: 14px;
@@ -329,10 +376,10 @@
         999px;
 
       background:
-        #edf7f0;
+        #f8e4e6;
 
       color:
-        #1f5a3a;
+        #7a1f2b;
 
       font-size:
         0.76rem;
@@ -343,8 +390,11 @@
 
 
     .wishlist-stock.out {
-      background: #fff0ed;
-      color: #9c2f25;
+      background:
+        #fff0ed;
+
+      color:
+        #9c2f25;
     }
 
 
@@ -354,8 +404,10 @@
 
     .wishlist-actions {
       display: grid;
+
       grid-template-columns:
         1fr 1fr;
+
       gap: 9px;
     }
 
@@ -364,6 +416,7 @@
       min-height: 44px;
 
       display: inline-flex;
+
       align-items: center;
       justify-content: center;
 
@@ -375,10 +428,12 @@
 
       border:
         1px solid
-        rgba(31, 90, 58, 0.2);
+        rgba(122, 31, 43, 0.2);
 
       font-family: inherit;
+
       font-size: 0.84rem;
+
       font-weight: 700;
 
       text-decoration: none;
@@ -387,31 +442,50 @@
 
       transition:
         transform 0.2s ease,
-        opacity 0.2s ease;
+        opacity 0.2s ease,
+        background 0.2s ease;
     }
 
 
     .wishlist-btn:hover {
-      transform: translateY(-1px);
+      transform:
+        translateY(-1px);
     }
 
 
     .wishlist-btn.details {
       background: #ffffff;
-      color: #1f5a3a;
+
+      color: #7a1f2b;
+    }
+
+
+    .wishlist-btn.details:hover {
+      background: #f8e4e6;
     }
 
 
     .wishlist-btn.cart {
-      background: #1f5a3a;
+      background: #7a1f2b;
+
       color: #ffffff;
-      border-color: #1f5a3a;
+
+      border-color: #7a1f2b;
+    }
+
+
+    .wishlist-btn.cart:hover {
+      background: #4a1119;
+
+      border-color: #4a1119;
     }
 
 
     .wishlist-btn:disabled {
       opacity: 0.55;
+
       cursor: not-allowed;
+
       transform: none;
     }
 
@@ -426,7 +500,7 @@
 
       border:
         1px solid
-        rgba(31, 90, 58, 0.12);
+        rgba(122, 31, 43, 0.14);
 
       border-radius:
         18px;
@@ -442,9 +516,10 @@
     .wishlist-empty-icon {
       margin-bottom: 12px;
 
-      color: #c73333;
+      color: #7a1f2b;
 
       font-size: 3rem;
+
       line-height: 1;
     }
 
@@ -454,7 +529,7 @@
         0 0 8px;
 
       color:
-        #173d29;
+        #4a1119;
 
       font-family:
         "Fraunces",
@@ -494,7 +569,7 @@
         10px;
 
       background:
-        #1f5a3a;
+        #7a1f2b;
 
       color:
         #ffffff;
@@ -504,6 +579,12 @@
 
       text-decoration:
         none;
+    }
+
+
+    .wishlist-shop-btn:hover {
+      background:
+        #4a1119;
     }
 
 
@@ -812,7 +893,9 @@
         return (
           "product-details.html?id=" +
           encodeURIComponent(
-            product.id
+            String(
+              product.id
+            )
           )
         );
 
@@ -835,7 +918,8 @@
 
 
         return Number(
-          product.price || 0
+          product.price ||
+          0
         );
 
       }
@@ -978,7 +1062,9 @@
           <article
             class="wishlist-card"
             data-product-id="${escapeHtml(
-              product.id
+              String(
+                product.id
+              )
             )}"
           >
 
@@ -987,7 +1073,9 @@
               type="button"
               class="wishlist-remove"
               data-remove-wishlist="${escapeHtml(
-                product.id
+                String(
+                  product.id
+                )
               )}"
               aria-label="Remove ${escapeHtml(
                 product.name
@@ -1106,7 +1194,9 @@
                   type="button"
                   class="wishlist-btn cart"
                   data-wishlist-cart="${escapeHtml(
-                    product.id
+                    String(
+                      product.id
+                    )
                   )}"
                   ${
                     inStock
@@ -1146,7 +1236,9 @@
       ) {
 
         if (
-          !Array.isArray(products) ||
+          !Array.isArray(
+            products
+          ) ||
           products.length === 0
         ) {
 
@@ -1201,7 +1293,6 @@
 
         try {
 
-
           showMessage(
             "Loading your wishlist..."
           );
@@ -1218,7 +1309,20 @@
           }
 
 
-          /* CHECK LOGIN */
+          if (
+            !window.BTWishlist
+          ) {
+
+            throw new Error(
+              "Wishlist service is not available."
+            );
+
+          }
+
+
+          /* =================================================
+             CHECK LOGIN
+             ================================================= */
 
           var sessionResult =
             await window.supabaseClient
@@ -1256,7 +1360,9 @@
           }
 
 
-          /* LOAD PRODUCTS */
+          /* =================================================
+             LOAD PRODUCTS
+             ================================================= */
 
           if (
             window.BTProducts &&
@@ -1269,13 +1375,32 @@
           }
 
 
-          /* LOAD WISHLIST */
+          /* =================================================
+             LOAD WISHLIST
+             ================================================= */
+
+          if (
+            typeof window.BTWishlist.load !==
+              "function"
+          ) {
+
+            throw new Error(
+              "Wishlist loader is not available."
+            );
+
+          }
+
 
           await window.BTWishlist.load();
 
 
           var ids =
-            window.BTWishlist.getIds();
+            typeof window.BTWishlist.getIds ===
+              "function"
+
+              ? window.BTWishlist.getIds()
+
+              : [];
 
 
           var products =
@@ -1327,7 +1452,7 @@
 
 
       /* ====================================================
-         REMOVE
+         REMOVE FROM WISHLIST
          ==================================================== */
 
       async function removeProduct(
@@ -1335,13 +1460,26 @@
       ) {
 
         var productId =
-          Number(
-            button.dataset
-              .removeWishlist
-          );
+          button.dataset
+            .removeWishlist;
 
 
         if (!productId) {
+
+          return;
+
+        }
+
+
+        if (
+          !window.BTWishlist ||
+          typeof window.BTWishlist.remove !==
+            "function"
+        ) {
+
+          alert(
+            "Wishlist is not available."
+          );
 
           return;
 
@@ -1373,8 +1511,10 @@
 
 
           if (
+            typeof window.BTWishlist.count ===
+              "function" &&
             window.BTWishlist.count() ===
-            0
+              0
           ) {
 
             renderEmpty();
@@ -1395,7 +1535,12 @@
 
 
           alert(
-            "Unable to remove this product from your wishlist."
+            error &&
+            error.message
+
+              ? error.message
+
+              : "Unable to remove this product from your wishlist."
           );
 
         }
@@ -1412,10 +1557,15 @@
       ) {
 
         var productId =
-          Number(
-            button.dataset
-              .wishlistCart
-          );
+          button.dataset
+            .wishlistCart;
+
+
+        if (!productId) {
+
+          return;
+
+        }
 
 
         var product =
@@ -1471,13 +1621,37 @@
           true;
 
 
+        var originalText =
+          button.textContent;
+
+
+        button.textContent =
+          "Adding...";
+
+
         try {
 
-          await window.BTCart.add(
-            product.id,
-            pack.id,
-            1
-          );
+          var added =
+            await window.BTCart.add(
+              product.id,
+              pack.id,
+              1
+            );
+
+
+          if (
+            added === false
+          ) {
+
+            button.textContent =
+              originalText;
+
+            button.disabled =
+              false;
+
+            return;
+
+          }
 
 
           button.textContent =
@@ -1487,11 +1661,19 @@
           setTimeout(
             function () {
 
-              button.textContent =
-                "Add to Cart";
+              if (
+                document.body.contains(
+                  button
+                )
+              ) {
 
-              button.disabled =
-                false;
+                button.textContent =
+                  "Add to Cart";
+
+                button.disabled =
+                  false;
+
+              }
 
             },
             1200
@@ -1504,6 +1686,10 @@
             "Wishlist cart error:",
             error
           );
+
+
+          button.textContent =
+            originalText;
 
 
           button.disabled =
@@ -1530,6 +1716,7 @@
 
       document.addEventListener(
         "click",
+
         function (event) {
 
 
@@ -1543,9 +1730,11 @@
 
             event.preventDefault();
 
+
             removeProduct(
               removeButton
             );
+
 
             return;
 
@@ -1562,6 +1751,7 @@
 
             event.preventDefault();
 
+
             addToCart(
               cartButton
             );
@@ -1573,11 +1763,33 @@
 
 
       /* ====================================================
+         WISHLIST CHANGE
+         ==================================================== */
+
+      document.addEventListener(
+        "bt:wishlist-change",
+
+        function () {
+
+          /*
+            wishlist.html updates itself when a product
+            is removed.
+
+            This event is kept here so other shared
+            wishlist UI can stay synchronized.
+          */
+
+        }
+      );
+
+
+      /* ====================================================
          START
          ==================================================== */
 
       document.addEventListener(
         "DOMContentLoaded",
+
         loadPage
       );
 
