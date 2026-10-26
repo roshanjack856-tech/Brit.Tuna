@@ -2,13 +2,17 @@
 
   "use strict";
 
+
   var listeners = [];
 
-  var wishlistIds = new Set();
+  var wishlistIds =
+    new Set();
 
-  var initialized = false;
+  var initialized =
+    false;
 
-  var currentUser = null;
+  var currentUser =
+    null;
 
 
   /* ======================================================
@@ -17,18 +21,33 @@
 
   function getClient() {
 
-    return window.supabaseClient || null;
+    return (
+      window.supabaseClient ||
+      null
+    );
 
   }
 
 
   /* ======================================================
      PRODUCT ID
+
+     Supabase products.id is bigint.
+
+     JavaScript receives the value from HTML
+     data attributes as a string, so normalize
+     it before using it with Supabase.
      ====================================================== */
 
-  function normalizeProductId(productId) {
+  function normalizeProductId(
+    productId
+  ) {
 
-    var id = Number(productId);
+    var id =
+      Number(
+        productId
+      );
+
 
     if (
       !Number.isSafeInteger(id) ||
@@ -38,6 +57,7 @@
       return null;
 
     }
+
 
     return id;
 
@@ -50,25 +70,37 @@
 
   function notify() {
 
-    listeners.forEach(function (callback) {
+    var detail = {
+      count:
+        wishlistIds.size,
 
-      try {
+      ids:
+        Array.from(
+          wishlistIds
+        )
+    };
 
-        callback({
-          count: wishlistIds.size,
-          ids: Array.from(wishlistIds)
-        });
 
-      } catch (error) {
+    listeners.forEach(
+      function (callback) {
 
-        console.error(
-          "Brit.Tuna wishlist listener error:",
-          error
-        );
+        try {
+
+          callback(
+            detail
+          );
+
+        } catch (error) {
+
+          console.error(
+            "Brit.Tuna wishlist listener error:",
+            error
+          );
+
+        }
 
       }
-
-    });
+    );
 
 
     document.dispatchEvent(
@@ -76,10 +108,8 @@
       new CustomEvent(
         "bt:wishlist-change",
         {
-          detail: {
-            count: wishlistIds.size,
-            ids: Array.from(wishlistIds)
-          }
+          detail:
+            detail
         }
       )
 
@@ -94,9 +124,17 @@
 
   async function getCurrentUser() {
 
-    var client = getClient();
+    var client =
+      getClient();
 
-    if (!client) {
+
+    if (
+      !client ||
+      !client.auth
+    ) {
+
+      currentUser =
+        null;
 
       return null;
 
@@ -104,15 +142,23 @@
 
 
     var result =
-      await client.auth.getSession();
+      await client.auth
+        .getSession();
 
 
-    if (result.error) {
+    if (
+      result.error
+    ) {
 
       console.error(
         "Brit.Tuna wishlist session error:",
         result.error
       );
+
+
+      currentUser =
+        null;
+
 
       return null;
 
@@ -144,14 +190,16 @@
 
   async function load() {
 
-    var client = getClient();
+    var client =
+      getClient();
 
 
     if (!client) {
 
       wishlistIds.clear();
 
-      initialized = true;
+      initialized =
+        true;
 
       notify();
 
@@ -168,7 +216,8 @@
 
       wishlistIds.clear();
 
-      initialized = true;
+      initialized =
+        true;
 
       notify();
 
@@ -180,22 +229,37 @@
     var result =
       await client
 
-        .from("wishlist_items")
+        .from(
+          "wishlist_items"
+        )
 
-        .select("product_id")
+        .select(
+          "product_id"
+        )
 
         .eq(
           "user_id",
           user.id
+        )
+
+        .order(
+          "created_at",
+          {
+            ascending:
+              false
+          }
         );
 
 
-    if (result.error) {
+    if (
+      result.error
+    ) {
 
       console.error(
         "Brit.Tuna wishlist load error:",
         result.error
       );
+
 
       throw result.error;
 
@@ -205,7 +269,10 @@
     wishlistIds.clear();
 
 
-    (result.data || []).forEach(
+    (
+      result.data ||
+      []
+    ).forEach(
 
       function (row) {
 
@@ -217,7 +284,9 @@
 
         if (id) {
 
-          wishlistIds.add(id);
+          wishlistIds.add(
+            id
+          );
 
         }
 
@@ -226,7 +295,9 @@
     );
 
 
-    initialized = true;
+    initialized =
+      true;
+
 
     notify();
 
@@ -252,12 +323,15 @@
 
 
     next +=
-      window.location.search || "";
+      window.location.search ||
+      "";
 
 
     window.location.href =
       "login.html?next=" +
-      encodeURIComponent(next);
+      encodeURIComponent(
+        next
+      );
 
   }
 
@@ -266,7 +340,9 @@
      IS WISHLISTED
      ====================================================== */
 
-  function has(productId) {
+  function has(
+    productId
+  ) {
 
     var id =
       normalizeProductId(
@@ -281,16 +357,20 @@
     }
 
 
-    return wishlistIds.has(id);
+    return wishlistIds.has(
+      id
+    );
 
   }
 
 
   /* ======================================================
-     ADD
+     ADD TO WISHLIST
      ====================================================== */
 
-  async function add(productId) {
+  async function add(
+    productId
+  ) {
 
     var id =
       normalizeProductId(
@@ -328,75 +408,140 @@
 
       goToLogin();
 
+
       return {
-        loginRequired: true
+        loginRequired:
+          true
       };
 
     }
 
 
     /*
-      Already exists locally.
+      Product already exists in the local
+      wishlist cache.
+
+      Do not send another database request.
     */
 
     if (
-      wishlistIds.has(id)
+      wishlistIds.has(
+        id
+      )
     ) {
 
       return {
-        added: false,
-        exists: true
+        added:
+          false,
+
+        exists:
+          true
       };
 
     }
 
 
+    /*
+      Use INSERT instead of UPSERT.
+
+      wishlist_items already has:
+
+      UNIQUE(user_id, product_id)
+
+      so the same product cannot be stored
+      twice for the same customer.
+    */
+
     var result =
       await client
 
-        .from("wishlist_items")
+        .from(
+          "wishlist_items"
+        )
 
-        .upsert(
-          {
-            user_id: user.id,
-            product_id: id
-          },
-          {
-            onConflict:
-              "user_id,product_id"
-          }
+        .insert({
+          user_id:
+            user.id,
+
+          product_id:
+            id
+        });
+
+
+    if (
+      result.error
+    ) {
+
+      /*
+        PostgreSQL error 23505 means:
+
+        unique constraint violation.
+
+        The product already exists in the
+        customer's wishlist.
+
+        Treat it as wishlisted instead of
+        showing an error.
+      */
+
+      if (
+        result.error.code ===
+        "23505"
+      ) {
+
+        wishlistIds.add(
+          id
         );
 
 
-    if (result.error) {
+        notify();
+
+
+        return {
+          added:
+            false,
+
+          exists:
+            true
+        };
+
+      }
+
 
       console.error(
         "Brit.Tuna wishlist add error:",
         result.error
       );
 
+
       throw result.error;
 
     }
 
 
-    wishlistIds.add(id);
+    wishlistIds.add(
+      id
+    );
+
 
     notify();
 
 
     return {
-      added: true
+      added:
+        true
     };
 
   }
 
 
   /* ======================================================
-     REMOVE
+     REMOVE FROM WISHLIST
      ====================================================== */
 
-  async function remove(productId) {
+  async function remove(
+    productId
+  ) {
 
     var id =
       normalizeProductId(
@@ -407,7 +552,8 @@
     if (!id) {
 
       return {
-        removed: false
+        removed:
+          false
       };
 
     }
@@ -434,8 +580,10 @@
 
       goToLogin();
 
+
       return {
-        loginRequired: true
+        loginRequired:
+          true
       };
 
     }
@@ -444,7 +592,9 @@
     var result =
       await client
 
-        .from("wishlist_items")
+        .from(
+          "wishlist_items"
+        )
 
         .delete()
 
@@ -459,25 +609,32 @@
         );
 
 
-    if (result.error) {
+    if (
+      result.error
+    ) {
 
       console.error(
         "Brit.Tuna wishlist remove error:",
         result.error
       );
 
+
       throw result.error;
 
     }
 
 
-    wishlistIds.delete(id);
+    wishlistIds.delete(
+      id
+    );
+
 
     notify();
 
 
     return {
-      removed: true
+      removed:
+        true
     };
 
   }
@@ -487,7 +644,9 @@
      TOGGLE
      ====================================================== */
 
-  async function toggle(productId) {
+  async function toggle(
+    productId
+  ) {
 
     var id =
       normalizeProductId(
@@ -505,15 +664,21 @@
 
 
     if (
-      wishlistIds.has(id)
+      wishlistIds.has(
+        id
+      )
     ) {
 
-      return remove(id);
+      return remove(
+        id
+      );
 
     }
 
 
-    return add(id);
+    return add(
+      id
+    );
 
   }
 
@@ -546,7 +711,9 @@
      SUBSCRIBE
      ====================================================== */
 
-  function subscribe(callback) {
+  function subscribe(
+    callback
+  ) {
 
     if (
       typeof callback !==
@@ -558,18 +725,51 @@
     }
 
 
-    listeners.push(callback);
+    listeners.push(
+      callback
+    );
+
+
+    /*
+      Immediately provide the current state
+      to the subscriber.
+    */
+
+    try {
+
+      callback({
+        count:
+          wishlistIds.size,
+
+        ids:
+          Array.from(
+            wishlistIds
+          )
+      });
+
+    } catch (error) {
+
+      console.error(
+        "Brit.Tuna wishlist subscriber error:",
+        error
+      );
+
+    }
 
 
     return function () {
 
       listeners =
         listeners.filter(
+
           function (item) {
 
-            return item !== callback;
+            return (
+              item !== callback
+            );
 
           }
+
         );
 
     };
@@ -583,7 +783,9 @@
 
   async function initialize() {
 
-    if (initialized) {
+    if (
+      initialized
+    ) {
 
       return getIds();
 
@@ -615,67 +817,91 @@
     }
 
 
-    client.auth.onAuthStateChange(
+    client.auth
+      .onAuthStateChange(
 
-      function (
-        event,
-        session
-      ) {
-
-        currentUser =
-          session &&
-          session.user
-
-            ? session.user
-
-            : null;
-
-
-        if (
-          event === "SIGNED_OUT"
+        function (
+          event,
+          session
         ) {
 
-          wishlistIds.clear();
+          currentUser =
+            session &&
+            session.user
 
-          initialized = false;
+              ? session.user
 
-          notify();
-
-          return;
-
-        }
+              : null;
 
 
-        if (
-          event === "SIGNED_IN"
-        ) {
+          /*
+            Customer logged out.
+          */
 
-          initialized = false;
+          if (
+            event ===
+            "SIGNED_OUT"
+          ) {
+
+            wishlistIds.clear();
+
+            initialized =
+              false;
+
+            notify();
+
+            return;
+
+          }
 
 
-          setTimeout(
-            function () {
+          /*
+            Customer logged in.
 
-              load().catch(
-                function (error) {
+            Reload their wishlist from
+            Supabase.
+          */
 
-                  console.error(
-                    "Brit.Tuna wishlist reload error:",
-                    error
+          if (
+            event ===
+            "SIGNED_IN"
+          ) {
+
+            initialized =
+              false;
+
+
+            setTimeout(
+
+              function () {
+
+                load()
+                  .catch(
+
+                    function (
+                      error
+                    ) {
+
+                      console.error(
+                        "Brit.Tuna wishlist reload error:",
+                        error
+                      );
+
+                    }
+
                   );
 
-                }
-              );
+              },
 
-            },
-            0
-          );
+              0
+
+            );
+
+          }
 
         }
 
-      }
-
-    );
+      );
 
   }
 
@@ -686,26 +912,39 @@
 
   window.BTWishlist = {
 
-    initialize: initialize,
+    initialize:
+      initialize,
 
-    load: load,
+    load:
+      load,
 
-    add: add,
+    add:
+      add,
 
-    remove: remove,
+    remove:
+      remove,
 
-    toggle: toggle,
+    toggle:
+      toggle,
 
-    has: has,
+    has:
+      has,
 
-    count: count,
+    count:
+      count,
 
-    getIds: getIds,
+    getIds:
+      getIds,
 
-    subscribe: subscribe
+    subscribe:
+      subscribe
 
   };
 
+
+  /* ======================================================
+     START AUTH WATCHER
+     ====================================================== */
 
   watchAuth();
 
