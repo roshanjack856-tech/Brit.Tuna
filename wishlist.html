@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <title>My Wishlist | Brit.Tuna</title>
+
+  <meta
+    name="robots"
+    content="noindex"
+  >
+
+  <meta
+    name="theme-color"
+    content="#1f5a3a"
+  >
+
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  >
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  >
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="responsive.css"
+  >
+
+
+  <style>
+
+    /* ======================================================
+       WISHLIST PAGE
+       ====================================================== */
+
+    .wishlist-wrap {
+      max-width: 1150px;
+      margin: 0 auto;
+    }
+
+
+    .wishlist-message {
+      padding: 18px;
+      margin-bottom: 24px;
+      border-radius: 14px;
+      background: #f7f4eb;
+      color: #34423a;
+      text-align: center;
+    }
+
+
+    .wishlist-message.error {
+      background: #fff0ed;
+      color: #9c2f25;
+    }
+
+
+    .wishlist-message.success {
+      background: #edf7f0;
+      color: #1f5a3a;
+    }
+
+
+    /* ======================================================
+       GRID
+       ====================================================== */
+
+    .wishlist-grid {
+      display: grid;
+      grid-template-columns:
+        repeat(
+          3,
+          minmax(0, 1fr)
+        );
+      gap: 22px;
+    }
+
+
+    /* ======================================================
+       CARD
+       ====================================================== */
+
+    .wishlist-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      overflow: hidden;
+
+      background: #ffffff;
+
+      border:
+        1px solid
+        rgba(31, 90, 58, 0.12);
+
+      border-radius: 18px;
+
+      box-shadow:
+        0 8px 30px
+        rgba(25, 50, 35, 0.06);
+
+      transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+
+
+    .wishlist-card:hover {
+      transform: translateY(-3px);
+
+      box-shadow:
+        0 12px 34px
+        rgba(25, 50, 35, 0.1);
+    }
+
+
+    /* ======================================================
+       IMAGE
+       ====================================================== */
+
+    .wishlist-image-link {
+      position: relative;
+      display: block;
+      width: 100%;
+      aspect-ratio: 1 / 0.78;
+      overflow: hidden;
+      background: #f7f4eb;
+    }
+
+
+    .wishlist-image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+
+      transition:
+        transform 0.3s ease;
+    }
+
+
+    .wishlist-card:hover
+    .wishlist-image {
+      transform: scale(1.035);
+    }
+
+
+    /* ======================================================
+       REMOVE HEART
+       ====================================================== */
+
+    .wishlist-remove {
+      position: absolute;
+      z-index: 3;
+      top: 12px;
+      right: 12px;
+
+      width: 42px;
+      height: 42px;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 0;
+
+      border:
+        1px solid
+        rgba(0, 0, 0, 0.08);
+
+      border-radius: 50%;
+
+      background:
+        rgba(255, 255, 255, 0.95);
+
+      color: #c73333;
+
+      font-size: 1.3rem;
+
+      cursor: pointer;
+
+      box-shadow:
+        0 4px 16px
+        rgba(0, 0, 0, 0.1);
+
+      transition:
+        transform 0.2s ease,
+        background 0.2s ease;
+    }
+
+
+    .wishlist-remove:hover {
+      transform: scale(1.07);
+      background: #fff0f0;
+    }
+
+
+    .wishlist-remove:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+
+    /* ======================================================
+       CONTENT
+       ====================================================== */
+
+    .wishlist-card-content {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      padding: 18px;
+    }
+
+
+    .wishlist-category {
+      margin-bottom: 7px;
+
+      color: #788078;
+
+      font-size: 0.78rem;
+      font-weight: 700;
+
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+
+    .wishlist-name {
+      display: inline-block;
+
+      margin-bottom: 9px;
+
+      color: #173d29;
+
+      font-family:
+        "Fraunces",
+        serif;
+
+      font-size: 1.15rem;
+      font-weight: 700;
+
+      line-height: 1.35;
+
+      text-decoration: none;
+
+      overflow-wrap: anywhere;
+    }
+
+
+    .wishlist-name:hover {
+      color: #1f5a3a;
+      text-decoration: underline;
+    }
+
+
+    .wishlist-description {
+      margin: 0 0 14px;
+
+      color: #6d746f;
+
+      font-size: 0.9rem;
+      line-height: 1.55;
+
+      overflow-wrap: anywhere;
+    }
+
+
+    /* ======================================================
+       PRICE
+       ====================================================== */
+
+    .wishlist-price {
+      margin-top: auto;
+      margin-bottom: 8px;
+
+      color: #1f5a3a;
+
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+
+    .wishlist-demo-price {
+      margin-bottom: 12px;
+
+      color: #8a8378;
+
+      font-size: 0.74rem;
+    }
+
+
+    /* ======================================================
+       STOCK
+       ====================================================== */
+
+    .wishlist-stock {
+      display: inline-flex;
+      width: fit-content;
+
+      margin-bottom: 14px;
+
+      padding:
+        6px 9px;
+
+      border-radius:
+        999px;
+
+      background:
+        #edf7f0;
+
+      color:
+        #1f5a3a;
+
+      font-size:
+        0.76rem;
+
+      font-weight:
+        700;
+    }
+
+
+    .wishlist-stock.out {
+      background: #fff0ed;
+      color: #9c2f25;
+    }
+
+
+    /* ======================================================
+       BUTTONS
+       ====================================================== */
+
+    .wishlist-actions {
+      display: grid;
+      grid-template-columns:
+        1fr 1fr;
+      gap: 9px;
+    }
+
+
+    .wishlist-btn {
+      min-height: 44px;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      padding:
+        10px 12px;
+
+      border-radius:
+        10px;
+
+      border:
+        1px solid
+        rgba(31, 90, 58, 0.2);
+
+      font-family: inherit;
+      font-size: 0.84rem;
+      font-weight: 700;
+
+      text-decoration: none;
+
+      cursor: pointer;
+
+      transition:
+        transform 0.2s ease,
+        opacity 0.2s ease;
+    }
+
+
+    .wishlist-btn:hover {
+      transform: translateY(-1px);
+    }
+
+
+    .wishlist-btn.details {
+      background: #ffffff;
+      color: #1f5a3a;
+    }
+
+
+    .wishlist-btn.cart {
+      background: #1f5a3a;
+      color: #ffffff;
+      border-color: #1f5a3a;
+    }
+
+
+    .wishlist-btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+
+    /* ======================================================
+       EMPTY
+       ====================================================== */
+
+    .wishlist-empty {
+      padding:
+        55px 20px;
+
+      border:
+        1px solid
+        rgba(31, 90, 58, 0.12);
+
+      border-radius:
+        18px;
+
+      background:
+        #ffffff;
+
+      text-align:
+        center;
+    }
+
+
+    .wishlist-empty-icon {
+      margin-bottom: 12px;
+
+      color: #c73333;
+
+      font-size: 3rem;
+      line-height: 1;
+    }
+
+
+    .wishlist-empty h2 {
+      margin:
+        0 0 8px;
+
+      color:
+        #173d29;
+
+      font-family:
+        "Fraunces",
+        serif;
+    }
+
+
+    .wishlist-empty p {
+      margin:
+        0 auto 20px;
+
+      max-width:
+        500px;
+
+      color:
+        #6d746f;
+
+      line-height:
+        1.6;
+    }
+
+
+    .wishlist-shop-btn {
+      display:
+        inline-flex;
+
+      align-items:
+        center;
+
+      justify-content:
+        center;
+
+      padding:
+        12px 19px;
+
+      border-radius:
+        10px;
+
+      background:
+        #1f5a3a;
+
+      color:
+        #ffffff;
+
+      font-weight:
+        700;
+
+      text-decoration:
+        none;
+    }
+
+
+    /* ======================================================
+       MOBILE
+       ====================================================== */
+
+    @media (
+      max-width: 900px
+    ) {
+
+      .wishlist-grid {
+        grid-template-columns:
+          repeat(
+            2,
+            minmax(0, 1fr)
+          );
+      }
+
+    }
+
+
+    @media (
+      max-width: 600px
+    ) {
+
+      .wishlist-grid {
+        grid-template-columns:
+          1fr;
+      }
+
+
+      .wishlist-card {
+        max-width:
+          480px;
+
+        width:
+          100%;
+
+        margin:
+          0 auto;
+      }
+
+
+      .wishlist-actions {
+        grid-template-columns:
+          1fr;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body data-page="wishlist">
+
+
+  <!-- HEADER -->
+
+  <div id="site-header"></div>
+
+
+  <main id="main">
+
+
+    <section class="page-hero">
+
+      <div class="container">
+
+        <h1>
+          My Wishlist
+        </h1>
+
+        <p>
+          Save your favourite Brit.Tuna products for later.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <section
+      class="container page-body"
+    >
+
+      <div class="wishlist-wrap">
+
+
+        <div
+          id="wishlist-message"
+          class="wishlist-message"
+          role="status"
+          aria-live="polite"
+        >
+          Loading your wishlist...
+        </div>
+
+
+        <div
+          id="wishlist-grid"
+          class="wishlist-grid"
+        ></div>
+
+
+      </div>
+
+    </section>
+
+
+  </main>
+
+
+  <!-- FOOTER -->
+
+  <div id="site-footer"></div>
+
+
+  <!-- SUPABASE -->
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
+
+  <!-- BRIT.TUNA -->
+
+  <script src="config.js"></script>
+
+  <script src="supabase.js"></script>
+
+  <script src="products.js"></script>
+
+  <script src="cart.js"></script>
+
+  <script src="wishlist.js"></script>
+
+  <script src="script.js"></script>
+
+
+  <script>
+
+    (function () {
+
+      "use strict";
+
+
+      var messageElement =
+        document.getElementById(
+          "wishlist-message"
+        );
+
+
+      var gridElement =
+        document.getElementById(
+          "wishlist-grid"
+        );
+
+
+      /* ====================================================
+         HTML
+         ==================================================== */
+
+      function escapeHtml(value) {
+
+        return String(
+          value == null
+            ? ""
+            : value
+        )
+          .replace(
+            /&/g,
+            "&amp;"
+          )
+          .replace(
+            /</g,
+            "&lt;"
+          )
+          .replace(
+            />/g,
+            "&gt;"
+          )
+          .replace(
+            /"/g,
+            "&quot;"
+          )
+          .replace(
+            /'/g,
+            "&#039;"
+          );
+
+      }
+
+
+      /* ====================================================
+         MONEY
+         ==================================================== */
+
+      function formatMoney(value) {
+
+        return new Intl.NumberFormat(
+          "en-IN",
+          {
+            style:
+              "currency",
+
+            currency:
+              "INR",
+
+            maximumFractionDigits:
+              2
+          }
+        ).format(
+          Number(
+            value || 0
+          )
+        );
+
+      }
+
+
+      /* ====================================================
+         MESSAGE
+         ==================================================== */
+
+      function showMessage(
+        text,
+        type
+      ) {
+
+        messageElement.textContent =
+          text;
+
+
+        messageElement.className =
+          "wishlist-message";
+
+
+        if (type) {
+
+          messageElement.classList.add(
+            type
+          );
+
+        }
+
+
+        messageElement.hidden =
+          false;
+
+      }
+
+
+      function hideMessage() {
+
+        messageElement.hidden =
+          true;
+
+      }
+
+
+      /* ====================================================
+         PRODUCT HELPERS
+         ==================================================== */
+
+      function productImage(product) {
+
+        if (
+          window.BTProducts &&
+          typeof window.BTProducts.imageFor ===
+            "function"
+        ) {
+
+          return window.BTProducts.imageFor(
+            product
+          );
+
+        }
+
+
+        return (
+          product.image ||
+          ""
+        );
+
+      }
+
+
+      function productLink(product) {
+
+        if (
+          window.BTProducts &&
+          typeof window.BTProducts.productUrl ===
+            "function"
+        ) {
+
+          return window.BTProducts.productUrl(
+            product
+          );
+
+        }
+
+
+        return (
+          "product-details.html?id=" +
+          encodeURIComponent(
+            product.id
+          )
+        );
+
+      }
+
+
+      function productPrice(product) {
+
+        if (
+          window.BTProducts &&
+          typeof window.BTProducts.fromPrice ===
+            "function"
+        ) {
+
+          return window.BTProducts.fromPrice(
+            product
+          );
+
+        }
+
+
+        return Number(
+          product.price || 0
+        );
+
+      }
+
+
+      function availablePack(product) {
+
+        if (
+          window.BTProducts &&
+          typeof window.BTProducts.firstAvailablePack ===
+            "function"
+        ) {
+
+          return window.BTProducts.firstAvailablePack(
+            product
+          );
+
+        }
+
+
+        if (
+          Array.isArray(
+            product.packs
+          )
+        ) {
+
+          return (
+            product.packs[0] ||
+            null
+          );
+
+        }
+
+
+        return null;
+
+      }
+
+
+      function productInStock(
+        product
+      ) {
+
+        if (
+          window.BTProducts &&
+          typeof window.BTProducts.hasAvailableStock ===
+            "function"
+        ) {
+
+          return window.BTProducts.hasAvailableStock(
+            product
+          );
+
+        }
+
+
+        return Boolean(
+          availablePack(
+            product
+          )
+        );
+
+      }
+
+
+      /* ====================================================
+         EMPTY
+         ==================================================== */
+
+      function renderEmpty() {
+
+        gridElement.innerHTML = `
+
+          <div
+            class="wishlist-empty"
+            style="grid-column: 1 / -1;"
+          >
+
+            <div class="wishlist-empty-icon">
+              ♡
+            </div>
+
+            <h2>
+              Your wishlist is empty
+            </h2>
+
+            <p>
+              Save products you like and easily find
+              them again later.
+            </p>
+
+            <a
+              href="shop.html"
+              class="wishlist-shop-btn"
+            >
+              Explore Products
+            </a>
+
+          </div>
+
+        `;
+
+      }
+
+
+      /* ====================================================
+         CARD
+         ==================================================== */
+
+      function cardHtml(
+        product
+      ) {
+
+        var image =
+          productImage(
+            product
+          );
+
+
+        var link =
+          productLink(
+            product
+          );
+
+
+        var price =
+          productPrice(
+            product
+          );
+
+
+        var inStock =
+          productInStock(
+            product
+          );
+
+
+        return `
+
+          <article
+            class="wishlist-card"
+            data-product-id="${escapeHtml(
+              product.id
+            )}"
+          >
+
+
+            <button
+              type="button"
+              class="wishlist-remove"
+              data-remove-wishlist="${escapeHtml(
+                product.id
+              )}"
+              aria-label="Remove ${escapeHtml(
+                product.name
+              )} from wishlist"
+              title="Remove from wishlist"
+            >
+              ♥
+            </button>
+
+
+            <a
+              class="wishlist-image-link"
+              href="${escapeHtml(
+                link
+              )}"
+            >
+
+              <img
+                class="wishlist-image"
+                src="${escapeHtml(
+                  image
+                )}"
+                alt="${escapeHtml(
+                  product.name
+                )}"
+                loading="lazy"
+              >
+
+            </a>
+
+
+            <div class="wishlist-card-content">
+
+
+              <div class="wishlist-category">
+
+                ${escapeHtml(
+                  product.category ||
+                  "Brit.Tuna"
+                )}
+
+              </div>
+
+
+              <a
+                class="wishlist-name"
+                href="${escapeHtml(
+                  link
+                )}"
+              >
+
+                ${escapeHtml(
+                  product.name
+                )}
+
+              </a>
+
+
+              <p class="wishlist-description">
+
+                ${escapeHtml(
+                  product.shortDescription ||
+                  product.description ||
+                  ""
+                )}
+
+              </p>
+
+
+              <div class="wishlist-price">
+
+                From
+                ${formatMoney(
+                  price
+                )}
+
+              </div>
+
+
+              <div class="wishlist-demo-price">
+                Demo price — replace with production pricing later.
+              </div>
+
+
+              <span
+                class="wishlist-stock ${
+                  inStock
+                    ? ""
+                    : "out"
+                }"
+              >
+
+                ${
+                  inStock
+                    ? "In Stock"
+                    : "Out of Stock"
+                }
+
+              </span>
+
+
+              <div class="wishlist-actions">
+
+
+                <a
+                  class="wishlist-btn details"
+                  href="${escapeHtml(
+                    link
+                  )}"
+                >
+                  View Product
+                </a>
+
+
+                <button
+                  type="button"
+                  class="wishlist-btn cart"
+                  data-wishlist-cart="${escapeHtml(
+                    product.id
+                  )}"
+                  ${
+                    inStock
+                      ? ""
+                      : "disabled"
+                  }
+                >
+
+                  ${
+                    inStock
+                      ? "Add to Cart"
+                      : "Out of Stock"
+                  }
+
+                </button>
+
+
+              </div>
+
+
+            </div>
+
+
+          </article>
+
+        `;
+
+      }
+
+
+      /* ====================================================
+         RENDER
+         ==================================================== */
+
+      function renderProducts(
+        products
+      ) {
+
+        if (
+          !Array.isArray(products) ||
+          products.length === 0
+        ) {
+
+          renderEmpty();
+
+          return;
+
+        }
+
+
+        gridElement.innerHTML =
+          products
+            .map(
+              cardHtml
+            )
+            .join("");
+
+      }
+
+
+      /* ====================================================
+         FIND PRODUCT
+         ==================================================== */
+
+      function getProduct(
+        productId
+      ) {
+
+        if (
+          !window.BTProducts ||
+          typeof window.BTProducts.getById !==
+            "function"
+        ) {
+
+          return null;
+
+        }
+
+
+        return window.BTProducts.getById(
+          productId
+        );
+
+      }
+
+
+      /* ====================================================
+         LOAD PAGE
+         ==================================================== */
+
+      async function loadPage() {
+
+        try {
+
+
+          showMessage(
+            "Loading your wishlist..."
+          );
+
+
+          if (
+            !window.supabaseClient
+          ) {
+
+            throw new Error(
+              "Supabase connection is not available."
+            );
+
+          }
+
+
+          /* CHECK LOGIN */
+
+          var sessionResult =
+            await window.supabaseClient
+              .auth
+              .getSession();
+
+
+          if (
+            sessionResult.error
+          ) {
+
+            throw sessionResult.error;
+
+          }
+
+
+          var session =
+            sessionResult.data &&
+            sessionResult.data.session;
+
+
+          if (
+            !session ||
+            !session.user
+          ) {
+
+            window.location.href =
+              "login.html?next=" +
+              encodeURIComponent(
+                "wishlist.html"
+              );
+
+            return;
+
+          }
+
+
+          /* LOAD PRODUCTS */
+
+          if (
+            window.BTProducts &&
+            typeof window.BTProducts.load ===
+              "function"
+          ) {
+
+            await window.BTProducts.load();
+
+          }
+
+
+          /* LOAD WISHLIST */
+
+          await window.BTWishlist.load();
+
+
+          var ids =
+            window.BTWishlist.getIds();
+
+
+          var products =
+            ids
+              .map(
+                function (id) {
+
+                  return getProduct(
+                    id
+                  );
+
+                }
+              )
+              .filter(
+                Boolean
+              );
+
+
+          hideMessage();
+
+
+          renderProducts(
+            products
+          );
+
+
+        } catch (error) {
+
+          console.error(
+            "Brit.Tuna wishlist page error:",
+            error
+          );
+
+
+          showMessage(
+            error &&
+            error.message
+
+              ? error.message
+
+              : "Unable to load your wishlist.",
+
+            "error"
+          );
+
+        }
+
+      }
+
+
+      /* ====================================================
+         REMOVE
+         ==================================================== */
+
+      async function removeProduct(
+        button
+      ) {
+
+        var productId =
+          Number(
+            button.dataset
+              .removeWishlist
+          );
+
+
+        if (!productId) {
+
+          return;
+
+        }
+
+
+        button.disabled =
+          true;
+
+
+        try {
+
+          await window.BTWishlist.remove(
+            productId
+          );
+
+
+          var card =
+            button.closest(
+              ".wishlist-card"
+            );
+
+
+          if (card) {
+
+            card.remove();
+
+          }
+
+
+          if (
+            window.BTWishlist.count() ===
+            0
+          ) {
+
+            renderEmpty();
+
+          }
+
+
+        } catch (error) {
+
+          console.error(
+            "Wishlist remove error:",
+            error
+          );
+
+
+          button.disabled =
+            false;
+
+
+          alert(
+            "Unable to remove this product from your wishlist."
+          );
+
+        }
+
+      }
+
+
+      /* ====================================================
+         ADD TO CART
+         ==================================================== */
+
+      async function addToCart(
+        button
+      ) {
+
+        var productId =
+          Number(
+            button.dataset
+              .wishlistCart
+          );
+
+
+        var product =
+          getProduct(
+            productId
+          );
+
+
+        if (!product) {
+
+          alert(
+            "Product is unavailable."
+          );
+
+          return;
+
+        }
+
+
+        var pack =
+          availablePack(
+            product
+          );
+
+
+        if (!pack) {
+
+          alert(
+            "This product is currently out of stock."
+          );
+
+          return;
+
+        }
+
+
+        if (
+          !window.BTCart ||
+          typeof window.BTCart.add !==
+            "function"
+        ) {
+
+          alert(
+            "Cart is not available."
+          );
+
+          return;
+
+        }
+
+
+        button.disabled =
+          true;
+
+
+        try {
+
+          await window.BTCart.add(
+            product.id,
+            pack.id,
+            1
+          );
+
+
+          button.textContent =
+            "Added ✓";
+
+
+          setTimeout(
+            function () {
+
+              button.textContent =
+                "Add to Cart";
+
+              button.disabled =
+                false;
+
+            },
+            1200
+          );
+
+
+        } catch (error) {
+
+          console.error(
+            "Wishlist cart error:",
+            error
+          );
+
+
+          button.disabled =
+            false;
+
+
+          alert(
+            error &&
+            error.message
+
+              ? error.message
+
+              : "Unable to add product to cart."
+          );
+
+        }
+
+      }
+
+
+      /* ====================================================
+         CLICKS
+         ==================================================== */
+
+      document.addEventListener(
+        "click",
+        function (event) {
+
+
+          var removeButton =
+            event.target.closest(
+              "[data-remove-wishlist]"
+            );
+
+
+          if (removeButton) {
+
+            event.preventDefault();
+
+            removeProduct(
+              removeButton
+            );
+
+            return;
+
+          }
+
+
+          var cartButton =
+            event.target.closest(
+              "[data-wishlist-cart]"
+            );
+
+
+          if (cartButton) {
+
+            event.preventDefault();
+
+            addToCart(
+              cartButton
+            );
+
+          }
+
+        }
+      );
+
+
+      /* ====================================================
+         START
+         ==================================================== */
+
+      document.addEventListener(
+        "DOMContentLoaded",
+        loadPage
+      );
+
+
+    })();
+
+  </script>
+
+
+</body>
+
+</html>
