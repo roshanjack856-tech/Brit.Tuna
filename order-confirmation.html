@@ -95,6 +95,7 @@
       border-radius: 20px;
       padding: 26px;
       box-shadow: 0 8px 30px rgba(25, 50, 35, 0.06);
+      overflow: hidden;
     }
 
 
@@ -258,7 +259,7 @@
     .confirmation-item {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
       gap: 20px;
       padding: 17px 0;
       border-bottom: 1px dashed #dedfd9;
@@ -270,6 +271,48 @@
     }
 
 
+    /* ======================================================
+       PRODUCT IMAGE + PRODUCT INFORMATION
+       ====================================================== */
+
+    .confirmation-product {
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      flex: 1;
+      min-width: 0;
+    }
+
+
+    .confirmation-product-image-link {
+      display: block;
+      width: 95px;
+      height: 95px;
+      flex: 0 0 95px;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid #ece7da;
+      background: #f7f4eb;
+      text-decoration: none;
+    }
+
+
+    .confirmation-product-image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition:
+        transform 0.25s ease;
+    }
+
+
+    .confirmation-product-image-link:hover
+    .confirmation-product-image {
+      transform: scale(1.05);
+    }
+
+
     .confirmation-item-left {
       flex: 1;
       min-width: 0;
@@ -277,11 +320,21 @@
 
 
     .confirmation-item-name {
-      display: block;
+      display: inline-block;
       margin-bottom: 6px;
       color: #29352e;
       font-size: 1rem;
       font-weight: 700;
+      text-decoration: none;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+
+    a.confirmation-item-name:hover {
+      color: #1f5a3a;
+      text-decoration: underline;
     }
 
 
@@ -527,12 +580,27 @@
 
       .confirmation-item {
         flex-direction: column;
-        gap: 10px;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+
+      .confirmation-product {
+        width: 100%;
+      }
+
+
+      .confirmation-product-image-link {
+        width: 78px;
+        height: 78px;
+        flex-basis: 78px;
       }
 
 
       .confirmation-item-price {
+        margin-left: 93px;
         text-align: left;
+        white-space: normal;
       }
 
 
@@ -547,6 +615,27 @@
 
     }
 
+
+    @media (max-width: 380px) {
+
+      .confirmation-product {
+        gap: 11px;
+      }
+
+
+      .confirmation-product-image-link {
+        width: 68px;
+        height: 68px;
+        flex-basis: 68px;
+      }
+
+
+      .confirmation-item-price {
+        margin-left: 79px;
+      }
+
+    }
+
   </style>
 
 </head>
@@ -555,16 +644,12 @@
 <body data-page="order-confirmation">
 
 
-  <!-- ======================================================
-       HEADER
-       ====================================================== -->
+  <!-- HEADER -->
 
   <div id="site-header"></div>
 
 
-  <!-- ======================================================
-       MAIN
-       ====================================================== -->
+  <!-- MAIN -->
 
   <main id="main">
 
@@ -591,8 +676,6 @@
       <div class="confirmation-wrap">
 
 
-        <!-- MESSAGE -->
-
         <div
           id="confirmation-message"
           class="confirmation-message"
@@ -602,8 +685,6 @@
           Loading your order...
         </div>
 
-
-        <!-- ORDER CONTENT -->
 
         <div
           id="confirmation-content"
@@ -619,23 +700,19 @@
   </main>
 
 
-  <!-- ======================================================
-       FOOTER
-       ====================================================== -->
+  <!-- FOOTER -->
 
   <div id="site-footer"></div>
 
 
-  <!-- ======================================================
-       SUPABASE
-       ====================================================== -->
+  <!-- SUPABASE -->
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
 
 
-  <!-- ======================================================
-       BRIT.TUNA FILES
-       ====================================================== -->
+  <!-- BRIT.TUNA FILES -->
 
   <script src="config.js"></script>
 
@@ -644,9 +721,7 @@
   <script src="script.js"></script>
 
 
-  <!-- ======================================================
-       ORDER CONFIRMATION LOGIC
-       ====================================================== -->
+  <!-- ORDER CONFIRMATION LOGIC -->
 
   <script>
 
@@ -669,6 +744,21 @@
         document.getElementById(
           "confirmation-content"
         );
+
+
+      /*
+        Product image cache.
+
+        Example:
+
+        {
+          "2": "https://...",
+          "6": "https://..."
+        }
+      */
+
+      var productImageMap =
+        {};
 
 
       /* ====================================================
@@ -737,6 +827,7 @@
               2
 
           }
+
         ).format(
           amount
         );
@@ -794,6 +885,7 @@
               "2-digit"
 
           }
+
         ).format(
           date
         );
@@ -809,6 +901,13 @@
         text,
         type
       ) {
+
+        if (!messageElement) {
+
+          return;
+
+        }
+
 
         messageElement.textContent =
           text;
@@ -835,8 +934,441 @@
 
       function hideMessage() {
 
-        messageElement.hidden =
-          true;
+        if (messageElement) {
+
+          messageElement.hidden =
+            true;
+
+        }
+
+      }
+
+
+      /* ====================================================
+         PLACEHOLDER IMAGE
+         ==================================================== */
+
+      function placeholderImage() {
+
+        return (
+          "data:image/svg+xml;charset=UTF-8," +
+          encodeURIComponent(
+            `
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="400"
+              height="400"
+              viewBox="0 0 400 400"
+            >
+              <rect
+                width="400"
+                height="400"
+                fill="#f7f4eb"
+              />
+
+              <circle
+                cx="200"
+                cy="155"
+                r="55"
+                fill="#dfe9e1"
+              />
+
+              <path
+                d="M100 310 L170 220 L215 265 L255 220 L320 310 Z"
+                fill="#c9d9cd"
+              />
+
+              <text
+                x="200"
+                y="360"
+                text-anchor="middle"
+                font-family="Arial, sans-serif"
+                font-size="24"
+                fill="#1f5a3a"
+              >
+                Brit.Tuna
+              </text>
+
+            </svg>
+            `
+          )
+        );
+
+      }
+
+
+      /* ====================================================
+         PRODUCT DETAILS URL
+         ==================================================== */
+
+      function productUrl(productId) {
+
+        var id =
+          Number(
+            productId
+          );
+
+
+        if (
+          !Number.isInteger(id) ||
+          id <= 0
+        ) {
+
+          return "shop.html";
+
+        }
+
+
+        return (
+          "product-details.html?id=" +
+          encodeURIComponent(
+            String(id)
+          )
+        );
+
+      }
+
+
+      /* ====================================================
+         GET PRODUCT IMAGE
+         ==================================================== */
+
+      function getProductImage(
+        productId
+      ) {
+
+        var key =
+          String(
+            productId || ""
+          );
+
+
+        return (
+          productImageMap[key] ||
+          placeholderImage()
+        );
+
+      }
+
+
+      /* ====================================================
+         LOAD PRODUCT IMAGES
+
+         PRIORITY:
+
+         1. product_images primary
+         2. first product_images image
+         3. products.image_url
+         4. Brit.Tuna placeholder
+         ==================================================== */
+
+      async function loadProductImages(
+        items
+      ) {
+
+        productImageMap =
+          {};
+
+
+        if (
+          !Array.isArray(items) ||
+          items.length === 0
+        ) {
+
+          return;
+
+        }
+
+
+        var productIds =
+          [];
+
+
+        items.forEach(
+          function (item) {
+
+            var id =
+              Number(
+                item.product_id
+              );
+
+
+            if (
+              Number.isInteger(id) &&
+              id > 0 &&
+              !productIds.includes(id)
+            ) {
+
+              productIds.push(
+                id
+              );
+
+            }
+
+          }
+        );
+
+
+        if (
+          productIds.length === 0
+        ) {
+
+          return;
+
+        }
+
+
+        /* ================================================
+           LEGACY products.image_url FALLBACK
+           ================================================ */
+
+        try {
+
+          var productResult =
+            await window.supabaseClient
+
+              .from(
+                "products"
+              )
+
+              .select(
+                "id, image_url"
+              )
+
+              .in(
+                "id",
+                productIds
+              );
+
+
+          if (productResult.error) {
+
+            console.warn(
+              "Brit.Tuna: Product fallback images could not be loaded.",
+              productResult.error
+            );
+
+          } else {
+
+            (
+              productResult.data ||
+              []
+            ).forEach(
+              function (product) {
+
+                if (
+                  product &&
+                  product.image_url
+                ) {
+
+                  productImageMap[
+                    String(
+                      product.id
+                    )
+                  ] =
+                    product.image_url;
+
+                }
+
+              }
+            );
+
+          }
+
+        } catch (error) {
+
+          console.warn(
+            "Brit.Tuna: Product fallback image loading failed.",
+            error
+          );
+
+        }
+
+
+        /* ================================================
+           PRODUCT_IMAGES
+           ================================================ */
+
+        try {
+
+          var imageResult =
+            await window.supabaseClient
+
+              .from(
+                "product_images"
+              )
+
+              .select(
+                `
+                id,
+                product_id,
+                image_url,
+                sort_order,
+                is_primary
+                `
+              )
+
+              .in(
+                "product_id",
+                productIds
+              )
+
+              .order(
+                "sort_order",
+                {
+                  ascending:
+                    true
+                }
+              );
+
+
+          if (imageResult.error) {
+
+            console.warn(
+              "Brit.Tuna: Product images could not be loaded.",
+              imageResult.error
+            );
+
+            return;
+
+          }
+
+
+          var groupedImages =
+            {};
+
+
+          (
+            imageResult.data ||
+            []
+          ).forEach(
+            function (image) {
+
+              if (
+                !image ||
+                !image.product_id
+              ) {
+
+                return;
+
+              }
+
+
+              var key =
+                String(
+                  image.product_id
+                );
+
+
+              if (
+                !groupedImages[key]
+              ) {
+
+                groupedImages[key] =
+                  [];
+
+              }
+
+
+              groupedImages[key].push(
+                image
+              );
+
+            }
+          );
+
+
+          Object.keys(
+            groupedImages
+          ).forEach(
+            function (productId) {
+
+              var images =
+                groupedImages[
+                  productId
+                ];
+
+
+              /*
+                Sort:
+
+                primary first,
+                then sort_order.
+              */
+
+              images.sort(
+                function (a, b) {
+
+                  if (
+                    a.is_primary &&
+                    !b.is_primary
+                  ) {
+
+                    return -1;
+
+                  }
+
+
+                  if (
+                    !a.is_primary &&
+                    b.is_primary
+                  ) {
+
+                    return 1;
+
+                  }
+
+
+                  return (
+                    Number(
+                      a.sort_order || 0
+                    ) -
+                    Number(
+                      b.sort_order || 0
+                    )
+                  );
+
+                }
+              );
+
+
+              var selectedImage =
+                images.find(
+                  function (image) {
+
+                    return (
+                      image &&
+                      image.image_url
+                    );
+
+                  }
+                );
+
+
+              if (
+                selectedImage &&
+                selectedImage.image_url
+              ) {
+
+                productImageMap[
+                  productId
+                ] =
+                  selectedImage.image_url;
+
+              }
+
+            }
+          );
+
+
+        } catch (error) {
+
+          console.warn(
+            "Brit.Tuna: Product image loading failed.",
+            error
+          );
+
+        }
 
       }
 
@@ -937,9 +1469,7 @@
           '<div class="confirmation-item-details">';
 
 
-        /*
-         * Product ID
-         */
+        /* PRODUCT ID */
 
         if (
           item.product_id
@@ -961,9 +1491,7 @@
         }
 
 
-        /*
-         * PACK SIZE
-         */
+        /* PACK SIZE */
 
         if (
           item.pack_size
@@ -985,9 +1513,7 @@
         }
 
 
-        /*
-         * VARIANT ID
-         */
+        /* VARIANT ID */
 
         if (
           item.variant_id
@@ -1022,7 +1548,9 @@
          RENDER ORDER ITEMS
          ==================================================== */
 
-      function renderItems(items) {
+      function renderItems(
+        items
+      ) {
 
         if (
           !Array.isArray(items) ||
@@ -1065,42 +1593,94 @@
               quantity;
 
 
+            var imageUrl =
+              getProductImage(
+                item.product_id
+              );
+
+
+            var detailsUrl =
+              productUrl(
+                item.product_id
+              );
+
+
             return `
 
               <li class="confirmation-item">
 
 
-                <div class="confirmation-item-left">
+                <div class="confirmation-product">
 
 
-                  <!-- PRODUCT -->
+                  <!-- PRODUCT IMAGE -->
 
-                  <span class="confirmation-item-name">
-
-                    ${escapeHtml(
+                  <a
+                    class="confirmation-product-image-link"
+                    href="${escapeHtml(
+                      detailsUrl
+                    )}"
+                    aria-label="View ${escapeHtml(
                       item.product_name ||
-                      "Product"
+                      "product"
+                    )}"
+                  >
+
+                    <img
+                      class="confirmation-product-image"
+                      src="${escapeHtml(
+                        imageUrl
+                      )}"
+                      alt="${escapeHtml(
+                        item.product_name ||
+                        "Brit.Tuna product"
+                      )}"
+                      loading="lazy"
+                      data-fallback="ready"
+                    >
+
+                  </a>
+
+
+                  <!-- PRODUCT INFORMATION -->
+
+                  <div class="confirmation-item-left">
+
+
+                    <a
+                      class="confirmation-item-name"
+                      href="${escapeHtml(
+                        detailsUrl
+                      )}"
+                    >
+
+                      ${escapeHtml(
+                        item.product_name ||
+                        "Product"
+                      )}
+
+                      × ${escapeHtml(
+                        quantity
+                      )}
+
+                    </a>
+
+
+                    <!-- PRODUCT / PACK / VARIANT -->
+
+                    ${productDetailsHtml(
+                      item
                     )}
 
-                    × ${escapeHtml(
-                      quantity
+
+                    <!-- SELLER FULFILLMENT -->
+
+                    ${fulfillmentStatusHtml(
+                      item.fulfillment_status
                     )}
 
-                  </span>
 
-
-                  <!-- PRODUCT / PACK / VARIANT -->
-
-                  ${productDetailsHtml(
-                    item
-                  )}
-
-
-                  <!-- SELLER FULFILLMENT -->
-
-                  ${fulfillmentStatusHtml(
-                    item.fulfillment_status
-                  )}
+                  </div>
 
 
                 </div>
@@ -1141,7 +1721,9 @@
          ADDRESS
          ==================================================== */
 
-      function buildAddress(order) {
+      function buildAddress(
+        order
+      ) {
 
         var parts = [
 
@@ -1209,6 +1791,49 @@
           </div>
 
         `;
+
+      }
+
+
+      /* ====================================================
+         ATTACH IMAGE ERROR FALLBACK
+         ==================================================== */
+
+      function attachImageFallbacks() {
+
+        contentElement
+          .querySelectorAll(
+            ".confirmation-product-image"
+          )
+          .forEach(
+            function (image) {
+
+              image.addEventListener(
+                "error",
+                function () {
+
+                  if (
+                    image.dataset.fallback ===
+                    "done"
+                  ) {
+
+                    return;
+
+                  }
+
+
+                  image.dataset.fallback =
+                    "done";
+
+
+                  image.src =
+                    placeholderImage();
+
+                }
+              );
+
+            }
+          );
 
       }
 
@@ -1534,6 +2159,9 @@
         contentElement.hidden =
           false;
 
+
+        attachImageFallbacks();
+
       }
 
 
@@ -1598,8 +2226,8 @@
 
 
           /*
-           * Orders use BIGINT.
-           */
+            Orders use BIGINT.
+          */
 
           if (
             !/^\d+$/.test(
@@ -1708,12 +2336,8 @@
           /* ==================================================
              GET CUSTOMER ORDER
 
-             IMPORTANT:
-             variant_id
-             pack_size
-             fulfillment_status
-
-             are loaded from order_items.
+             Security:
+             Order ID + current logged-in user ID.
              ================================================== */
 
           var orderResult =
@@ -1757,6 +2381,8 @@
                   id,
 
                   product_id,
+
+                  seller_id,
 
                   variant_id,
 
@@ -1816,9 +2442,36 @@
           }
 
 
+          var order =
+            orderResult.data;
+
+
           console.log(
             "Brit.Tuna Order Confirmation:",
-            orderResult.data
+            order
+          );
+
+
+          /* ----------------------------------------------
+             LOAD PRODUCT IMAGES
+
+             This must happen before renderOrder().
+             ---------------------------------------------- */
+
+          await loadProductImages(
+            Array.isArray(
+              order.order_items
+            )
+
+              ? order.order_items
+
+              : []
+          );
+
+
+          console.log(
+            "Brit.Tuna Order Product Images:",
+            productImageMap
           );
 
 
@@ -1830,13 +2483,11 @@
 
 
           renderOrder(
-            orderResult.data
+            order
           );
 
 
-        }
-
-        catch (error) {
+        } catch (error) {
 
           console.error(
             "Brit.Tuna Order Confirmation error:",
