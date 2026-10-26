@@ -533,31 +533,129 @@ button {
   color: var(--green);
 }
 
+/* ==========================================================
+   CART + WISHLIST COUNT BADGES
+   ========================================================== */
+
+.cart-link,
+.wishlist-link {
+  position: relative;
+}
+
+
+/* CART COUNT */
+
 .cart-count {
   position: absolute;
 
   top: -9px;
   right: -11px;
 
-  background: var(--red);
-
-  color: #fff;
-
-  font-size: 0.7rem;
-
-  font-weight: 700;
+  z-index: 2;
 
   min-width: 18px;
   height: 18px;
-
-  border-radius: 9px;
 
   display: grid;
 
   place-items: center;
 
   padding: 0 4px;
+
+  background: var(--red);
+
+  color: #ffffff;
+
+  border: 2px solid #ffffff;
+
+  border-radius: 999px;
+
+  font-size: 0.68rem;
+
+  font-weight: 700;
+
+  line-height: 1;
+
+  pointer-events: none;
 }
+
+
+/* WISHLIST COUNT */
+
+.wishlist-count {
+  position: absolute;
+
+  top: -9px;
+  right: -11px;
+
+  z-index: 2;
+
+  min-width: 18px;
+  height: 18px;
+
+  display: grid;
+
+  place-items: center;
+
+  padding: 0 4px;
+
+  background: var(--green);
+
+  color: #ffffff;
+
+  border: 2px solid #ffffff;
+
+  border-radius: 999px;
+
+  font-size: 0.68rem;
+
+  font-weight: 700;
+
+  line-height: 1;
+
+  pointer-events: none;
+}
+
+
+/* HEADER WISHLIST ICON */
+
+.wishlist-link {
+  color: var(--ink);
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.wishlist-link:hover {
+  color: var(--red);
+}
+
+.wishlist-link .wishlist-header-heart {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  font-size: 1.55rem;
+
+  line-height: 1;
+}
+
+
+/* MOBILE DRAWER BADGES */
+
+.drawer-icons .cart-count,
+.drawer-icons .wishlist-count {
+  top: -8px;
+
+  right: -9px;
+}
+
+
+/* ==========================================================
+   HAMBURGER
+   ========================================================== */
 
 .hamburger {
   display: none;
