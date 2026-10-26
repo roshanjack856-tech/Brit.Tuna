@@ -1372,6 +1372,196 @@ button {
   padding-right: 8px;
 }
 
+/* ==========================================================
+   PRODUCT WISHLIST
+   ========================================================== */
+
+.pc-image-wrap {
+  position: relative;
+
+  width: 100%;
+
+  overflow: hidden;
+}
+
+
+/* Product card wishlist heart */
+
+.pc-wishlist {
+  position: absolute;
+
+  top: 12px;
+  right: 12px;
+
+  z-index: 10;
+
+  width: 42px;
+  height: 42px;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border:
+    1px solid
+    rgba(122, 31, 43, 0.18);
+
+  border-radius: 50%;
+
+  background:
+    rgba(255, 248, 236, 0.96);
+
+  color: var(--green);
+
+  box-shadow:
+    0 4px 14px
+    rgba(74, 17, 25, 0.16);
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.pc-wishlist
+.wishlist-heart {
+  display: block;
+
+  font-size: 1.55rem;
+
+  line-height: 1;
+}
+
+
+.pc-wishlist:hover {
+  transform: scale(1.08);
+
+  background: #ffffff;
+
+  border-color:
+    var(--green);
+
+  box-shadow:
+    0 6px 18px
+    rgba(74, 17, 25, 0.22);
+}
+
+
+/* Already wishlisted */
+
+.pc-wishlist.active {
+  background:
+    var(--green);
+
+  border-color:
+    var(--green);
+
+  color: #ffffff;
+}
+
+
+.pc-wishlist.active:hover {
+  background:
+    var(--green-dark);
+
+  border-color:
+    var(--green-dark);
+
+  color: #ffffff;
+}
+
+
+.pc-wishlist:disabled {
+  opacity: 0.65;
+
+  cursor: wait;
+
+  transform: none;
+}
+
+
+/* ==========================================================
+   PRODUCT DETAILS WISHLIST BUTTON
+   ========================================================== */
+
+.btn-wishlist {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  background: #ffffff;
+
+  border-color:
+    var(--green);
+
+  color:
+    var(--green);
+}
+
+
+.btn-wishlist
+.wishlist-heart {
+  font-size: 1.25rem;
+
+  line-height: 1;
+}
+
+
+.btn-wishlist:hover {
+  background:
+    var(--green-soft);
+
+  border-color:
+    var(--green-dark);
+
+  color:
+    var(--green-dark);
+}
+
+
+/* Already wishlisted */
+
+.btn-wishlist.active {
+  background:
+    var(--green);
+
+  border-color:
+    var(--green);
+
+  color: #ffffff;
+}
+
+
+.btn-wishlist.active:hover {
+  background:
+    var(--green-dark);
+
+  border-color:
+    var(--green-dark);
+
+  color: #ffffff;
+}
+
+
+.btn-wishlist:disabled {
+  opacity: 0.65;
+
+  cursor: wait;
+
+  transform: none;
+}
+
 
 /* ==========================================================
    SHOP / PRODUCTS TOOLBAR
@@ -1497,8 +1687,6 @@ button {
 
   text-align: center;
 }
-
-
 /* ==========================================================
    PRODUCT DETAILS
    ========================================================== */
@@ -3788,25 +3976,35 @@ button {
 /* ==========================================================
    ADD TO CART + BUY NOW
    ========================================================== */
-
 .product-detail-actions {
   display: grid;
 
   grid-template-columns:
-    1fr 1fr;
+    repeat(3, minmax(0, 1fr));
 
   gap: 12px;
 
   margin-top: 20px;
 }
 
+
+/* All product action buttons */
+
 .product-detail-actions .btn {
   width: 100%;
 
+  min-width: 0;
+
   min-height: 48px;
+
+  padding-left: 12px;
+  padding-right: 12px;
 
   border-radius: 10px;
 }
+
+
+/* Buy Now */
 
 .btn-buy-now {
   background: var(--red);
@@ -3822,6 +4020,28 @@ button {
   border-color: var(--red-dark);
 }
 
+
+/* Wishlist */
+
+.product-detail-actions
+.btn-wishlist {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+}
+
+.product-detail-actions
+.btn-wishlist
+.wishlist-heart {
+  flex-shrink: 0;
+}
+
+
+/* WhatsApp */
+
 .product-detail-whatsapp {
   width: 100%;
 
@@ -3831,8 +4051,6 @@ button {
 
   border-radius: 10px;
 }
-
-
 /* ==========================================================
    PRODUCT HIGHLIGHTS
    ========================================================== */
