@@ -95,12 +95,17 @@
     }
 
 
+    /* ======================================================
+       ORDER CARD
+       ====================================================== */
+
     .order-card {
       background: #ffffff;
       border: 1px solid rgba(31, 90, 58, 0.12);
       border-radius: 18px;
       padding: 22px;
       box-shadow: 0 8px 30px rgba(25, 50, 35, 0.06);
+      overflow: hidden;
     }
 
 
@@ -138,7 +143,7 @@
 
 
     /* ======================================================
-       OVERALL ORDER STATUS
+       ORDER STATUS
        ====================================================== */
 
     .order-statuses {
@@ -181,15 +186,56 @@
 
     .order-item {
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      gap: 20px;
-      padding: 15px 0;
+      gap: 18px;
+      padding: 16px 0;
       border-bottom: 1px dashed #e2e2dc;
     }
 
 
     .order-item:last-child {
       border-bottom: 0;
+    }
+
+
+    /* ======================================================
+       PRODUCT IMAGE + INFORMATION
+       ====================================================== */
+
+    .order-product {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex: 1;
+      min-width: 0;
+    }
+
+
+    .order-product-image-link {
+      width: 90px;
+      height: 90px;
+      flex: 0 0 90px;
+      display: block;
+      border-radius: 13px;
+      overflow: hidden;
+      background: #f7f4eb;
+      border: 1px solid #ece7da;
+      text-decoration: none;
+    }
+
+
+    .order-product-image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.25s ease;
+    }
+
+
+    .order-product-image-link:hover .order-product-image {
+      transform: scale(1.04);
     }
 
 
@@ -200,22 +246,33 @@
 
 
     .order-item-name {
-      display: block;
+      display: inline-block;
       color: #29352e;
       font-weight: 700;
       margin-bottom: 7px;
+      text-decoration: none;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+
+    a.order-item-name:hover {
+      color: #1f5a3a;
+      text-decoration: underline;
     }
 
 
     .order-item-price {
-      color: #58625c;
+      color: #1f5a3a;
       white-space: nowrap;
-      font-weight: 600;
+      font-weight: 700;
+      font-size: 1rem;
     }
 
 
     /* ======================================================
-       PRODUCT PACK / VARIANT
+       PACK / VARIANT
        ====================================================== */
 
     .order-item-meta {
@@ -253,7 +310,7 @@
 
 
     /* ======================================================
-       SELLER FULFILLMENT STATUS
+       SELLER STATUS
        ====================================================== */
 
     .seller-status-row {
@@ -285,15 +342,11 @@
     }
 
 
-    /* Pending */
-
     .seller-status.pending {
       background: #fff3df;
       color: #8a5a0a;
     }
 
-
-    /* Processing */
 
     .seller-status.processing {
       background: #e8f1ff;
@@ -301,23 +354,17 @@
     }
 
 
-    /* Shipped */
-
     .seller-status.shipped {
       background: #eee8ff;
       color: #6340a5;
     }
 
 
-    /* Delivered */
-
     .seller-status.delivered {
       background: #e8f7ec;
       color: #18723a;
     }
 
-
-    /* Cancelled */
 
     .seller-status.cancelled {
       background: #fff0ed;
@@ -332,7 +379,7 @@
 
 
     /* ======================================================
-       INFORMATION
+       HELP
        ====================================================== */
 
     .order-status-help {
@@ -414,7 +461,7 @@
     @media (max-width: 600px) {
 
       .order-card {
-        padding: 17px;
+        padding: 16px;
       }
 
 
@@ -427,11 +474,25 @@
       .order-item {
         align-items: flex-start;
         flex-direction: column;
-        gap: 8px;
+        gap: 12px;
+      }
+
+
+      .order-product {
+        width: 100%;
+        align-items: flex-start;
+      }
+
+
+      .order-product-image-link {
+        width: 78px;
+        height: 78px;
+        flex-basis: 78px;
       }
 
 
       .order-item-price {
+        margin-left: 93px;
         white-space: normal;
       }
 
@@ -447,6 +508,27 @@
 
     }
 
+
+    @media (max-width: 380px) {
+
+      .order-product-image-link {
+        width: 68px;
+        height: 68px;
+        flex-basis: 68px;
+      }
+
+
+      .order-product {
+        gap: 11px;
+      }
+
+
+      .order-item-price {
+        margin-left: 79px;
+      }
+
+    }
+
   </style>
 
 </head>
@@ -455,16 +537,12 @@
 <body data-page="orders">
 
 
-  <!-- ======================================================
-       HEADER
-       ====================================================== -->
+  <!-- HEADER -->
 
   <div id="site-header"></div>
 
 
-  <!-- ======================================================
-       MAIN
-       ====================================================== -->
+  <!-- MAIN -->
 
   <main id="main">
 
@@ -491,8 +569,6 @@
       <div class="orders-wrap">
 
 
-        <!-- MESSAGE -->
-
         <div
           id="orders-message"
           class="orders-message"
@@ -502,8 +578,6 @@
           Loading your orders...
         </div>
 
-
-        <!-- ORDERS -->
 
         <div
           id="orders-list"
@@ -519,23 +593,19 @@
   </main>
 
 
-  <!-- ======================================================
-       FOOTER
-       ====================================================== -->
+  <!-- FOOTER -->
 
   <div id="site-footer"></div>
 
 
-  <!-- ======================================================
-       SUPABASE
-       ====================================================== -->
+  <!-- SUPABASE -->
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
 
 
-  <!-- ======================================================
-       BRIT.TUNA FILES
-       ====================================================== -->
+  <!-- BRIT.TUNA FILES -->
 
   <script src="config.js"></script>
 
@@ -544,9 +614,7 @@
   <script src="script.js"></script>
 
 
-  <!-- ======================================================
-       MY ORDERS LOGIC
-       ====================================================== -->
+  <!-- MY ORDERS LOGIC -->
 
   <script>
 
@@ -569,6 +637,20 @@
         document.getElementById(
           "orders-list"
         );
+
+
+      /*
+        Product image information is stored here.
+
+        Key:
+        product ID
+
+        Value:
+        image URL
+      */
+
+      var productImageMap =
+        {};
 
 
       /* ====================================================
@@ -712,6 +794,13 @@
         type
       ) {
 
+        if (!messageElement) {
+
+          return;
+
+        }
+
+
         messageElement.textContent =
           text;
 
@@ -737,14 +826,122 @@
 
       function hideMessage() {
 
-        messageElement.hidden =
-          true;
+        if (messageElement) {
+
+          messageElement.hidden =
+            true;
+
+        }
 
       }
 
 
       /* ====================================================
-         EMPTY
+         PLACEHOLDER IMAGE
+         ==================================================== */
+
+      function placeholderImage() {
+
+        return (
+          "data:image/svg+xml;charset=UTF-8," +
+          encodeURIComponent(
+            `
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="400"
+              height="400"
+              viewBox="0 0 400 400"
+            >
+              <rect
+                width="400"
+                height="400"
+                fill="#f7f4eb"
+              />
+
+              <circle
+                cx="200"
+                cy="155"
+                r="55"
+                fill="#dfe9e1"
+              />
+
+              <path
+                d="M100 310 L170 220 L215 265 L255 220 L320 310 Z"
+                fill="#c9d9cd"
+              />
+
+              <text
+                x="200"
+                y="360"
+                text-anchor="middle"
+                font-family="Arial, sans-serif"
+                font-size="24"
+                fill="#1f5a3a"
+              >
+                Brit.Tuna
+              </text>
+            </svg>
+            `
+          )
+        );
+
+      }
+
+
+      /* ====================================================
+         PRODUCT URL
+         ==================================================== */
+
+      function productUrl(productId) {
+
+        var id =
+          Number(
+            productId
+          );
+
+
+        if (
+          !Number.isInteger(id) ||
+          id <= 0
+        ) {
+
+          return "shop.html";
+
+        }
+
+
+        return (
+          "product-details.html?id=" +
+          encodeURIComponent(
+            String(id)
+          )
+        );
+
+      }
+
+
+      /* ====================================================
+         PRODUCT IMAGE
+         ==================================================== */
+
+      function getProductImage(productId) {
+
+        var id =
+          String(
+            productId || ""
+          );
+
+
+        return (
+          productImageMap[id] ||
+          placeholderImage()
+        );
+
+      }
+
+
+      /* ====================================================
+         EMPTY STATE
          ==================================================== */
 
       function renderEmpty() {
@@ -868,16 +1065,20 @@
         var packSize =
           item &&
           item.pack_size
+
             ? String(
                 item.pack_size
               ).trim()
+
             : "";
 
 
         var variantId =
           item &&
           item.variant_id
+
             ? item.variant_id
+
             : null;
 
 
@@ -895,9 +1096,7 @@
           '<div class="order-item-meta">';
 
 
-        if (
-          packSize
-        ) {
+        if (packSize) {
 
           html += `
 
@@ -915,9 +1114,7 @@
         }
 
 
-        if (
-          variantId
-        ) {
+        if (variantId) {
 
           html += `
 
@@ -945,10 +1142,336 @@
 
 
       /* ====================================================
-         RENDER ITEMS
+         LOAD PRODUCT IMAGES
+
+         Image priority:
+
+         1. product_images.is_primary = true
+         2. lowest sort_order
+         3. products.image_url
+         4. placeholder
          ==================================================== */
 
-      function renderItems(items) {
+      async function loadProductImages(
+        orders
+      ) {
+
+        productImageMap =
+          {};
+
+
+        var productIds =
+          [];
+
+
+        orders.forEach(
+          function (order) {
+
+            var items =
+              Array.isArray(
+                order.order_items
+              )
+
+                ? order.order_items
+
+                : [];
+
+
+            items.forEach(
+              function (item) {
+
+                var id =
+                  Number(
+                    item.product_id
+                  );
+
+
+                if (
+                  Number.isInteger(id) &&
+                  id > 0 &&
+                  !productIds.includes(id)
+                ) {
+
+                  productIds.push(
+                    id
+                  );
+
+                }
+
+              }
+            );
+
+          }
+        );
+
+
+        if (
+          productIds.length === 0
+        ) {
+
+          return;
+
+        }
+
+
+        /*
+          First load legacy products.image_url.
+
+          This is also used as fallback when
+          product_images has no image.
+        */
+
+        try {
+
+          var productResult =
+            await window.supabaseClient
+
+              .from(
+                "products"
+              )
+
+              .select(
+                "id, image_url"
+              )
+
+              .in(
+                "id",
+                productIds
+              );
+
+
+          if (productResult.error) {
+
+            console.warn(
+              "Brit.Tuna: Product fallback images could not be loaded.",
+              productResult.error
+            );
+
+          } else {
+
+            (
+              productResult.data ||
+              []
+            ).forEach(
+              function (product) {
+
+                if (
+                  product.image_url
+                ) {
+
+                  productImageMap[
+                    String(
+                      product.id
+                    )
+                  ] =
+                    product.image_url;
+
+                }
+
+              }
+            );
+
+          }
+
+        } catch (error) {
+
+          console.warn(
+            "Brit.Tuna: Product fallback image loading failed.",
+            error
+          );
+
+        }
+
+
+        /*
+          Now load product_images.
+
+          They override the old
+          products.image_url.
+        */
+
+        try {
+
+          var imageResult =
+            await window.supabaseClient
+
+              .from(
+                "product_images"
+              )
+
+              .select(
+                `
+                id,
+                product_id,
+                image_url,
+                sort_order,
+                is_primary
+                `
+              )
+
+              .in(
+                "product_id",
+                productIds
+              )
+
+              .order(
+                "sort_order",
+                {
+                  ascending:
+                    true
+                }
+              );
+
+
+          if (imageResult.error) {
+
+            console.warn(
+              "Brit.Tuna: Product images could not be loaded.",
+              imageResult.error
+            );
+
+            return;
+
+          }
+
+
+          var groupedImages =
+            {};
+
+
+          (
+            imageResult.data ||
+            []
+          ).forEach(
+            function (image) {
+
+              var key =
+                String(
+                  image.product_id
+                );
+
+
+              if (
+                !groupedImages[key]
+              ) {
+
+                groupedImages[key] =
+                  [];
+
+              }
+
+
+              groupedImages[key].push(
+                image
+              );
+
+            }
+          );
+
+
+          Object.keys(
+            groupedImages
+          ).forEach(
+            function (productId) {
+
+              var images =
+                groupedImages[
+                  productId
+                ];
+
+
+              images.sort(
+                function (a, b) {
+
+                  /*
+                    Primary image first.
+                  */
+
+                  if (
+                    a.is_primary &&
+                    !b.is_primary
+                  ) {
+
+                    return -1;
+
+                  }
+
+
+                  if (
+                    !a.is_primary &&
+                    b.is_primary
+                  ) {
+
+                    return 1;
+
+                  }
+
+
+                  /*
+                    Then sort_order.
+                  */
+
+                  return (
+                    Number(
+                      a.sort_order || 0
+                    ) -
+                    Number(
+                      b.sort_order || 0
+                    )
+                  );
+
+                }
+              );
+
+
+              var selectedImage =
+                images.find(
+                  function (image) {
+
+                    return (
+                      image &&
+                      image.image_url
+                    );
+
+                  }
+                );
+
+
+              if (
+                selectedImage &&
+                selectedImage.image_url
+              ) {
+
+                productImageMap[
+                  productId
+                ] =
+                  selectedImage.image_url;
+
+              }
+
+            }
+          );
+
+
+        } catch (error) {
+
+          console.warn(
+            "Brit.Tuna: Product image loading failed.",
+            error
+          );
+
+        }
+
+      }
+
+
+      /* ====================================================
+         RENDER ORDER ITEMS
+         ==================================================== */
+
+      function renderItems(
+        items
+      ) {
 
         if (
           !Array.isArray(items) ||
@@ -991,42 +1514,90 @@
               quantity;
 
 
+            var imageUrl =
+              getProductImage(
+                item.product_id
+              );
+
+
+            var detailsUrl =
+              productUrl(
+                item.product_id
+              );
+
+
             return `
 
               <li class="order-item">
 
 
-                <div class="order-item-left">
+                <div class="order-product">
 
 
-                  <!-- PRODUCT NAME -->
+                  <!-- PRODUCT IMAGE -->
 
-                  <span class="order-item-name">
-
-                    ${escapeHtml(
+                  <a
+                    class="order-product-image-link"
+                    href="${escapeHtml(
+                      detailsUrl
+                    )}"
+                    aria-label="View ${escapeHtml(
                       item.product_name ||
-                      "Product"
+                      "product"
+                    )}"
+                  >
+
+                    <img
+                      class="order-product-image"
+                      src="${escapeHtml(
+                        imageUrl
+                      )}"
+                      alt="${escapeHtml(
+                        item.product_name ||
+                        "Brit.Tuna product"
+                      )}"
+                      loading="lazy"
+                      data-fallback="true"
+                    >
+
+                  </a>
+
+
+                  <!-- PRODUCT INFORMATION -->
+
+                  <div class="order-item-left">
+
+
+                    <a
+                      class="order-item-name"
+                      href="${escapeHtml(
+                        detailsUrl
+                      )}"
+                    >
+
+                      ${escapeHtml(
+                        item.product_name ||
+                        "Product"
+                      )}
+
+                      × ${escapeHtml(
+                        quantity
+                      )}
+
+                    </a>
+
+
+                    ${productMetaHtml(
+                      item
                     )}
 
-                    × ${escapeHtml(
-                      quantity
+
+                    ${fulfillmentStatusHtml(
+                      item.fulfillment_status
                     )}
 
-                  </span>
 
-
-                  <!-- PACK SIZE + VARIANT -->
-
-                  ${productMetaHtml(
-                    item
-                  )}
-
-
-                  <!-- SELLER STATUS -->
-
-                  ${fulfillmentStatusHtml(
-                    item.fulfillment_status
-                  )}
+                  </div>
 
 
                 </div>
@@ -1127,7 +1698,7 @@
                   </div>
 
 
-                  <!-- OVERALL ORDER STATUS -->
+                  <!-- ORDER STATUS -->
 
                   <div class="order-statuses">
 
@@ -1164,7 +1735,7 @@
                   </ul>
 
 
-                  <!-- EXPLANATION -->
+                  <!-- INFORMATION -->
 
                   <div class="order-status-help">
 
@@ -1209,6 +1780,46 @@
             }
 
           ).join("");
+
+
+        /*
+          If a Supabase image URL becomes
+          unavailable, show placeholder.
+        */
+
+        listElement
+          .querySelectorAll(
+            ".order-product-image"
+          )
+          .forEach(
+            function (image) {
+
+              image.addEventListener(
+                "error",
+                function () {
+
+                  if (
+                    image.dataset.fallback ===
+                    "done"
+                  ) {
+
+                    return;
+
+                  }
+
+
+                  image.dataset.fallback =
+                    "done";
+
+
+                  image.src =
+                    placeholderImage();
+
+                }
+              );
+
+            }
+          );
 
       }
 
@@ -1290,10 +1901,8 @@
                 </h2>
 
                 <p>
-
                   Please sign in with your customer account
                   to view your order history.
-
                 </p>
 
                 <a
@@ -1315,13 +1924,6 @@
 
           /* ==================================================
              GET CUSTOMER ORDERS
-
-             NEW:
-             variant_id
-             pack_size
-
-             fulfillment_status is also fetched
-             from order_items.
              ================================================== */
 
           var orderResult =
@@ -1354,6 +1956,8 @@
 
                   product_id,
 
+                  seller_id,
+
                   variant_id,
 
                   product_name,
@@ -1379,14 +1983,11 @@
               .order(
                 "created_at",
                 {
-                  ascending: false
+                  ascending:
+                    false
                 }
               );
 
-
-          /* ----------------------------------------------
-             ERROR
-             ---------------------------------------------- */
 
           if (
             orderResult.error
@@ -1408,9 +2009,6 @@
           );
 
 
-          hideMessage();
-
-
           /* ----------------------------------------------
              NO ORDERS
              ---------------------------------------------- */
@@ -1420,6 +2018,8 @@
             0
           ) {
 
+            hideMessage();
+
             renderEmpty();
 
             return;
@@ -1428,17 +2028,36 @@
 
 
           /* ----------------------------------------------
+             LOAD PRODUCT IMAGES
+
+             IMPORTANT:
+             Do this before rendering orders.
+             ---------------------------------------------- */
+
+          await loadProductImages(
+            orders
+          );
+
+
+          console.log(
+            "Brit.Tuna Order Product Images:",
+            productImageMap
+          );
+
+
+          /* ----------------------------------------------
              RENDER
              ---------------------------------------------- */
+
+          hideMessage();
+
 
           renderOrders(
             orders
           );
 
 
-        }
-
-        catch (error) {
+        } catch (error) {
 
           console.error(
             "Brit.Tuna My Orders error:",
