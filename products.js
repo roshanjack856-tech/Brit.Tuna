@@ -2225,262 +2225,355 @@ function productUrl(p) {
      Add to Cart and WhatsApp.
   ========================================================== */
 
-  function cardHTML(p) {
+ function cardHTML(p) {
 
-    if (
-      !p ||
-      !p.packs.length
-    ) {
+  if (
+    !p ||
+    !p.packs.length
+  ) {
 
-      return '';
-
-    }
-
-
-    var cat =
-      getCategory(
-        p.category
-      );
-
-
-    var productStatus =
-      productStockStatus(
-        p
-      );
-
-
-    var out =
-      productStatus ===
-      'out_of_stock';
-
-
-    /*
-      IMPORTANT FIX:
-
-      Do NOT use:
-
-      p.packs[0]
-
-      because first pack can have stock 0.
-    */
-
-    var first =
-      firstAvailablePack(
-        p
-      );
-
-
-    /*
-      If every pack is sold out,
-      use first pack only for displaying
-      WhatsApp information.
-
-      Add to Cart remains disabled.
-    */
-
-    var displayPack =
-      first ||
-      p.packs[0];
-
-
-    var msg =
-      'Hello Brit.Tuna, I would like to order:\n' +
-      'Product: ' +
-      p.name +
-      '\nPack size: ' +
-      (
-        displayPack
-          ? displayPack.label
-          : ''
-      ) +
-      '\nQuantity: 1' +
-      '\nLink: ' +
-      absoluteUrl(
-        productUrl(p)
-      );
-
-
-    var mrp =
-      fromMrp(
-        p
-      );
-
-
-    var now =
-      fromPrice(
-        p
-      );
-
-
-    var packText =
-      p.packs
-        .map(
-          function (pack) {
-
-            var text =
-              U.escapeHtml(
-                pack.label
-              );
-
-
-            if (
-              !packHasStock(
-                pack
-              )
-            ) {
-
-              text +=
-                ' (Out of stock)';
-
-            }
-
-
-            return text;
-
-          }
-        )
-        .join(' · ');
-
-
-    return (
-      '<article class="product-card">' +
-
-      '<a class="pc-img" href="' +
-      productUrl(p) +
-      '">' +
-
-      '<img src="' +
-      imageFor(p) +
-      '" alt="' +
-      U.escapeHtml(
-        p.name
-      ) +
-      '" loading="lazy" width="400" height="300" data-pid="' +
-      U.escapeHtml(
-        String(
-          p.id
-        )
-      ) +
-      '">' +
-
-      (
-        p.discount
-          ? '<span class="pc-badge">' +
-            p.discount +
-            '% OFF</span>'
-          : ''
-      ) +
-
-      '</a>' +
-
-      '<div class="pc-body">' +
-
-      '<p class="pc-cat">' +
-      U.escapeHtml(
-        cat
-          ? cat.name
-          : ''
-      ) +
-      '</p>' +
-
-      '<h3 class="pc-name">' +
-
-      '<a href="' +
-      productUrl(p) +
-      '">' +
-
-      U.escapeHtml(
-        p.name
-      ) +
-
-      '</a>' +
-
-      '</h3>' +
-
-      '<p class="pc-short">' +
-      U.escapeHtml(
-        p.short
-      ) +
-      '</p>' +
-
-      '<p class="pc-packs">Packs: ' +
-      packText +
-      '</p>' +
-
-      '<p class="pc-price">' +
-
-      '<span class="price-from">From</span> ' +
-
-      '<span class="price-now">' +
-      U.formatINR(
-        now
-      ) +
-      '</span>' +
-
-      (
-        p.discount
-          ? ' <span class="price-old">' +
-            U.formatINR(
-              mrp
-            ) +
-            '</span>'
-          : ''
-      ) +
-
-      '</p>' +
-
-      '<p class="stock stock-' +
-      productStatus +
-      '">' +
-
-      STOCK_LABELS[
-        productStatus
-      ] +
-
-      '</p>' +
-
-      '<div class="pc-actions">' +
-
-      '<button type="button" class="btn btn-primary btn-sm js-add-card" data-product-id="' +
-      U.escapeHtml(
-        String(
-          p.id
-        )
-      ) +
-      '"' +
-
-      (
-        out
-          ? ' disabled'
-          : ''
-      ) +
-
-      '>' +
-
-      (
-        out
-          ? 'Out of stock'
-          : 'Add to Cart'
-      ) +
-
-      '</button>' +
-
-      '<a class="btn btn-whatsapp btn-sm" href="' +
-      U.whatsappLink(
-        msg
-      ) +
-      '" target="_blank" rel="noopener">WhatsApp</a>' +
-
-      '</div>' +
-
-      '</div>' +
-
-      '</article>'
-    );
+    return '';
 
   }
 
 
+  var cat =
+    getCategory(
+      p.category
+    );
+
+
+  var productStatus =
+    productStockStatus(
+      p
+    );
+
+
+  var out =
+    productStatus ===
+    'out_of_stock';
+
+
+  /*
+    IMPORTANT FIX:
+
+    Never automatically choose
+    an out-of-stock first variant.
+  */
+
+  var first =
+    firstAvailablePack(
+      p
+    );
+
+
+  var displayPack =
+    first ||
+    p.packs[0];
+
+
+  var msg =
+    'Hello Brit.Tuna, I would like to order:\n' +
+    'Product: ' +
+    p.name +
+    '\nPack size: ' +
+    (
+      displayPack
+        ? displayPack.label
+        : ''
+    ) +
+    '\nQuantity: 1' +
+    '\nLink: ' +
+    absoluteUrl(
+      productUrl(p)
+    );
+
+
+  var mrp =
+    fromMrp(
+      p
+    );
+
+
+  var now =
+    fromPrice(
+      p
+    );
+
+
+  var packText =
+    p.packs
+      .map(
+        function (pack) {
+
+          var text =
+            U.escapeHtml(
+              pack.label
+            );
+
+
+          if (
+            !packHasStock(
+              pack
+            )
+          ) {
+
+            text +=
+              ' (Out of stock)';
+
+          }
+
+
+          return text;
+
+        }
+      )
+      .join(' · ');
+
+
+  return (
+
+    '<article class="product-card">' +
+
+
+    /* ================================================
+       PRODUCT IMAGE + WISHLIST
+    ================================================ */
+
+    '<div class="pc-image-wrap">' +
+
+
+    /* WISHLIST BUTTON */
+
+    '<button ' +
+    'type="button" ' +
+    'class="pc-wishlist js-wishlist" ' +
+    'data-wishlist-id="' +
+    U.escapeHtml(
+      String(
+        p.id
+      )
+    ) +
+    '" ' +
+    'aria-label="Add ' +
+    U.escapeHtml(
+      p.name
+    ) +
+    ' to wishlist" ' +
+    'aria-pressed="false" ' +
+    'title="Add to Wishlist">' +
+
+    '<span class="wishlist-heart" aria-hidden="true">♡</span>' +
+
+    '</button>' +
+
+
+    /* PRODUCT IMAGE LINK */
+
+    '<a class="pc-img" href="' +
+    productUrl(p) +
+    '">' +
+
+
+    '<img src="' +
+    imageFor(p) +
+    '" alt="' +
+    U.escapeHtml(
+      p.name
+    ) +
+    '" loading="lazy" width="400" height="300" data-pid="' +
+    U.escapeHtml(
+      String(
+        p.id
+      )
+    ) +
+    '">' +
+
+
+    /* DISCOUNT BADGE */
+
+    (
+      p.discount
+        ? '<span class="pc-badge">' +
+          p.discount +
+          '% OFF</span>'
+        : ''
+    ) +
+
+
+    '</a>' +
+
+
+    '</div>' +
+
+
+    /* ================================================
+       PRODUCT BODY
+    ================================================ */
+
+    '<div class="pc-body">' +
+
+
+    '<p class="pc-cat">' +
+
+    U.escapeHtml(
+      cat
+        ? cat.name
+        : ''
+    ) +
+
+    '</p>' +
+
+
+    '<h3 class="pc-name">' +
+
+    '<a href="' +
+    productUrl(p) +
+    '">' +
+
+    U.escapeHtml(
+      p.name
+    ) +
+
+    '</a>' +
+
+    '</h3>' +
+
+
+    '<p class="pc-short">' +
+
+    U.escapeHtml(
+      p.short
+    ) +
+
+    '</p>' +
+
+
+    '<p class="pc-packs">Packs: ' +
+
+    packText +
+
+    '</p>' +
+
+
+    /* ================================================
+       PRICE
+    ================================================ */
+
+    '<p class="pc-price">' +
+
+    '<span class="price-from">From</span> ' +
+
+    '<span class="price-now">' +
+
+    U.formatINR(
+      now
+    ) +
+
+    '</span>' +
+
+
+    (
+      p.discount
+        ? ' <span class="price-old">' +
+
+          U.formatINR(
+            mrp
+          ) +
+
+          '</span>'
+        : ''
+    ) +
+
+    '</p>' +
+
+
+    /* ================================================
+       STOCK
+    ================================================ */
+
+    '<p class="stock stock-' +
+    productStatus +
+    '">' +
+
+    STOCK_LABELS[
+      productStatus
+    ] +
+
+    '</p>' +
+
+
+    /* ================================================
+       ACTIONS
+    ================================================ */
+
+    '<div class="pc-actions">' +
+
+
+    /* ADD TO CART */
+
+    '<button ' +
+    'type="button" ' +
+    'class="btn btn-primary btn-sm js-add-card" ' +
+    'data-product-id="' +
+
+    U.escapeHtml(
+      String(
+        p.id
+      )
+    ) +
+
+    '"' +
+
+
+    (
+      out
+        ? ' disabled'
+        : ''
+    ) +
+
+    '>' +
+
+
+    (
+      out
+        ? 'Out of stock'
+        : 'Add to Cart'
+    ) +
+
+    '</button>' +
+
+
+    /* WHATSAPP */
+
+    '<a ' +
+    'class="btn btn-whatsapp btn-sm" ' +
+    'href="' +
+
+    U.whatsappLink(
+      msg
+    ) +
+
+    '" ' +
+    'target="_blank" ' +
+    'rel="noopener">' +
+
+    'WhatsApp' +
+
+    '</a>' +
+
+
+    '</div>' +
+
+
+    '</div>' +
+
+
+    '</article>'
+
+  );
+
+}
   /* ==========================================================
      IMAGE FALLBACK
   ========================================================== */
@@ -2662,28 +2755,37 @@ function productUrl(p) {
      GRID
   ========================================================== */
 
-  function renderGrid(
-    el,
-    list
-  ) {
+ function renderGrid(
+  el,
+  list
+) {
 
-    if (!el) {
+  if (!el) {
 
-      return;
-
-    }
-
-
-    el.innerHTML =
-      list
-        .map(
-          cardHTML
-        )
-        .join('');
+    return;
 
   }
 
 
+  el.innerHTML =
+    list
+      .map(
+        cardHTML
+      )
+      .join('');
+
+
+  /*
+    Product cards are recreated whenever
+    search, filter or sort changes.
+
+    Refresh wishlist heart state after
+    every grid render.
+  */
+
+  updateWishlistButtons();
+
+}
   /* ==========================================================
      TOAST
   ========================================================== */
@@ -4236,32 +4338,57 @@ box.innerHTML =
 
   '</button>' +
 
+/* BUY NOW */
 
-  /* BUY NOW */
+'<button ' +
+'type="button" ' +
+'id="pd-buy-now" ' +
+'class="btn btn-buy-now"' +
 
-  '<button ' +
-  'type="button" ' +
-  'id="pd-buy-now" ' +
-  'class="btn btn-buy-now"' +
+(
+  allOut
+    ? ' disabled'
+    : ''
+) +
 
-  (
-    allOut
-      ? ' disabled'
-      : ''
-  ) +
+'>' +
 
-  '>' +
+(
+  allOut
+    ? 'Unavailable'
+    : 'Buy Now'
+) +
 
-  (
-    allOut
-      ? 'Unavailable'
-      : 'Buy Now'
-  ) +
+'</button>' +
 
-  '</button>' +
 
-  '</div>' +
+/* WISHLIST */
 
+'<button ' +
+'type="button" ' +
+'id="pd-wishlist" ' +
+'class="btn btn-wishlist js-wishlist" ' +
+'data-wishlist-id="' +
+U.escapeHtml(
+  String(
+    p.id
+  )
+) +
+'" ' +
+'aria-label="Add ' +
+U.escapeHtml(
+  p.name
+) +
+' to wishlist" ' +
+'aria-pressed="false" ' +
+'title="Add to Wishlist">' +
+
+'<span class="wishlist-heart" aria-hidden="true">♡</span> ' +
+'<span class="wishlist-text">Wishlist</span>' +
+
+'</button>' +
+
+'</div>' +
 
   /* ====================================================
      WHATSAPP
@@ -5116,212 +5243,468 @@ pdThumbnailButtons.forEach(
     );
 
 
-    /* ======================================================
-       INITIAL DETAILS UPDATE
-    ====================================================== */
+  /* ======================================================
+   INITIAL DETAILS UPDATE
+====================================================== */
 
-    update();
+update();
+
+/*
+  Update Product Details
+  Wishlist button state.
+
+  ♡ = not wishlisted
+  ♥ = already wishlisted
+*/
+
+updateWishlistButtons();
 
 
-    /* ======================================================
-       RELATED PRODUCTS
-    ====================================================== */
+/* ======================================================
+   RELATED PRODUCTS
+====================================================== */
 
-    var related =
-      document.getElementById(
-        'related-grid'
-      );
+var related =
+  document.getElementById(
+    'related-grid'
+  );
 
 
-    if (related) {
+if (related) {
 
-      var same =
-        cache.filter(
-          function (item) {
+  var same =
+    cache.filter(
+      function (item) {
 
-            return (
-              item.category ===
-                p.category &&
-              item.id !==
-                p.id
-            );
+        return (
+          item.category ===
+            p.category &&
+          item.id !==
+            p.id
+        );
 
-          }
+      }
+    );
+
+
+  var others =
+    cache.filter(
+      function (item) {
+
+        return (
+          item.category !==
+          p.category
+        );
+
+      }
+    );
+
+
+  renderGrid(
+    related,
+
+    same
+      .concat(
+        others
+      )
+      .slice(
+        0,
+        4
+      )
+  );
+
+}
+
+}
+    /* ==========================================================
+   WISHLIST
+========================================================== */
+
+function wishlistAvailable() {
+
+  return !!(
+    window.BTWishlist &&
+    typeof window.BTWishlist.has === 'function' &&
+    typeof window.BTWishlist.toggle === 'function'
+  );
+
+}
+
+
+/* ==========================================================
+   UPDATE WISHLIST BUTTONS
+========================================================== */
+
+function updateWishlistButtons() {
+
+  if (!wishlistAvailable()) {
+
+    return;
+
+  }
+
+
+  document
+    .querySelectorAll(
+      '.js-wishlist'
+    )
+    .forEach(
+      function (button) {
+
+        var productId =
+          button.getAttribute(
+            'data-wishlist-id'
+          );
+
+
+        var active =
+          window.BTWishlist.has(
+            productId
+          );
+
+
+        var heart =
+          button.querySelector(
+            '.wishlist-heart'
+          );
+
+
+        var text =
+          button.querySelector(
+            '.wishlist-text'
+          );
+
+
+        button.classList.toggle(
+          'active',
+          active
         );
 
 
-      var others =
-        cache.filter(
-          function (item) {
+        if (heart) {
 
-            return (
-              item.category !==
-              p.category
-            );
+          heart.textContent =
+            active
+              ? '♥'
+              : '♡';
 
-          }
+        }
+
+
+        if (text) {
+
+          text.textContent =
+            active
+              ? 'Wishlisted'
+              : 'Wishlist';
+
+        }
+
+
+        button.setAttribute(
+          'aria-pressed',
+          active
+            ? 'true'
+            : 'false'
         );
 
 
-      renderGrid(
-        related,
+        button.setAttribute(
+          'aria-label',
+          active
+            ? 'Remove from wishlist'
+            : 'Add to wishlist'
+        );
 
-        same
-          .concat(
-            others
-          )
-          .slice(
-            0,
-            4
-          )
+
+        button.title =
+          active
+            ? 'Remove from Wishlist'
+            : 'Add to Wishlist';
+
+      }
+    );
+
+}
+
+
+/* ==========================================================
+   INITIALIZE WISHLIST
+========================================================== */
+
+async function initializeWishlistUI() {
+
+  if (
+    !window.BTWishlist ||
+    typeof window.BTWishlist.initialize !== 'function'
+  ) {
+
+    return;
+
+  }
+
+
+  try {
+
+    await window.BTWishlist.initialize();
+
+    updateWishlistButtons();
+
+
+  } catch (error) {
+
+    console.error(
+      'Brit.Tuna: Wishlist initialization failed.',
+      error
+    );
+
+  }
+
+}
+
+
+/* ==========================================================
+   WISHLIST CHANGE EVENT
+========================================================== */
+
+document.addEventListener(
+  'bt:wishlist-change',
+
+  function () {
+
+    updateWishlistButtons();
+
+  }
+);
+
+
+/* ==========================================================
+   WISHLIST BUTTON CLICK
+========================================================== */
+
+document.addEventListener(
+  'click',
+
+  async function (event) {
+
+    var button =
+      event.target.closest(
+        '.js-wishlist'
       );
+
+
+    if (!button) {
+
+      return;
+
+    }
+
+
+    event.preventDefault();
+
+    event.stopPropagation();
+
+
+    if (!wishlistAvailable()) {
+
+      console.error(
+        'Brit.Tuna: Wishlist is unavailable.'
+      );
+
+
+      toast(
+        'Wishlist is unavailable. Please refresh the page.'
+      );
+
+
+      return;
+
+    }
+
+
+    var productId =
+      button.getAttribute(
+        'data-wishlist-id'
+      );
+
+
+    var product =
+      getById(
+        productId
+      );
+
+
+    if (!product) {
+
+      toast(
+        'Product is unavailable.'
+      );
+
+      return;
+
+    }
+
+
+    var wasWishlisted =
+      window.BTWishlist.has(
+        productId
+      );
+
+
+    button.disabled =
+      true;
+
+
+    try {
+
+      var result =
+        await window.BTWishlist.toggle(
+          productId
+        );
+
+
+      if (
+        result &&
+        result.loginRequired
+      ) {
+
+        return;
+
+      }
+
+
+      updateWishlistButtons();
+
+
+      if (wasWishlisted) {
+
+        toast(
+          product.name +
+          ' removed from wishlist'
+        );
+
+      } else {
+
+        toast(
+          product.name +
+          ' added to wishlist'
+        );
+
+      }
+
+
+    } catch (error) {
+
+      console.error(
+        'Brit.Tuna: Wishlist update failed.',
+        error
+      );
+
+
+      toast(
+        'Unable to update wishlist. Please try again.'
+      );
+
+
+    } finally {
+
+      button.disabled =
+        false;
 
     }
 
   }
-     /* ==========================================================
-     PRODUCT CARD ADD TO CART
-
-     IMPORTANT FIX:
-     Never automatically add product.packs[0].
-
-     Always find the first pack that actually
-     has stock.
-
-     Example:
-     Premium Peanuts
-
-     250g -> stock 0
-     500g -> stock 40
-
-     Result:
-     Add to Cart -> 500g
-  ========================================================== */
-
-  document.addEventListener(
-    'click',
-
-    async function (e) {
-
-      var button =
-        e.target.closest(
-          '.js-add-card'
-        );
+);
 
 
-      if (!button) {
+/* ==========================================================
+   PRODUCT CARD ADD TO CART
 
-        return;
+   IMPORTANT FIX:
+   Never automatically add product.packs[0].
 
-      }
+   Always find the first pack that actually
+   has stock.
+========================================================== */
 
+document.addEventListener(
+  'click',
 
-      var product =
-        getById(
-          button.getAttribute(
-            'data-product-id'
-          )
-        );
+  async function (e) {
 
-
-      if (
-        !product ||
-        !product.packs ||
-        !product.packs.length
-      ) {
-
-        toast(
-          'Product is unavailable.'
-        );
-
-        return;
-
-      }
+    var button =
+      e.target.closest(
+        '.js-add-card'
+      );
 
 
-      if (!window.BTCart) {
+    if (!button) {
 
-        console.error(
-          'Brit.Tuna: Cart is not available.'
-        );
+      return;
 
-
-        toast(
-          'Cart is unavailable. Please refresh the page.'
-        );
-
-        return;
-
-      }
+    }
 
 
-      /*
-        IMPORTANT:
-
-        Do not use:
-        product.packs[0]
-
-        because the first variant may have
-        stock_quantity = 0.
-      */
-
-      var pack =
-        firstAvailablePack(
-          product
-        );
-
-
-      /*
-        No pack with stock means the whole
-        product is unavailable.
-      */
-
-      if (!pack) {
-
-        toast(
-          'This product is currently out of stock.'
-        );
-
-
-        button.disabled =
-          true;
-
-
-        button.textContent =
-          'Out of stock';
-
-
-        return;
-
-      }
-
-
-      /*
-        Extra protection.
-
-        firstAvailablePack() already checks this,
-        but verify again before adding.
-      */
-
-      if (
-        !packHasStock(
-          pack
+    var product =
+      getById(
+        button.getAttribute(
+          'data-product-id'
         )
-      ) {
-
-        toast(
-          pack.label +
-          ' is currently out of stock.'
-        );
+      );
 
 
-        return;
+    if (
+      !product ||
+      !product.packs ||
+      !product.packs.length
+    ) {
 
-      }
+      toast(
+        'Product is unavailable.'
+      );
+
+      return;
+
+    }
 
 
-      var oldText =
-        button.textContent;
+    if (!window.BTCart) {
+
+      console.error(
+        'Brit.Tuna: Cart is not available.'
+      );
+
+
+      toast(
+        'Cart is unavailable. Please refresh the page.'
+      );
+
+      return;
+
+    }
+
+
+    /*
+      Never use product.packs[0]
+      because first variant may have stock 0.
+    */
+
+    var pack =
+      firstAvailablePack(
+        product
+      );
+
+
+    /*
+      No available pack means
+      whole product is out of stock.
+    */
+
+    if (!pack) {
+
+      toast(
+        'This product is currently out of stock.'
+      );
 
 
       button.disabled =
@@ -5329,137 +5712,192 @@ pdThumbnailButtons.forEach(
 
 
       button.textContent =
-        'Adding...';
+        'Out of stock';
 
 
-      try {
+      return;
 
-        var ok =
-          await window.BTCart.add(
-            product.id,
-            pack.id,
-            1
-          );
+    }
 
 
-        if (ok) {
+    /*
+      Extra stock protection
+    */
 
-          toast(
-            product.name +
-            ' (' +
-            pack.label +
-            ') added to cart'
-          );
+    if (
+      !packHasStock(
+        pack
+      )
+    ) {
 
-        }
+      toast(
+        pack.label +
+        ' is currently out of stock.'
+      );
 
 
-      } catch (error) {
+      return;
 
-        console.error(
-          'Brit.Tuna: Add to cart failed.',
-          error
+    }
+
+
+    button.disabled =
+      true;
+
+
+    button.textContent =
+      'Adding...';
+
+
+    try {
+
+      var ok =
+        await window.BTCart.add(
+          product.id,
+          pack.id,
+          1
         );
 
+
+      if (ok) {
 
         toast(
-          'Unable to add this product. Please try again.'
+          product.name +
+          ' (' +
+          pack.label +
+          ') added to cart'
         );
-
-
-      } finally {
-
-        /*
-          Re-check stock status after the
-          cart operation.
-        */
-
-        var stillAvailable =
-          firstAvailablePack(
-            product
-          );
-
-
-        button.disabled =
-          !stillAvailable;
-
-
-        button.textContent =
-          stillAvailable
-            ? 'Add to Cart'
-            : 'Out of stock';
 
       }
 
-    }
-  );
+
+    } catch (error) {
+
+      console.error(
+        'Brit.Tuna: Add to cart failed.',
+        error
+      );
 
 
-  /* ==========================================================
-     BOOT
-  ========================================================== */
+      toast(
+        'Unable to add this product. Please try again.'
+      );
 
-  document.addEventListener(
-    'DOMContentLoaded',
 
-    function () {
+    } finally {
 
-      var page =
-        document.body.getAttribute(
-          'data-page'
+      /*
+        Re-check stock after
+        cart operation.
+      */
+
+      var stillAvailable =
+        firstAvailablePack(
+          product
         );
 
 
-      load()
-        .then(
-          function () {
+      button.disabled =
+        !stillAvailable;
 
-            if (
-              page ===
-              'home'
-            ) {
 
-              initHome();
-
-            } else if (
-              page ===
-              'shop'
-            ) {
-
-              initShop();
-
-            } else if (
-              page ===
-              'products'
-            ) {
-
-              initProducts();
-
-            } else if (
-              page ===
-              'product-details'
-            ) {
-
-              initDetails();
-
-            }
-
-          }
-        )
-        .catch(
-          function (error) {
-
-            console.error(
-              'Brit.Tuna: Product initialization failed.',
-              error
-            );
-
-          }
-        );
+      button.textContent =
+        stillAvailable
+          ? 'Add to Cart'
+          : 'Out of stock';
 
     }
-  );
 
+  }
+);
+
+/* ==========================================================
+   BOOT
+========================================================== */
+
+document.addEventListener(
+  'DOMContentLoaded',
+
+  async function () {
+
+    var page =
+      document.body.getAttribute(
+        'data-page'
+      );
+
+
+    try {
+
+      /*
+        First load products from Supabase.
+      */
+
+      await load();
+
+
+      /*
+        Render the current page first.
+
+        This is important because wishlist
+        buttons must exist in the DOM before
+        wishlist state is applied.
+      */
+
+      if (
+        page ===
+        'home'
+      ) {
+
+        initHome();
+
+      } else if (
+        page ===
+        'shop'
+      ) {
+
+        initShop();
+
+      } else if (
+        page ===
+        'products'
+      ) {
+
+        initProducts();
+
+      } else if (
+        page ===
+        'product-details'
+      ) {
+
+        initDetails();
+
+      }
+
+
+      /*
+        Initialize wishlist AFTER
+        product cards/details are rendered.
+
+        This changes:
+
+        ♡ -> not wishlisted
+        ♥ -> wishlisted
+      */
+
+      await initializeWishlistUI();
+
+
+    } catch (error) {
+
+      console.error(
+        'Brit.Tuna: Product initialization failed.',
+        error
+      );
+
+    }
+
+  }
+);
 
   /* ==========================================================
      PUBLIC API
