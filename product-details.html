@@ -150,37 +150,58 @@
   ====================================================== -->
 
 
-  <!-- Supabase JavaScript Library -->
+<!-- =====================================================
+     JAVASCRIPT
 
-  <script
-    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-  ></script>
+     IMPORTANT LOAD ORDER:
 
+     1. Supabase JavaScript CDN
+     2. config.js
+     3. supabase.js
+     4. products.js
+     5. cart.js
+     6. wishlist.js
+     7. script.js
 
-  <!-- Brit.Tuna Configuration -->
-
-  <script src="config.js"></script>
-
-
-  <!-- Create Supabase Client -->
-
-  <script src="supabase.js"></script>
-
-
-  <!-- Product System -->
-
-  <script src="products.js"></script>
+     Do NOT add supabase-config.js here.
+====================================================== -->
 
 
-  <!-- Cart System -->
+<!-- Supabase JavaScript Library -->
 
-  <script src="cart.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
 
 
-  <!-- Shared Website Script -->
+<!-- Brit.Tuna Configuration -->
 
-  <script src="script.js"></script>
+<script src="config.js"></script>
 
+
+<!-- Create Supabase Client -->
+
+<script src="supabase.js"></script>
+
+
+<!-- Product System -->
+
+<script src="products.js"></script>
+
+
+<!-- Cart System -->
+
+<script src="cart.js"></script>
+
+
+<!-- Wishlist System -->
+
+<script src="wishlist.js"></script>
+
+
+<!-- Shared Website Script -->
+
+<script src="script.js"></script>
 
 </body>
 
