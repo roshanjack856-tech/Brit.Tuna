@@ -22,7 +22,6 @@
     content="#1f5a3a"
   >
 
-
   <!-- Google Fonts -->
 
   <link
@@ -41,7 +40,6 @@
     rel="stylesheet"
   >
 
-
   <!-- Brit.Tuna CSS -->
 
   <link
@@ -53,7 +51,6 @@
     rel="stylesheet"
     href="responsive.css"
   >
-
 
   <style>
 
@@ -169,7 +166,27 @@
 
 
     /* ======================================================
-       TEST ORDER NOTICE
+       COD NOTICE
+       ====================================================== */
+
+    .cod-order-notice {
+      padding: 15px 17px;
+      margin-bottom: 22px;
+      border-radius: 12px;
+      background: #edf7f0;
+      color: #28563a;
+      line-height: 1.6;
+      font-size: 0.9rem;
+    }
+
+
+    .cod-order-notice strong {
+      color: #1f5a3a;
+    }
+
+
+    /* ======================================================
+       OLD TEST ORDER NOTICE
        ====================================================== */
 
     .test-order-notice {
@@ -302,8 +319,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition:
-        transform 0.25s ease;
+      transition: transform 0.25s ease;
     }
 
 
@@ -771,17 +787,6 @@
         );
 
 
-      /*
-        Product image cache.
-
-        Example:
-
-        {
-          "2": "https://...",
-          "6": "https://..."
-        }
-      */
-
       var productImageMap =
         {};
 
@@ -970,6 +975,142 @@
 
 
       /* ====================================================
+         PAYMENT METHOD LABEL
+         ==================================================== */
+
+      function paymentMethodLabel(value) {
+
+        var method =
+          String(
+            value || ""
+          )
+            .trim()
+            .toLowerCase();
+
+
+        if (
+          method ===
+          "cod"
+        ) {
+
+          return "Cash on Delivery (COD)";
+
+        }
+
+
+        if (
+          method ===
+          "test_order"
+        ) {
+
+          return "Test Order";
+
+        }
+
+
+        if (!method) {
+
+          return "-";
+
+        }
+
+
+        return value;
+
+      }
+
+
+      /* ====================================================
+         PAYMENT NOTICE
+         ==================================================== */
+
+      function paymentNoticeHtml(
+        order
+      ) {
+
+        var paymentMethod =
+          String(
+            order.payment_method || ""
+          )
+            .trim()
+            .toLowerCase();
+
+
+        if (
+          paymentMethod ===
+          "cod"
+        ) {
+
+          return `
+
+            <div class="cod-order-notice">
+
+              <strong>
+                Order placed successfully!
+              </strong>
+
+              <br>
+
+              Your payment method is
+
+              <strong>
+                Cash on Delivery (COD).
+              </strong>
+
+              Please pay
+
+              <strong>
+                ${escapeHtml(
+                  formatMoney(
+                    order.total_amount
+                  )
+                )}
+              </strong>
+
+              when your order is delivered.
+
+            </div>
+
+          `;
+
+        }
+
+
+        /*
+          Keep support for orders created before
+          COD was enabled.
+        */
+
+        if (
+          paymentMethod ===
+          "test_order"
+        ) {
+
+          return `
+
+            <div class="test-order-notice">
+
+              <strong>
+                Demo / Test Order:
+              </strong>
+
+              This is an older test order.
+
+              No real online payment was processed.
+
+            </div>
+
+          `;
+
+        }
+
+
+        return "";
+
+      }
+
+
+      /* ====================================================
          PLACEHOLDER IMAGE
          ==================================================== */
 
@@ -1078,13 +1219,6 @@
 
       /* ====================================================
          LOAD PRODUCT IMAGES
-
-         PRIORITY:
-
-         1. product_images primary
-         2. first product_images image
-         3. products.image_url
-         4. Brit.Tuna placeholder
          ==================================================== */
 
       async function loadProductImages(
@@ -1143,9 +1277,7 @@
         }
 
 
-        /* ================================================
-           LEGACY products.image_url FALLBACK
-           ================================================ */
+        /* PRODUCTS IMAGE FALLBACK */
 
         try {
 
@@ -1166,7 +1298,9 @@
               );
 
 
-          if (productResult.error) {
+          if (
+            productResult.error
+          ) {
 
             console.warn(
               "Brit.Tuna: Product fallback images could not be loaded.",
@@ -1210,9 +1344,7 @@
         }
 
 
-        /* ================================================
-           PRODUCT_IMAGES
-           ================================================ */
+        /* PRODUCT_IMAGES */
 
         try {
 
@@ -1247,7 +1379,9 @@
               );
 
 
-          if (imageResult.error) {
+          if (
+            imageResult.error
+          ) {
 
             console.warn(
               "Brit.Tuna: Product images could not be loaded.",
@@ -1313,13 +1447,6 @@
                   productId
                 ];
 
-
-              /*
-                Sort:
-
-                primary first,
-                then sort_order.
-              */
 
               images.sort(
                 function (a, b) {
@@ -1494,8 +1621,6 @@
           '<div class="confirmation-item-details">';
 
 
-        /* PRODUCT ID */
-
         if (
           item.product_id
         ) {
@@ -1516,8 +1641,6 @@
         }
 
 
-        /* PACK SIZE */
-
         if (
           item.pack_size
         ) {
@@ -1537,8 +1660,6 @@
 
         }
 
-
-        /* VARIANT ID */
 
         if (
           item.variant_id
@@ -1638,8 +1759,6 @@
                 <div class="confirmation-product">
 
 
-                  <!-- PRODUCT IMAGE -->
-
                   <a
                     class="confirmation-product-image-link"
                     href="${escapeHtml(
@@ -1667,8 +1786,6 @@
                   </a>
 
 
-                  <!-- PRODUCT INFORMATION -->
-
                   <div class="confirmation-item-left">
 
 
@@ -1691,14 +1808,10 @@
                     </a>
 
 
-                    <!-- PRODUCT / PACK / VARIANT -->
-
                     ${productDetailsHtml(
                       item
                     )}
 
-
-                    <!-- SELLER FULFILLMENT -->
 
                     ${fulfillmentStatusHtml(
                       item.fulfillment_status
@@ -1710,8 +1823,6 @@
 
                 </div>
 
-
-                <!-- PRICE -->
 
                 <div class="confirmation-item-price">
 
@@ -1776,46 +1887,6 @@
         return parts.join(
           ", "
         );
-
-      }
-
-
-      /* ====================================================
-         TEST ORDER NOTICE
-         ==================================================== */
-
-      function testOrderNoticeHtml(
-        order
-      ) {
-
-        if (
-          String(
-            order.payment_method || ""
-          ).toLowerCase() !==
-          "test_order"
-        ) {
-
-          return "";
-
-        }
-
-
-        return `
-
-          <div class="test-order-notice">
-
-            <strong>
-              Demo / Test Order:
-            </strong>
-
-            This order was created using the current
-            test checkout flow.
-
-            No real online payment has been processed.
-
-          </div>
-
-        `;
 
       }
 
@@ -1967,9 +2038,9 @@
             </div>
 
 
-            <!-- TEST ORDER -->
+            <!-- PAYMENT / COD NOTICE -->
 
-            ${testOrderNoticeHtml(
+            ${paymentNoticeHtml(
               order
             )}
 
@@ -2031,8 +2102,26 @@
                   <div class="customer-info-value">
 
                     ${escapeHtml(
-                      order.payment_method ||
-                      "-"
+                      paymentMethodLabel(
+                        order.payment_method
+                      )
+                    )}
+
+                  </div>
+
+                </div>
+
+
+                <div class="customer-info-box">
+
+                  <span class="customer-info-label">
+                    Payment Status
+                  </span>
+
+                  <div class="customer-info-value">
+
+                    ${escapeHtml(
+                      paymentStatus
                     )}
 
                   </div>
@@ -2135,6 +2224,42 @@
 
             <div class="order-summary">
 
+              <div class="summary-row">
+
+                <span>
+                  Payment Method
+                </span>
+
+                <strong>
+
+                  ${escapeHtml(
+                    paymentMethodLabel(
+                      order.payment_method
+                    )
+                  )}
+
+                </strong>
+
+              </div>
+
+
+              <div class="summary-row">
+
+                <span>
+                  Payment Status
+                </span>
+
+                <strong>
+
+                  ${escapeHtml(
+                    paymentStatus
+                  )}
+
+                </strong>
+
+              </div>
+
+
               <div class="summary-row total">
 
                 <span>
@@ -2208,9 +2333,7 @@
             true;
 
 
-          /* ----------------------------------------------
-             SUPABASE
-             ---------------------------------------------- */
+          /* SUPABASE */
 
           if (
             !window.supabaseClient
@@ -2223,9 +2346,7 @@
           }
 
 
-          /* ----------------------------------------------
-             ORDER ID FROM URL
-             ---------------------------------------------- */
+          /* ORDER ID FROM URL */
 
           var params =
             new URLSearchParams(
@@ -2249,10 +2370,6 @@
 
           }
 
-
-          /*
-            Orders use BIGINT.
-          */
 
           if (
             !/^\d+$/.test(
@@ -2287,9 +2404,7 @@
           }
 
 
-          /* ----------------------------------------------
-             SESSION
-             ---------------------------------------------- */
+          /* SESSION */
 
           var sessionResult =
             await window.supabaseClient
@@ -2311,9 +2426,7 @@
             sessionResult.data.session;
 
 
-          /* ----------------------------------------------
-             LOGIN REQUIRED
-             ---------------------------------------------- */
+          /* LOGIN REQUIRED */
 
           if (
             !session ||
@@ -2361,8 +2474,7 @@
           /* ==================================================
              GET CUSTOMER ORDER
 
-             Security:
-             Order ID + current logged-in user ID.
+             Order ID + logged-in user ID
              ================================================== */
 
           var orderResult =
@@ -2439,10 +2551,6 @@
               .maybeSingle();
 
 
-          /* ----------------------------------------------
-             DATABASE ERROR
-             ---------------------------------------------- */
-
           if (
             orderResult.error
           ) {
@@ -2451,10 +2559,6 @@
 
           }
 
-
-          /* ----------------------------------------------
-             ORDER NOT FOUND / ACCESS DENIED
-             ---------------------------------------------- */
 
           if (
             !orderResult.data
@@ -2477,11 +2581,7 @@
           );
 
 
-          /* ----------------------------------------------
-             LOAD PRODUCT IMAGES
-
-             This must happen before renderOrder().
-             ---------------------------------------------- */
+          /* LOAD PRODUCT IMAGES */
 
           await loadProductImages(
             Array.isArray(
@@ -2500,9 +2600,7 @@
           );
 
 
-          /* ----------------------------------------------
-             RENDER
-             ---------------------------------------------- */
+          /* RENDER */
 
           hideMessage();
 
