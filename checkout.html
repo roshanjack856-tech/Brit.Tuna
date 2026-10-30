@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
   <meta charset="UTF-8">
 
   <meta
@@ -22,6 +23,7 @@
   >
 
   <!-- Google Fonts -->
+
   <link
     rel="preconnect"
     href="https://fonts.googleapis.com"
@@ -39,6 +41,7 @@
   >
 
   <!-- Website CSS -->
+
   <link
     rel="stylesheet"
     href="style.css"
@@ -48,6 +51,7 @@
     rel="stylesheet"
     href="responsive.css"
   >
+
 </head>
 
 
@@ -489,7 +493,17 @@
 
   <!-- ============================================
        JAVASCRIPT
+
        IMPORTANT LOAD ORDER
+
+       1. Supabase Library
+       2. config.js
+       3. supabase.js
+       4. products.js
+       5. cart.js
+       6. wishlist.js
+       7. script.js
+       8. Checkout page logic
   ============================================= -->
 
 
@@ -520,7 +534,12 @@
   <script src="cart.js"></script>
 
 
-  <!-- 6. Shared Website UI -->
+  <!-- 6. Wishlist -->
+
+  <script src="wishlist.js"></script>
+
+
+  <!-- 7. Shared Website UI -->
 
   <script src="script.js"></script>
 
@@ -812,31 +831,6 @@
 
 
       /* ==========================================
-         CART CHECK
-      ========================================== */
-
-      function cartHasItems() {
-
-        if (
-          !window.BTCart ||
-          typeof window.BTCart.count !==
-            'function'
-        ) {
-
-          return false;
-
-        }
-
-
-        return (
-          window.BTCart.count() >
-          0
-        );
-
-      }
-
-
-      /* ==========================================
          FILL AUTH USER INFORMATION
       ========================================== */
 
@@ -1013,6 +1007,8 @@
         }
 
       }
+
+
       /* ==========================================
          LOAD SAVED DELIVERY DETAILS
       ========================================== */
@@ -1184,10 +1180,10 @@
         try {
 
           /*
-            Wait for product catalogue first.
+            Wait for cart/product initialization.
 
             Cart validation depends on current
-            Supabase products + variants.
+            Supabase products and variants.
           */
 
           if (
@@ -1245,11 +1241,6 @@
           var user =
             session.user;
 
-
-          /*
-            Use validated cart lines here instead
-            of only raw localStorage count.
-          */
 
           var validLines =
 
@@ -1846,19 +1837,16 @@
             /*
               SECURITY:
 
-              Only product_id,
-              variant_id and quantity
-              are sent from the cart.
+              Browser prices are NOT sent.
 
-              Browser price is NOT sent.
+              Only:
+              - product_id
+              - variant_id
+              - quantity
 
               create_customer_order()
-              calculates the order total
-              using database prices.
-
-              IMPORTANT:
-              The RPC parameter below is
-              cart_items_input.
+              calculates trusted prices
+              inside Supabase.
             */
 
             var orderResult =
@@ -1920,7 +1908,9 @@
 
                   }
                 );
-                        if (orderResult.error) {
+
+
+            if (orderResult.error) {
 
               throw orderResult.error;
 
@@ -1951,8 +1941,8 @@
 
 
             /*
-              Save delivery information only
-              after successful database order.
+              Save delivery details only after
+              successful database order.
             */
 
             saveDeliveryDetails();
@@ -1960,7 +1950,7 @@
 
             /*
               Clear cart only after Supabase
-              confirms success.
+              confirms order creation.
             */
 
             if (
@@ -1975,10 +1965,9 @@
 
 
             /*
-              Redirect to confirmation.
-
-              IMPORTANT:
               Payment has NOT been collected.
+
+              Redirect to confirmation page.
             */
 
             window.location.replace(
