@@ -14,7 +14,7 @@
 
   <meta
     name="description"
-    content="Brit.Tuna secure customer checkout."
+    content="Brit.Tuna secure customer checkout with Cash on Delivery."
   >
 
   <meta
@@ -83,7 +83,7 @@
         </h1>
 
         <p>
-          Enter your delivery details.
+          Enter your delivery details and place your Cash on Delivery order.
         </p>
 
       </div>
@@ -192,13 +192,18 @@
       >
 
 
-        <!-- TEST ORDER NOTICE -->
+        <!-- CASH ON DELIVERY NOTICE -->
 
         <p class="notice">
 
-          Test order mode: your order will be saved to Brit.Tuna,
-          but no payment will be collected. Razorpay will be
-          connected later.
+          <strong>
+            Cash on Delivery (COD)
+          </strong>
+
+          <br>
+
+          Pay when your order is delivered.
+          No online payment is required now.
 
         </p>
 
@@ -422,28 +427,39 @@
             </div>
 
 
-            <!-- PAYMENT WARNING -->
+            <!-- ======================================
+                 PAYMENT METHOD
+            ======================================= -->
 
-            <p
-              class="form-note"
+            <div
+              class="notice"
               style="margin-top:14px"
             >
 
-              This is currently a test order. Do not enter card,
-              UPI PIN, CVV or banking information. No payment
-              will be collected.
+              <strong>
+                Payment method:
+              </strong>
 
-            </p>
+              Cash on Delivery (COD)
+
+              <br>
+
+              <small>
+                Payment status will remain pending until
+                payment is collected.
+              </small>
+
+            </div>
 
 
-            <!-- PLACE TEST ORDER -->
+            <!-- PLACE COD ORDER -->
 
             <button
               type="submit"
               class="btn btn-primary btn-block"
               id="place-order-button"
             >
-              Place Test Order
+              Place COD Order
             </button>
 
 
@@ -794,8 +810,8 @@
 
         placeOrderButton.textContent =
           loading
-            ? 'Creating Order...'
-            : 'Place Test Order';
+            ? 'Placing COD Order...'
+            : 'Place COD Order';
 
       }
 
@@ -1820,7 +1836,7 @@
 
 
           /* ======================================
-             CREATE TEST ORDER
+             CREATE CASH ON DELIVERY ORDER
           ====================================== */
 
           orderCreating =
@@ -1847,6 +1863,12 @@
               create_customer_order()
               calculates trusted prices
               inside Supabase.
+
+              Supabase RPC stores:
+
+              payment_method = cod
+              payment_status = pending
+              order_status = pending
             */
 
             var orderResult =
@@ -1935,7 +1957,7 @@
 
 
             console.log(
-              'Brit.Tuna: Test order created:',
+              'Brit.Tuna: COD order created:',
               orderId
             );
 
@@ -1965,9 +1987,10 @@
 
 
             /*
-              Payment has NOT been collected.
+              COD payment has not been collected yet.
 
-              Redirect to confirmation page.
+              Redirect customer to the
+              order confirmation page.
             */
 
             window.location.replace(
@@ -1983,7 +2006,7 @@
           } catch (error) {
 
             console.error(
-              'Brit.Tuna: Order creation failed.',
+              'Brit.Tuna: COD order creation failed.',
               error
             );
 
