@@ -472,41 +472,36 @@
 
 
   <!-- ============================================
-       1. SUPABASE LIBRARY
+       BRIT.TUNA JAVASCRIPT
   ============================================= -->
 
+  <!-- 1. SUPABASE LIBRARY -->
   <script
     src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
   ></script>
 
-
-
-  <!-- ============================================
-       2. CONFIG
-  ============================================= -->
-
+  <!-- 2. CONFIG -->
   <script src="config.js"></script>
 
-
-
-  <!-- ============================================
-       3. SUPABASE CLIENT
-  ============================================= -->
-
+  <!-- 3. SUPABASE CLIENT -->
   <script src="supabase.js"></script>
 
+  <!-- 4. PRODUCTS -->
+  <script src="products.js"></script>
 
+  <!-- 5. CART -->
+  <script src="cart.js"></script>
 
-  <!-- ============================================
-       4. WEBSITE SCRIPT
-  ============================================= -->
+  <!-- 6. WISHLIST -->
+  <script src="wishlist.js"></script>
 
+  <!-- 7. SHARED WEBSITE SCRIPT -->
   <script src="script.js"></script>
 
 
 
   <!-- ============================================
-       5. ACCOUNT LOGIC
+       8. ACCOUNT LOGIC
   ============================================= -->
 
   <script>
@@ -1521,20 +1516,6 @@
 
           /* ====================================
              SECURE PROFILE UPDATE
-
-             Calls the PostgreSQL function:
-
-             public.update_my_profile(
-               new_full_name,
-               new_phone
-             )
-
-             The logged-in user's ID comes from
-             auth.uid() inside PostgreSQL.
-
-             We do NOT send a user ID.
-
-             We do NOT send a role.
           ==================================== */
 
           const {
@@ -1580,11 +1561,6 @@
 
           /* ====================================
              SAVE ADDRESS LOCALLY
-
-             Address is NOT being written to
-             Supabase yet.
-
-             It stays in this browser only.
           ==================================== */
 
           saveLocalDeliveryDetails(
@@ -1643,11 +1619,6 @@
         }
 
         finally {
-
-          /*
-            Enable button again only when
-            customer is still logged in.
-          */
 
           if (currentUser) {
 
