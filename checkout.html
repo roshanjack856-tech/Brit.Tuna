@@ -14,7 +14,7 @@
 
   <meta
     name="description"
-    content="Brit.Tuna secure customer checkout with Cash on Delivery."
+    content="Brit.Tuna secure customer checkout with seller-controlled Cash on Delivery."
   >
 
   <meta
@@ -83,7 +83,7 @@
         </h1>
 
         <p>
-          Enter your delivery details and place your Cash on Delivery order.
+          Enter your delivery details and complete your order.
         </p>
 
       </div>
@@ -192,20 +192,18 @@
       >
 
 
-        <!-- CASH ON DELIVERY NOTICE -->
+        <!-- ==========================================
+             SELLER CONTROLLED COD STATUS
+        =========================================== -->
 
-        <p class="notice">
-
-          <strong>
-            Cash on Delivery (COD)
-          </strong>
-
-          <br>
-
-          Pay when your order is delivered.
-          No online payment is required now.
-
-        </p>
+        <div
+          class="notice"
+          id="cod-status"
+          role="status"
+          aria-live="polite"
+        >
+          Checking Cash on Delivery availability...
+        </div>
 
 
         <div
@@ -433,6 +431,7 @@
 
             <div
               class="notice"
+              id="payment-method-box"
               style="margin-top:14px"
             >
 
@@ -440,26 +439,26 @@
                 Payment method:
               </strong>
 
-              Cash on Delivery (COD)
-
               <br>
 
-              <small>
-                Payment status will remain pending until
-                payment is collected.
-              </small>
+              <span id="payment-method-text">
+                Checking COD availability...
+              </span>
 
             </div>
 
 
-            <!-- PLACE COD ORDER -->
+            <!-- ======================================
+                 PLACE COD ORDER
+            ======================================= -->
 
             <button
               type="submit"
               class="btn btn-primary btn-block"
               id="place-order-button"
+              disabled
             >
-              Place COD Order
+              Checking COD...
             </button>
 
 
@@ -479,7 +478,6 @@
 
           <!-- ======================================
                ORDER SUMMARY
-               cart.js fills this automatically
           ======================================= -->
 
           <aside
@@ -508,18 +506,7 @@
 
 
   <!-- ============================================
-       JAVASCRIPT
-
-       IMPORTANT LOAD ORDER
-
-       1. Supabase Library
-       2. config.js
-       3. supabase.js
-       4. products.js
-       5. cart.js
-       6. wishlist.js
-       7. script.js
-       8. Checkout page logic
+       JAVASCRIPT LOAD ORDER
   ============================================= -->
 
 
@@ -530,12 +517,12 @@
   ></script>
 
 
-  <!-- 2. Brit.Tuna Config -->
+  <!-- 2. Config -->
 
   <script src="config.js"></script>
 
 
-  <!-- 3. Create Supabase Client -->
+  <!-- 3. Supabase Client -->
 
   <script src="supabase.js"></script>
 
@@ -555,7 +542,7 @@
   <script src="wishlist.js"></script>
 
 
-  <!-- 7. Shared Website UI -->
+  <!-- 7. Shared UI -->
 
   <script src="script.js"></script>
 
@@ -623,7 +610,33 @@
         );
 
 
+      var codStatusBox =
+        document.getElementById(
+          'cod-status'
+        );
+
+
+      var paymentMethodBox =
+        document.getElementById(
+          'payment-method-box'
+        );
+
+
+      var paymentMethodText =
+        document.getElementById(
+          'payment-method-text'
+        );
+
+
       var orderCreating =
+        false;
+
+
+      var codAvailable =
+        false;
+
+
+      var codChecking =
         false;
 
 
@@ -804,14 +817,29 @@
         }
 
 
+        if (loading) {
+
+          placeOrderButton.disabled =
+            true;
+
+
+          placeOrderButton.textContent =
+            'Placing COD Order...';
+
+
+          return;
+
+        }
+
+
         placeOrderButton.disabled =
-          loading;
+          !codAvailable;
 
 
         placeOrderButton.textContent =
-          loading
-            ? 'Placing COD Order...'
-            : 'Place COD Order';
+          codAvailable
+            ? 'Place COD Order'
+            : 'COD Not Available';
 
       }
 
@@ -918,7 +946,7 @@
 
 
       /* ==========================================
-         LOAD PROFILE FROM SUPABASE
+         LOAD PROFILE
       ========================================== */
 
       async function loadCustomerProfile(
@@ -1053,15 +1081,22 @@
 
 
           var fields = [
+
             'phone',
+
             'address',
+
             'city',
+
             'state',
+
             'pin'
+
           ];
 
 
           fields.forEach(
+
             function (field) {
 
               var input =
@@ -1082,6 +1117,7 @@
               }
 
             }
+
           );
 
 
@@ -1171,6 +1207,514 @@
 
 
       /* ==========================================
+         GET UNIQUE CART PRODUCT IDS
+      ========================================== */
+
+      function getCartProductIds() {
+
+        if (
+          !window.BTCart ||
+          typeof window.BTCart.lines !==
+            'function'
+        ) {
+
+          return [];
+
+        }
+
+
+        var lines =
+          window.BTCart.lines();
+
+
+        if (
+          !Array.isArray(lines)
+        ) {
+
+          return [];
+
+        }
+
+
+        var ids =
+          lines
+
+            .map(
+
+              function (line) {
+
+                if (
+                  !line ||
+                  !line.product
+                ) {
+
+                  return null;
+
+                }
+
+
+                return Number(
+                  line.product.id
+                );
+
+              }
+
+            )
+
+            .filter(
+
+              function (id) {
+
+                return (
+                  Number.isSafeInteger(id) &&
+                  id > 0
+                );
+
+              }
+
+            );
+
+
+        return Array.from(
+          new Set(ids)
+        );
+
+      }
+
+
+      /* ==========================================
+         SELLER CONTROLLED COD CHECK
+      ========================================== */
+
+      async function checkCodAvailability() {
+
+        codAvailable =
+          false;
+
+
+        codChecking =
+          true;
+
+
+        if (codStatusBox) {
+
+          codStatusBox.className =
+            'notice';
+
+
+          codStatusBox.textContent =
+            'Checking Cash on Delivery availability...';
+
+        }
+
+
+        if (paymentMethodBox) {
+
+          paymentMethodBox.className =
+            'notice';
+
+        }
+
+
+        if (paymentMethodText) {
+
+          paymentMethodText.textContent =
+            'Checking COD availability...';
+
+        }
+
+
+        if (placeOrderButton) {
+
+          placeOrderButton.disabled =
+            true;
+
+
+          placeOrderButton.textContent =
+            'Checking COD...';
+
+        }
+
+
+        try {
+
+          if (
+            !window.supabaseClient
+          ) {
+
+            throw new Error(
+              'Supabase connection is unavailable.'
+            );
+
+          }
+
+
+          var cartLines =
+
+            window.BTCart &&
+            typeof window.BTCart.lines ===
+              'function'
+
+              ? window.BTCart.lines()
+
+              : [];
+
+
+          if (
+            !Array.isArray(cartLines) ||
+            !cartLines.length
+          ) {
+
+            throw new Error(
+              'Your cart is empty.'
+            );
+
+          }
+
+
+          var productIds =
+            getCartProductIds();
+
+
+          /*
+            Every cart line must have a valid
+            product ID.
+          */
+
+          var cartHasInvalidProduct =
+            cartLines.some(
+
+              function (line) {
+
+                var id =
+                  Number(
+                    line &&
+                    line.product
+                      ? line.product.id
+                      : 0
+                  );
+
+
+                return (
+                  !Number.isSafeInteger(id) ||
+                  id <= 0
+                );
+
+              }
+
+            );
+
+
+          if (
+            cartHasInvalidProduct ||
+            !productIds.length
+          ) {
+
+            throw new Error(
+              'One or more cart products are invalid.'
+            );
+
+          }
+
+
+          /*
+            Read CURRENT COD status directly
+            from Supabase.
+
+            Do not trust localStorage COD data.
+          */
+
+          var productResult =
+            await window.supabaseClient
+
+              .from(
+                'products'
+              )
+
+              .select(
+                'id, name, cod_enabled, status, is_active'
+              )
+
+              .in(
+                'id',
+                productIds
+              );
+
+
+          if (
+            productResult.error
+          ) {
+
+            throw productResult.error;
+
+          }
+
+
+          var products =
+            Array.isArray(
+              productResult.data
+            )
+
+              ? productResult.data
+
+              : [];
+
+
+          /*
+            If a product disappeared because it is
+            inactive, deleted, rejected, etc.,
+            COD must not continue.
+          */
+
+          if (
+            products.length !==
+            productIds.length
+          ) {
+
+            throw new Error(
+              'One or more products in your cart are no longer available.'
+            );
+
+          }
+
+
+          var unavailableProducts =
+            products.filter(
+
+              function (product) {
+
+                return (
+
+                  product.cod_enabled !==
+                    true ||
+
+                  product.status !==
+                    'active' ||
+
+                  product.is_active !==
+                    true
+
+                );
+
+              }
+
+            );
+
+
+          /* ======================================
+             COD NOT AVAILABLE
+          ====================================== */
+
+          if (
+            unavailableProducts.length
+          ) {
+
+            var names =
+              unavailableProducts
+
+                .map(
+
+                  function (product) {
+
+                    return (
+                      product.name ||
+                      'Product'
+                    );
+
+                  }
+
+                )
+
+                .join(', ');
+
+
+            codAvailable =
+              false;
+
+
+            if (codStatusBox) {
+
+              codStatusBox.className =
+                'notice notice-warning';
+
+
+              codStatusBox.textContent =
+                'Cash on Delivery is not available for: ' +
+                names +
+                '.';
+
+            }
+
+
+            if (paymentMethodBox) {
+
+              paymentMethodBox.className =
+                'notice notice-warning';
+
+            }
+
+
+            if (paymentMethodText) {
+
+              paymentMethodText.textContent =
+                'COD is unavailable for one or more products in your cart.';
+
+            }
+
+
+            if (placeOrderButton) {
+
+              placeOrderButton.disabled =
+                true;
+
+
+              placeOrderButton.textContent =
+                'COD Not Available';
+
+            }
+
+
+            return false;
+
+          }
+
+
+          /* ======================================
+             COD AVAILABLE
+          ====================================== */
+
+          codAvailable =
+            true;
+
+
+          if (codStatusBox) {
+
+            codStatusBox.className =
+              'notice notice-success';
+
+
+            codStatusBox.innerHTML =
+              '<strong>Cash on Delivery (COD) available</strong>' +
+              '<br>' +
+              'All products in your cart currently support Cash on Delivery. ' +
+              'Pay when your order is delivered.';
+
+          }
+
+
+          if (paymentMethodBox) {
+
+            paymentMethodBox.className =
+              'notice notice-success';
+
+          }
+
+
+          if (paymentMethodText) {
+
+            paymentMethodText.innerHTML =
+              '<strong>Cash on Delivery (COD)</strong>' +
+              '<br>' +
+              '<small>' +
+              'Payment status will remain pending until payment is collected.' +
+              '</small>';
+
+          }
+
+
+          if (placeOrderButton) {
+
+            placeOrderButton.disabled =
+              false;
+
+
+            placeOrderButton.textContent =
+              'Place COD Order';
+
+          }
+
+
+          return true;
+
+        }
+
+        catch (error) {
+
+          console.error(
+            'Brit.Tuna: COD availability check failed.',
+            error
+          );
+
+
+          codAvailable =
+            false;
+
+
+          var errorMessage =
+
+            error &&
+            error.message
+
+              ? error.message
+
+              : 'Unable to check Cash on Delivery availability.';
+
+
+          if (codStatusBox) {
+
+            codStatusBox.className =
+              'notice notice-error';
+
+
+            codStatusBox.textContent =
+              errorMessage;
+
+          }
+
+
+          if (paymentMethodBox) {
+
+            paymentMethodBox.className =
+              'notice notice-error';
+
+          }
+
+
+          if (paymentMethodText) {
+
+            paymentMethodText.textContent =
+              'COD availability could not be verified.';
+
+          }
+
+
+          if (placeOrderButton) {
+
+            placeOrderButton.disabled =
+              true;
+
+
+            placeOrderButton.textContent =
+              'COD Unavailable';
+
+          }
+
+
+          return false;
+
+        }
+
+        finally {
+
+          codChecking =
+            false;
+
+        }
+
+      }
+
+
+      /* ==========================================
          CHECKOUT AUTH GUARD
       ========================================== */
 
@@ -1196,10 +1740,8 @@
         try {
 
           /*
-            Wait for cart/product initialization.
-
-            Cart validation depends on current
-            Supabase products and variants.
+            Wait for current product and
+            cart initialization.
           */
 
           if (
@@ -1213,13 +1755,19 @@
           }
 
 
+          /* ======================================
+             CHECK CUSTOMER SESSION
+          ====================================== */
+
           var sessionResult =
             await window.supabaseClient
               .auth
               .getSession();
 
 
-          if (sessionResult.error) {
+          if (
+            sessionResult.error
+          ) {
 
             console.error(
               'Brit.Tuna: Session check failed.',
@@ -1258,6 +1806,10 @@
             session.user;
 
 
+          /* ======================================
+             CHECK CART
+          ====================================== */
+
           var validLines =
 
             window.BTCart &&
@@ -1270,6 +1822,7 @@
 
 
           if (
+            !Array.isArray(validLines) ||
             !validLines.length
           ) {
 
@@ -1279,6 +1832,10 @@
 
           }
 
+
+          /* ======================================
+             LOAD CUSTOMER DATA
+          ====================================== */
 
           fillAuthUser(
             user
@@ -1293,6 +1850,10 @@
           loadSavedDeliveryDetails();
 
 
+          /* ======================================
+             RENDER CART SUMMARY
+          ====================================== */
+
           if (
             window.BTCart &&
             typeof window.BTCart.render ===
@@ -1305,6 +1866,13 @@
 
 
           showCheckout();
+
+
+          /* ======================================
+             CHECK CURRENT SELLER COD SETTINGS
+          ====================================== */
+
+          await checkCodAvailability();
 
 
           try {
@@ -1571,7 +2139,17 @@
           window.BTCart.lines();
 
 
+        if (
+          !Array.isArray(cartLines)
+        ) {
+
+          return [];
+
+        }
+
+
         return cartLines.map(
+
           function (line) {
 
             var productId =
@@ -1615,6 +2193,7 @@
             };
 
           }
+
         );
 
       }
@@ -1634,7 +2213,9 @@
           event.preventDefault();
 
 
-          if (orderCreating) {
+          if (
+            orderCreating
+          ) {
 
             return;
 
@@ -1642,6 +2223,51 @@
 
 
           hideResult();
+
+
+          /* ======================================
+             VERIFY COD AVAILABILITY
+          ====================================== */
+
+          if (
+            codChecking
+          ) {
+
+            showResult(
+              'Please wait while Cash on Delivery availability is checked.'
+            );
+
+
+            return;
+
+          }
+
+
+          /*
+            Recheck COD directly from Supabase.
+
+            This is important because a seller
+            could switch COD OFF after the
+            customer opened checkout.
+          */
+
+          var latestCodStatus =
+            await checkCodAvailability();
+
+
+          if (
+            !latestCodStatus ||
+            !codAvailable
+          ) {
+
+            showResult(
+              'Cash on Delivery is not available for one or more products in your cart.'
+            );
+
+
+            return;
+
+          }
 
 
           /* ======================================
@@ -1655,6 +2281,7 @@
             showResult(
               'Order failed: Supabase connection is unavailable.'
             );
+
 
             return;
 
@@ -1673,7 +2300,9 @@
                 .getSession();
 
 
-            if (sessionResult.error) {
+            if (
+              sessionResult.error
+            ) {
 
               console.error(
                 'Brit.Tuna: Session verification failed.',
@@ -1751,7 +2380,9 @@
           );
 
 
-          if (firstBad) {
+          if (
+            firstBad
+          ) {
 
             document
               .getElementById(
@@ -1766,7 +2397,7 @@
 
 
           /* ======================================
-             CHECK CART
+             BUILD CART
           ====================================== */
 
           var rpcCartItems =
@@ -1781,44 +2412,58 @@
               'Your cart is empty or the products are no longer available.'
             );
 
+
             return;
 
           }
 
 
-          /*
-            Validate IDs before calling RPC.
-          */
+          /* ======================================
+             VALIDATE CART IDS
+          ====================================== */
 
           var invalidCartItem =
             rpcCartItems.some(
+
               function (item) {
 
                 return (
-                  !Number.isInteger(
+
+                  !Number.isSafeInteger(
                     item.product_id
                   ) ||
+
                   item.product_id <= 0 ||
+
                   (
                     item.variant_id !== null &&
+
                     (
-                      !Number.isInteger(
+                      !Number.isSafeInteger(
                         item.variant_id
                       ) ||
+
                       item.variant_id <= 0
                     )
+
                   ) ||
-                  !Number.isInteger(
+
+                  !Number.isSafeInteger(
                     item.quantity
                   ) ||
+
                   item.quantity <= 0
+
                 );
 
               }
+
             );
 
 
-          if (invalidCartItem) {
+          if (
+            invalidCartItem
+          ) {
 
             console.error(
               'Brit.Tuna: Invalid cart data.',
@@ -1830,13 +2475,37 @@
               'One of the cart items is invalid. Please remove it and add the product again.'
             );
 
+
             return;
 
           }
 
 
           /* ======================================
-             CREATE CASH ON DELIVERY ORDER
+             FINAL COD CHECK BEFORE RPC
+          ====================================== */
+
+          var finalCodStatus =
+            await checkCodAvailability();
+
+
+          if (
+            !finalCodStatus ||
+            !codAvailable
+          ) {
+
+            showResult(
+              'Cash on Delivery is no longer available for one or more products in your cart.'
+            );
+
+
+            return;
+
+          }
+
+
+          /* ======================================
+             CREATE COD ORDER
           ====================================== */
 
           orderCreating =
@@ -1853,9 +2522,10 @@
             /*
               SECURITY:
 
-              Browser prices are NOT sent.
+              Browser does NOT send prices.
 
-              Only:
+              Browser sends only:
+
               - product_id
               - variant_id
               - quantity
@@ -1864,15 +2534,20 @@
               calculates trusted prices
               inside Supabase.
 
-              Supabase RPC stores:
+              IMPORTANT:
 
-              payment_method = cod
-              payment_status = pending
-              order_status = pending
+              Frontend COD checking is only
+              for customer experience.
+
+              create_customer_order() must ALSO
+              verify products.cod_enabled
+              server-side.
             */
+
 
             var orderResult =
               await window.supabaseClient
+
                 .rpc(
                   'create_customer_order',
                   {
@@ -1932,7 +2607,9 @@
                 );
 
 
-            if (orderResult.error) {
+            if (
+              orderResult.error
+            ) {
 
               throw orderResult.error;
 
@@ -1962,18 +2639,16 @@
             );
 
 
-            /*
-              Save delivery details only after
-              successful database order.
-            */
+            /* ======================================
+               SAVE DELIVERY DETAILS
+            ====================================== */
 
             saveDeliveryDetails();
 
 
-            /*
-              Clear cart only after Supabase
-              confirms order creation.
-            */
+            /* ======================================
+               CLEAR CART
+            ====================================== */
 
             if (
               window.BTCart &&
@@ -1986,20 +2661,20 @@
             }
 
 
-            /*
-              COD payment has not been collected yet.
-
-              Redirect customer to the
-              order confirmation page.
-            */
+            /* ======================================
+               ORDER CONFIRMATION
+            ====================================== */
 
             window.location.replace(
+
               'order-confirmation.html?order=' +
+
               encodeURIComponent(
                 String(
                   orderId
                 )
               )
+
             );
 
 
@@ -2012,6 +2687,7 @@
 
 
             var message =
+
               error &&
               error.message
 
@@ -2028,6 +2704,16 @@
 
             orderCreating =
               false;
+
+
+            /*
+              Check COD again after an order error.
+
+              Example:
+              Seller may have disabled COD.
+            */
+
+            await checkCodAvailability();
 
 
             setOrderButtonLoading(
