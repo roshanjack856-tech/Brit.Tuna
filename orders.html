@@ -379,6 +379,55 @@
 
 
     /* ======================================================
+       SHIPPING / TRACKING DETAILS
+       ====================================================== */
+
+    .shipping-details {
+      margin-top: 12px;
+      padding: 13px;
+      border: 1px solid #dce9df;
+      border-radius: 12px;
+      background: #f5faf6;
+      color: #425248;
+      font-size: 0.84rem;
+      line-height: 1.6;
+    }
+
+    .shipping-details h3 {
+      margin: 0 0 8px;
+      color: #1f5a3a;
+      font-size: 0.95rem;
+    }
+
+    .shipping-details p {
+      margin: 4px 0;
+      overflow-wrap: anywhere;
+    }
+
+    .tracking-link {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 8px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: #1f5a3a;
+      color: #fff;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .tracking-link:hover {
+      opacity: 0.9;
+    }
+
+    .shipping-pending {
+      margin-top: 10px;
+      color: #737c75;
+      font-size: 0.8rem;
+    }
+
+
+    /* ======================================================
        HELP
        ====================================================== */
 
@@ -1621,6 +1670,8 @@
                       item.fulfillment_status
                     )}
 
+                     ${shippingDetailsHtml(item)}
+
 
                   </div>
 
@@ -1993,7 +2044,17 @@
 
                   quantity,
 
-                  fulfillment_status
+                  fulfillment_status,
+
+                  courier_name,
+
+                  tracking_number,
+
+                  tracking_url,
+
+                  shipped_at,
+
+                  delivered_at
 
                 )
 
@@ -2128,4 +2189,45 @@
 
 </body>
 
-</html>
+</html       /* ====================================================
+          SHIPPING / TRACKING DETAILS
+          ==================================================== */
+
+       function safeTrackingUrl(value) {
+         if (!value) return "";
+         try {
+           var url = new URL(String(value).trim());
+           return url.protocol === "https:" ? url.href : "";
+         } catch (error) {
+           return "";
+         }
+       }
+
+       function shippingDetailsHtml(item) {
+         var status = normalizeFulfillmentStatus(item && item.fulfillment_status);
+         var courier = String(item && item.courier_name || "").trim();
+         var trackingNumber = String(item && item.tracking_number || "").trim();
+         var trackingUrl = safeTrackingUrl(item && item.tracking_url);
+         var shippedDate = formatDate(item && item.shipped_at);
+         var deliveredDate = formatDate(item && item.delivered_at);
+         var hasDetails = courier || trackingNumber || trackingUrl || shippedDate || deliveredDate;
+
+         if (!hasDetails) {
+           return (status === "pending" || status === "processing")
+             ? `<p class="shipping-pending">Shipping and tracking details will appear here after the seller dispatches this product.</p>`
+             : "";
+         }
+
+         var html = `<div class="shipping-details"><h3>Shipping &amp; Tracking</h3>`;
+         if (courier) html += `<p><strong>Courier:</strong> ${escapeHtml(courier)}</p>`;
+         if (trackingNumber) html += `<p><strong>Tracking number:</strong> ${escapeHtml(trackingNumber)}</p>`;
+         if (shippedDate) html += `<p><strong>Shipped:</strong> ${escapeHtml(shippedDate)}</p>`;
+         if (deliveredDate) html += `<p><strong>Delivered:</strong> ${escapeHtml(deliveredDate)}</p>`;
+         if (trackingUrl) {
+           html += `<a class="tracking-link" href="${escapeHtml(trackingUrl)}" target="_blank" rel="noopener noreferrer">Track Package</a>`;
+         }
+         return html + "</div>";
+       }
+
+
+>
