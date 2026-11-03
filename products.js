@@ -1,12 +1,6 @@
 /* ==========================================================
    products.js — Brit.Tuna
    Product catalogue + Supabase products + product variants
-
-   UPDATED:
-   - Buy Now button now works (sends only product id, variant id
-     and quantity to checkout; never touches the cart; no price).
-   - Buy Now is disabled for out-of-stock packs and for demo
-     products that have no real backend product / variant ids.
    ========================================================== */
 
 (function () {
@@ -27,7 +21,8 @@
       color: '#f4e3c1',
       photo:
         'https://images.unsplash.com/photo-1567892320421-1c657571ea4a?auto=format&fit=crop&w=700&q=70',
-      blurb: 'Raw, premium, roasted, skinless and wholesale peanuts.'
+      blurb:
+        'Raw, premium, roasted, skinless and wholesale peanuts.'
     },
     {
       id: 'mango-pickles',
@@ -36,7 +31,8 @@
       color: '#fbe3a6',
       photo:
         'https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=700&q=70',
-      blurb: 'Five mango pickle styles.'
+      blurb:
+        'Five mango pickle styles.'
     },
     {
       id: 'red-chilli',
@@ -45,7 +41,8 @@
       color: '#f6cbc4',
       photo:
         'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=700&q=70',
-      blurb: 'Whole, dried, powder, premium and wholesale chilli.'
+      blurb:
+        'Whole, dried, powder, premium and wholesale chilli.'
     },
     {
       id: 'rice',
@@ -54,7 +51,8 @@
       color: '#edf0dc',
       photo:
         'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=700&q=70',
-      blurb: 'Ponni, idli, basmati, sona masoori, raw and parboiled rice.'
+      blurb:
+        'Ponni, idli, basmati, sona masoori, raw and parboiled rice.'
     }
   ];
 
@@ -73,11 +71,36 @@
   ========================================================== */
 
   var PRICE_RANGES = [
-    { id: 'all', label: 'All prices', min: 0, max: Infinity },
-    { id: 'u200', label: 'Under ₹200', min: 0, max: 200 },
-    { id: '200-500', label: '₹200 – ₹500', min: 200, max: 500 },
-    { id: '500-1000', label: '₹500 – ₹1,000', min: 500, max: 1000 },
-    { id: 'o1000', label: 'Above ₹1,000', min: 1000, max: Infinity }
+    {
+      id: 'all',
+      label: 'All prices',
+      min: 0,
+      max: Infinity
+    },
+    {
+      id: 'u200',
+      label: 'Under ₹200',
+      min: 0,
+      max: 200
+    },
+    {
+      id: '200-500',
+      label: '₹200 – ₹500',
+      min: 200,
+      max: 500
+    },
+    {
+      id: '500-1000',
+      label: '₹500 – ₹1,000',
+      min: 500,
+      max: 1000
+    },
+    {
+      id: 'o1000',
+      label: 'Above ₹1,000',
+      min: 1000,
+      max: Infinity
+    }
   ];
 
   /* ==========================================================
@@ -93,10 +116,25 @@
   }
 
   var CAT_IMG = {
-    peanuts: ['1567892320421-1c657571ea4a', '1626082927389-6cd097cdc6ec'],
-    'mango-pickles': ['1553279768-865429fa0078', '1601050690597-df0568f70950'],
-    'red-chilli': ['1588252303782-cb80119abd6d', '1583119022894-919a68a3d0e3'],
-    rice: ['1586201375761-83865001e31c', '1536304993881-ff6e9eefa2a6']
+    peanuts: [
+      '1567892320421-1c657571ea4a',
+      '1626082927389-6cd097cdc6ec'
+    ],
+
+    'mango-pickles': [
+      '1553279768-865429fa0078',
+      '1601050690597-df0568f70950'
+    ],
+
+    'red-chilli': [
+      '1588252303782-cb80119abd6d',
+      '1583119022894-919a68a3d0e3'
+    ],
+
+    rice: [
+      '1586201375761-83865001e31c',
+      '1536304993881-ff6e9eefa2a6'
+    ]
   };
 
   /* ==========================================================
@@ -109,7 +147,8 @@
         ' Packed fresh and sealed to keep the crunch. Available in retail and bulk sizes.',
       ingredients: 'Peanuts',
       allergens: 'Contains peanuts.',
-      storage: 'Store in a cool, dry place in an airtight container.'
+      storage:
+        'Store in a cool, dry place in an airtight container.'
     },
 
     'mango-pickles': {
@@ -135,7 +174,8 @@
         ' Cleaned and packed for everyday kitchens, families, caterers and hotels.',
       ingredients: 'Rice',
       allergens: '',
-      storage: 'Store in a cool, dry place in a sealed container.'
+      storage:
+        'Store in a cool, dry place in a sealed container.'
     }
   };
 
@@ -207,6 +247,7 @@
 
   /* ==========================================================
      STOCK / PACK HELPERS
+     NEW:
      Never automatically choose an out-of-stock variant.
   ========================================================== */
 
@@ -226,25 +267,36 @@
       so keep demo behaviour working.
     */
 
-    if (pack.stockQuantity === null || pack.stockQuantity === undefined) {
+    if (
+      pack.stockQuantity === null ||
+      pack.stockQuantity === undefined
+    ) {
       return true;
     }
 
     return Number(pack.stockQuantity) > 0;
   }
 
+
   function availablePacks(product) {
-    if (!product || !Array.isArray(product.packs)) {
+    if (
+      !product ||
+      !Array.isArray(product.packs)
+    ) {
       return [];
     }
 
-    return product.packs.filter(function (pack) {
-      return packHasStock(pack);
-    });
+    return product.packs.filter(
+      function (pack) {
+        return packHasStock(pack);
+      }
+    );
   }
 
+
   function firstAvailablePack(product) {
-    var available = availablePacks(product);
+    var available =
+      availablePacks(product);
 
     if (available.length) {
       return available[0];
@@ -253,38 +305,26 @@
     return null;
   }
 
+
   function hasAvailableStock(product) {
     return !!firstAvailablePack(product);
   }
 
-  /*
-    A pack can be ordered (Buy Now / checkout) only if it belongs
-    to a real Supabase product, has a real variant id, and has stock.
-    Demo products never qualify.
-  */
-
-  function isOrderable(product, pack) {
-    return !!(
-      product &&
-      pack &&
-      product.source === 'supabase' &&
-      Number.isInteger(product.databaseId) &&
-      Number.isInteger(pack.variantId) &&
-      pack.variantId > 0 &&
-      packHasStock(pack)
-    );
-  }
 
   function packStockLabel(pack) {
     if (!pack) {
       return 'Out of stock';
     }
 
-    if (pack.stockQuantity === null || pack.stockQuantity === undefined) {
+    if (
+      pack.stockQuantity === null ||
+      pack.stockQuantity === undefined
+    ) {
       return 'In stock';
     }
 
-    var quantity = Number(pack.stockQuantity);
+    var quantity =
+      Number(pack.stockQuantity);
 
     if (quantity <= 0) {
       return 'Out of stock';
@@ -296,6 +336,7 @@
 
     return 'In stock';
   }
+
 
   /* ==========================================================
      DEMO PRODUCT BUILDER
@@ -316,17 +357,31 @@
       category: category,
       short: short,
 
-      description: description + ((CAT_INFO[category] || {}).extra || ''),
+      description:
+        description +
+        ((CAT_INFO[category] || {}).extra || ''),
 
-      image: opts.image || catImage(category, name),
+      image:
+        opts.image ||
+        catImage(category, name),
 
-      discount: opts.discount || EXTRA_DISC[name] || 0,
+      discount:
+        opts.discount ||
+        EXTRA_DISC[name] ||
+        0,
 
-      stock: opts.stock || 'in_stock',
+      stock:
+        opts.stock ||
+        'in_stock',
 
-      featured: !!opts.featured,
-      bestseller: !!opts.bestseller,
-      wholesale: !!opts.wholesale,
+      featured:
+        !!opts.featured,
+
+      bestseller:
+        !!opts.bestseller,
+
+      wholesale:
+        !!opts.wholesale,
 
       active: true,
 
@@ -335,26 +390,35 @@
       brandId: null,
       sellerId: null,
 
-      ingredients: (CAT_INFO[category] || {}).ingredients || '',
-      allergens: (CAT_INFO[category] || {}).allergens || '',
-      storage: (CAT_INFO[category] || {}).storage || '',
+      ingredients:
+        (CAT_INFO[category] || {}).ingredients || '',
 
-      packs: packs.map(function (p) {
-        return {
-          id: id + '-' + slugify(p[0]),
+      allergens:
+        (CAT_INFO[category] || {}).allergens || '',
 
-          variantId: null,
-          label: p[0],
-          price: Number(p[1]),
+      storage:
+        (CAT_INFO[category] || {}).storage || '',
 
-          /*
-            Demo catalogue has no real inventory.
-          */
-          stockQuantity: null,
+      packs:
+        packs.map(function (p) {
+          return {
+            id:
+              id +
+              '-' +
+              slugify(p[0]),
 
-          active: true
-        };
-      })
+            variantId: null,
+            label: p[0],
+            price: Number(p[1]),
+
+            /*
+              Demo catalogue has no real inventory.
+            */
+            stockQuantity: null,
+
+            active: true
+          };
+        })
     };
   }
 
@@ -371,8 +435,15 @@
       'Raw Peanuts',
       'Raw peanut kernels for everyday cooking.',
       'Raw peanut kernels that can be used for cooking, chutneys or roasting at home.',
-      [['500 g', 90], ['1 kg', 170], ['5 kg', 800]],
-      { featured: true, bestseller: true }
+      [
+        ['500 g', 90],
+        ['1 kg', 170],
+        ['5 kg', 800]
+      ],
+      {
+        featured: true,
+        bestseller: true
+      }
     ),
 
     P(
@@ -380,8 +451,15 @@
       'Premium Peanuts',
       'Carefully selected larger peanuts.',
       'A premium grade of peanuts for snacking and gifting.',
-      [['500 g', 120], ['1 kg', 230], ['5 kg', 1100]],
-      { featured: true, discount: 10 }
+      [
+        ['500 g', 120],
+        ['1 kg', 230],
+        ['5 kg', 1100]
+      ],
+      {
+        featured: true,
+        discount: 10
+      }
     ),
 
     P(
@@ -389,8 +467,14 @@
       'Roasted Peanuts',
       'Ready-to-eat roasted peanuts.',
       'Roasted peanuts ready to eat as a snack.',
-      [['250 g', 70], ['500 g', 130], ['1 kg', 250]],
-      { bestseller: true }
+      [
+        ['250 g', 70],
+        ['500 g', 130],
+        ['1 kg', 250]
+      ],
+      {
+        bestseller: true
+      }
     ),
 
     P(
@@ -398,7 +482,10 @@
       'Skinless Peanuts',
       'Peanut kernels without the red skin.',
       'Skinless peanut kernels for cooking and preparing sweets and sauces.',
-      [['500 g', 110], ['1 kg', 210]],
+      [
+        ['500 g', 110],
+        ['1 kg', 210]
+      ],
       {}
     ),
 
@@ -407,8 +494,13 @@
       'Wholesale Peanuts',
       'Bulk peanuts for businesses.',
       'Bulk quantities of peanuts for shops, caterers and food businesses. Contact us for current wholesale rates.',
-      [['25 kg', 3900], ['50 kg', 7600]],
-      { wholesale: true }
+      [
+        ['25 kg', 3900],
+        ['50 kg', 7600]
+      ],
+      {
+        wholesale: true
+      }
     ),
 
     /* MANGO PICKLES */
@@ -418,8 +510,15 @@
       'Traditional Mango Pickle',
       'Classic mango pickle in a traditional style.',
       'A traditional-style mango pickle for everyday meals.',
-      [['250 g', 140], ['500 g', 260], ['1 kg', 480]],
-      { featured: true, bestseller: true }
+      [
+        ['250 g', 140],
+        ['500 g', 260],
+        ['1 kg', 480]
+      ],
+      {
+        featured: true,
+        bestseller: true
+      }
     ),
 
     P(
@@ -427,8 +526,14 @@
       'Spicy Mango Pickle',
       'Mango pickle with a stronger spice level.',
       'A spicier mango pickle for those who like extra heat.',
-      [['250 g', 150], ['500 g', 280], ['1 kg', 520]],
-      { featured: true }
+      [
+        ['250 g', 150],
+        ['500 g', 280],
+        ['1 kg', 520]
+      ],
+      {
+        featured: true
+      }
     ),
 
     P(
@@ -436,8 +541,14 @@
       'Garlic Mango Pickle',
       'Mango pickle prepared with garlic.',
       'A mango pickle prepared with garlic.',
-      [['250 g', 160], ['500 g', 300], ['1 kg', 560]],
-      { discount: 5 }
+      [
+        ['250 g', 160],
+        ['500 g', 300],
+        ['1 kg', 560]
+      ],
+      {
+        discount: 5
+      }
     ),
 
     P(
@@ -445,8 +556,14 @@
       'Sweet Mango Pickle',
       'Mild and sweet mango pickle.',
       'A sweeter, milder mango pickle.',
-      [['250 g', 140], ['500 g', 260], ['1 kg', 480]],
-      { stock: 'low_stock' }
+      [
+        ['250 g', 140],
+        ['500 g', 260],
+        ['1 kg', 480]
+      ],
+      {
+        stock: 'low_stock'
+      }
     ),
 
     P(
@@ -454,8 +571,14 @@
       'Homemade-Style Mango Pickle',
       'Mango pickle in a homemade style.',
       'A mango pickle made in a homemade style.',
-      [['250 g', 170], ['500 g', 320], ['1 kg', 600]],
-      { featured: true }
+      [
+        ['250 g', 170],
+        ['500 g', 320],
+        ['1 kg', 600]
+      ],
+      {
+        featured: true
+      }
     ),
 
     /* RED CHILLI */
@@ -465,7 +588,12 @@
       'Whole Red Chilli',
       'Whole red chillies for cooking.',
       'Whole red chillies for tempering and cooking.',
-      [['100 g', 50], ['250 g', 120], ['500 g', 230], ['1 kg', 440]],
+      [
+        ['100 g', 50],
+        ['250 g', 120],
+        ['500 g', 230],
+        ['1 kg', 440]
+      ],
       {}
     ),
 
@@ -474,7 +602,12 @@
       'Dried Red Chilli',
       'Sun-dried style red chillies.',
       'Dried red chillies for everyday cooking.',
-      [['100 g', 55], ['250 g', 130], ['500 g', 250], ['1 kg', 480]],
+      [
+        ['100 g', 55],
+        ['250 g', 130],
+        ['500 g', 250],
+        ['1 kg', 480]
+      ],
       {}
     ),
 
@@ -483,8 +616,16 @@
       'Red Chilli Powder',
       'Ground red chilli powder.',
       'Ground red chilli powder for curries and masalas.',
-      [['100 g', 60], ['250 g', 140], ['500 g', 270], ['1 kg', 520]],
-      { featured: true, bestseller: true }
+      [
+        ['100 g', 60],
+        ['250 g', 140],
+        ['500 g', 270],
+        ['1 kg', 520]
+      ],
+      {
+        featured: true,
+        bestseller: true
+      }
     ),
 
     P(
@@ -492,8 +633,14 @@
       'Premium Red Chilli',
       'Selected premium-grade red chillies.',
       'A premium selection of red chillies.',
-      [['100 g', 80], ['250 g', 190], ['500 g', 360]],
-      { discount: 10 }
+      [
+        ['100 g', 80],
+        ['250 g', 190],
+        ['500 g', 360]
+      ],
+      {
+        discount: 10
+      }
     ),
 
     P(
@@ -501,8 +648,14 @@
       'Wholesale Red Chilli',
       'Bulk red chilli for businesses.',
       'Bulk quantities of red chilli for shops, caterers and food businesses. Contact us for current wholesale rates.',
-      [['10 kg', 1900], ['25 kg', 4600]],
-      { wholesale: true, stock: 'out_of_stock' }
+      [
+        ['10 kg', 1900],
+        ['25 kg', 4600]
+      ],
+      {
+        wholesale: true,
+        stock: 'out_of_stock'
+      }
     ),
 
     /* RICE */
@@ -512,8 +665,15 @@
       'Ponni Rice',
       'Everyday Ponni rice.',
       'Ponni rice for everyday meals.',
-      [['5 kg', 320], ['10 kg', 620], ['25 kg', 1500]],
-      { featured: true, bestseller: true }
+      [
+        ['5 kg', 320],
+        ['10 kg', 620],
+        ['25 kg', 1500]
+      ],
+      {
+        featured: true,
+        bestseller: true
+      }
     ),
 
     P(
@@ -521,7 +681,11 @@
       'Idli Rice',
       'Rice suited for idli and dosa batter.',
       'Rice commonly used for idli and dosa batter.',
-      [['5 kg', 300], ['10 kg', 580], ['25 kg', 1400]],
+      [
+        ['5 kg', 300],
+        ['10 kg', 580],
+        ['25 kg', 1400]
+      ],
       {}
     ),
 
@@ -530,8 +694,15 @@
       'Basmati Rice',
       'Long-grain basmati rice.',
       'Long-grain basmati rice for biryani and pulao.',
-      [['1 kg', 140], ['5 kg', 680], ['10 kg', 1320]],
-      { featured: true, discount: 8 }
+      [
+        ['1 kg', 140],
+        ['5 kg', 680],
+        ['10 kg', 1320]
+      ],
+      {
+        featured: true,
+        discount: 8
+      }
     ),
 
     P(
@@ -539,8 +710,14 @@
       'Sona Masoori Rice',
       'Light, everyday Sona Masoori rice.',
       'Sona Masoori rice for daily cooking.',
-      [['5 kg', 360], ['10 kg', 700], ['25 kg', 1700]],
-      { bestseller: true }
+      [
+        ['5 kg', 360],
+        ['10 kg', 700],
+        ['25 kg', 1700]
+      ],
+      {
+        bestseller: true
+      }
     ),
 
     P(
@@ -548,7 +725,11 @@
       'Raw Rice',
       'Raw (unparboiled) rice.',
       'Raw rice for everyday cooking.',
-      [['5 kg', 280], ['10 kg', 540], ['25 kg', 1300]],
+      [
+        ['5 kg', 280],
+        ['10 kg', 540],
+        ['25 kg', 1300]
+      ],
       {}
     ),
 
@@ -557,248 +738,505 @@
       'Parboiled Rice',
       'Parboiled rice for daily meals.',
       'Parboiled rice for daily meals.',
-      [['5 kg', 290], ['10 kg', 560], ['25 kg', 1350]],
+      [
+        ['5 kg', 290],
+        ['10 kg', 560],
+        ['25 kg', 1350]
+      ],
       {}
     )
   ];
+
 
   /* ==========================================================
      PRODUCT CACHE
   ========================================================== */
 
-  var cache = DEFAULT_PRODUCTS.filter(function (p) {
-    return p.active;
-  });
+  var cache =
+    DEFAULT_PRODUCTS.filter(
+      function (p) {
+        return p.active;
+      }
+    );
 
-  /* ==========================================================
-     CONVERT SUPABASE PRODUCT
-  ========================================================== */
+/* ==========================================================
+   CONVERT SUPABASE PRODUCT
+========================================================== */
 
-  function fromRow(r) {
-    var slug = slugify(r.name);
+function fromRow(r) {
 
-    var id = String(r.id);
+  var slug =
+    slugify(r.name);
 
-    var category = normalizeCategory(r.category);
+  var id =
+    String(r.id);
 
-    /* ========================================================
-       PRODUCT IMAGES
-       Supports seller uploaded 2–6 images
-    ======================================================== */
+  var category =
+    normalizeCategory(
+      r.category
+    );
 
-    var productImages = Array.isArray(r.product_images)
+
+  /* ========================================================
+     PRODUCT IMAGES
+     Supports seller uploaded 2–6 images
+  ======================================================== */
+
+  var productImages =
+    Array.isArray(
+      r.product_images
+    )
       ? r.product_images.slice()
       : [];
 
-    /* Remove invalid image rows */
 
-    productImages = productImages.filter(function (image) {
-      return image && image.image_url;
-    });
+  /*
+    Remove invalid image rows
+  */
 
-    /* Sort images using sort_order */
+  productImages =
+    productImages.filter(
+      function (image) {
 
-    productImages.sort(function (a, b) {
-      return Number(a.sort_order || 0) - Number(b.sort_order || 0);
-    });
+        return (
+          image &&
+          image.image_url
+        );
 
-    /* Find primary image */
+      }
+    );
 
-    var primaryImage = productImages.find(function (image) {
-      return image.is_primary === true;
-    });
 
-    /* If no primary image exists, use first uploaded image. */
+  /*
+    Sort images using sort_order
+  */
 
-    if (!primaryImage && productImages.length) {
-      primaryImage = productImages[0];
+  productImages.sort(
+    function (a, b) {
+
+      return (
+        Number(
+          a.sort_order || 0
+        ) -
+        Number(
+          b.sort_order || 0
+        )
+      );
+
     }
+  );
 
-    /*
-      Clean image array used by:
-      - product cards
-      - hover image
-      - product details gallery
-    */
 
-    var images = productImages.map(function (image) {
-      return {
-        id: image.id,
-        url: image.image_url,
-        storagePath: image.storage_path || '',
-        sortOrder: Number(image.sort_order || 0),
-        primary: image.is_primary === true
-      };
-    });
+  /*
+    Find primary image
+  */
 
-    /* ========================================================
-       PRODUCT VARIANTS
-    ======================================================== */
+  var primaryImage =
+    productImages.find(
+      function (image) {
 
-    var variants = Array.isArray(r.product_variants)
+        return (
+          image.is_primary === true
+        );
+
+      }
+    );
+
+
+  /*
+    If no primary image exists,
+    use first uploaded image.
+  */
+
+  if (
+    !primaryImage &&
+    productImages.length
+  ) {
+
+    primaryImage =
+      productImages[0];
+
+  }
+
+
+  /*
+    Clean image array used by:
+    - product cards
+    - hover image
+    - product details gallery
+  */
+
+  var images =
+    productImages.map(
+      function (image) {
+
+        return {
+
+          id:
+            image.id,
+
+          url:
+            image.image_url,
+
+          storagePath:
+            image.storage_path || '',
+
+          sortOrder:
+            Number(
+              image.sort_order || 0
+            ),
+
+          primary:
+            image.is_primary === true
+
+        };
+
+      }
+    );
+
+
+  /* ========================================================
+     PRODUCT VARIANTS
+  ======================================================== */
+
+  var variants =
+    Array.isArray(
+      r.product_variants
+    )
       ? r.product_variants
       : [];
 
-    /*
-      Keep active variants including stock 0.
 
-      This allows product details to show
-      specific packs as out of stock.
-    */
+  /*
+    Keep active variants including stock 0.
 
-    variants = variants.filter(function (variant) {
-      return variant.is_active !== false;
-    });
+    This allows product details to show
+    specific packs as out of stock.
+  */
 
-    var packs = variants.map(function (variant) {
-      return {
-        /* REAL product_variants.id */
+  variants =
+    variants.filter(
+      function (variant) {
 
-        id: String(variant.id),
+        return (
+          variant.is_active !==
+          false
+        );
 
-        variantId: Number(variant.id),
+      }
+    );
 
-        productId: Number(r.id),
 
-        label: String(variant.pack_size || ''),
+  var packs =
+    variants.map(
+      function (variant) {
 
-        price: Number(variant.price),
+        return {
 
-        stockQuantity: Number(variant.stock_quantity) || 0,
+          /*
+            REAL product_variants.id
+          */
 
-        active: variant.is_active !== false
-      };
-    });
+          id:
+            String(
+              variant.id
+            ),
 
-    /* Keep variants in ID order */
+          variantId:
+            Number(
+              variant.id
+            ),
 
-    packs.sort(function (a, b) {
-      return Number(a.variantId) - Number(b.variantId);
-    });
+          productId:
+            Number(
+              r.id
+            ),
 
-    /* ========================================================
-       TOTAL STOCK
-    ======================================================== */
+          label:
+            String(
+              variant.pack_size ||
+              ''
+            ),
 
-    var totalStock = packs.reduce(function (total, pack) {
-      return total + (packHasStock(pack) ? Number(pack.stockQuantity) : 0);
-    }, 0);
+          price:
+            Number(
+              variant.price
+            ),
 
-    var stock = 'in_stock';
+          stockQuantity:
+            Number(
+              variant.stock_quantity
+            ) || 0,
 
-    if (totalStock <= 0) {
-      stock = 'out_of_stock';
-    } else if (totalStock <= 10) {
-      stock = 'low_stock';
-    }
+          active:
+            variant.is_active !==
+            false
 
-    var info = CAT_INFO[category] || {};
+        };
 
-    /* ========================================================
-       MAIN PRODUCT IMAGE
+      }
+    );
 
-       Priority:
-       1. product_images primary image
-       2. first product_images image
-       3. old products.image_url
-       4. category fallback image
-    ======================================================== */
 
-    var mainImage =
-      (primaryImage && primaryImage.image_url) ||
-      r.image_url ||
-      catImage(category, r.name || '');
+  /*
+    Keep variants in ID order
+  */
 
-    /*
-      Old products may only have products.image_url.
+  packs.sort(
+    function (a, b) {
 
-      Add that old image to images[] so the
-      rest of the website can still use the
-      same gallery structure.
-    */
-
-    if (!images.length && r.image_url) {
-      images.push({
-        id: null,
-        url: r.image_url,
-        storagePath: '',
-        sortOrder: 1,
-        primary: true
-      });
-    }
-
-    /* ========================================================
-       RETURN NORMALIZED PRODUCT
-    ======================================================== */
-
-    return {
-      id: id,
-
-      databaseId: Number(r.id),
-
-      source: 'supabase',
-
-      slug: slug,
-
-      name: r.name || 'Product',
-
-      category: category,
-
-      short: r.description || '',
-
-      description: r.description || '',
-
-      image: mainImage,
-
-      images: images,
-
-      discount: 0,
-
-      stock: stock,
-
-      featured: false,
-
-      bestseller: false,
-
-      wholesale: false,
-
-      active: r.is_active !== false,
-
-      productType: r.product_type || 'own',
-
-      status: r.status || '',
-
-      brandId: r.brand_id || null,
-
-      sellerId: r.seller_id || null,
-
-      affiliateUrl: r.affiliate_url || '',
-
-      ingredients: info.ingredients || '',
-
-      allergens: info.allergens || '',
-
-      storage: info.storage || '',
-
-      packs: packs
-    };
-  }
-
-  /* ==========================================================
-     LOAD PRODUCTS FROM SUPABASE
-  ========================================================== */
-
-  async function load() {
-    if (!window.supabaseClient) {
-      console.warn(
-        'Brit.Tuna: Supabase client unavailable. Using demo products.'
+      return (
+        Number(
+          a.variantId
+        ) -
+        Number(
+          b.variantId
+        )
       );
 
-      return cache;
     }
+  );
 
-    try {
-      var result = await window.supabaseClient
+
+  /* ========================================================
+     TOTAL STOCK
+  ======================================================== */
+
+  var totalStock =
+    packs.reduce(
+      function (total, pack) {
+
+        return (
+          total +
+          (
+            packHasStock(
+              pack
+            )
+              ? Number(
+                  pack.stockQuantity
+                )
+              : 0
+          )
+        );
+
+      },
+      0
+    );
+
+
+  var stock =
+    'in_stock';
+
+
+  if (
+    totalStock <= 0
+  ) {
+
+    stock =
+      'out_of_stock';
+
+  } else if (
+    totalStock <= 10
+  ) {
+
+    stock =
+      'low_stock';
+
+  }
+
+
+  var info =
+    CAT_INFO[category] ||
+    {};
+
+
+  /* ========================================================
+     MAIN PRODUCT IMAGE
+
+     Priority:
+     1. product_images primary image
+     2. first product_images image
+     3. old products.image_url
+     4. category fallback image
+  ======================================================== */
+
+  var mainImage =
+    (
+      primaryImage &&
+      primaryImage.image_url
+    ) ||
+    r.image_url ||
+    catImage(
+      category,
+      r.name || ''
+    );
+
+
+  /*
+    Old products may only have products.image_url.
+
+    Add that old image to images[] so the
+    rest of the website can still use the
+    same gallery structure.
+  */
+
+  if (
+    !images.length &&
+    r.image_url
+  ) {
+
+    images.push({
+
+      id:
+        null,
+
+      url:
+        r.image_url,
+
+      storagePath:
+        '',
+
+      sortOrder:
+        1,
+
+      primary:
+        true
+
+    });
+
+  }
+
+
+  /* ========================================================
+     RETURN NORMALIZED PRODUCT
+  ======================================================== */
+
+  return {
+
+    id:
+      id,
+
+    databaseId:
+      Number(
+        r.id
+      ),
+
+    source:
+      'supabase',
+
+    slug:
+      slug,
+
+    name:
+      r.name ||
+      'Product',
+
+    category:
+      category,
+
+    short:
+      r.description ||
+      '',
+
+    description:
+      r.description ||
+      '',
+
+
+    /*
+      MAIN IMAGE
+    */
+
+    image:
+      mainImage,
+
+
+    /*
+      ALL PRODUCT IMAGES
+    */
+
+    images:
+      images,
+
+
+    discount:
+      0,
+
+    stock:
+      stock,
+
+    featured:
+      false,
+
+    bestseller:
+      false,
+
+    wholesale:
+      false,
+
+    active:
+      r.is_active !==
+      false,
+
+    productType:
+      r.product_type ||
+      'own',
+
+    status:
+      r.status ||
+      '',
+
+    brandId:
+      r.brand_id ||
+      null,
+
+    sellerId:
+      r.seller_id ||
+      null,
+
+    affiliateUrl:
+      r.affiliate_url ||
+      '',
+
+    ingredients:
+      info.ingredients ||
+      '',
+
+    allergens:
+      info.allergens ||
+      '',
+
+    storage:
+      info.storage ||
+      '',
+
+    packs:
+      packs
+
+  };
+
+}
+
+/* ==========================================================
+   LOAD PRODUCTS FROM SUPABASE
+========================================================== */
+
+async function load() {
+
+  if (!window.supabaseClient) {
+
+    console.warn(
+      'Brit.Tuna: Supabase client unavailable. Using demo products.'
+    );
+
+    return cache;
+  }
+
+
+  try {
+
+    var result =
+      await window.supabaseClient
         .from('products')
         .select(`
           id,
@@ -837,150 +1275,303 @@
             updated_at
           )
         `)
-        .eq('status', 'active')
-        .eq('is_active', true)
-        .order('id', { ascending: true });
-
-      if (result.error) {
-        console.warn(
-          'Brit.Tuna: Supabase products unavailable. Using demo products.',
-          result.error
+        .eq(
+          'status',
+          'active'
+        )
+        .eq(
+          'is_active',
+          true
+        )
+        .order(
+          'id',
+          {
+            ascending: true
+          }
         );
 
-        return cache;
-      }
 
-      var rows = result.data || [];
-
-      var databaseProducts = rows.map(fromRow).filter(function (product) {
-        return (
-          product.active &&
-          product.status === 'active' &&
-          product.packs.length > 0
-        );
-      });
-
-      /*
-        Once Supabase contains usable active
-        products, use Supabase instead of
-        mixing them with demo products.
-      */
-
-      if (databaseProducts.length > 0) {
-        cache = databaseProducts;
-
-        console.log(
-          'Brit.Tuna: Loaded ' +
-            databaseProducts.length +
-            ' product(s) from Supabase.'
-        );
-
-        return cache;
-      }
+    if (result.error) {
 
       console.warn(
-        'Brit.Tuna: No active Supabase products with variants. Using demo catalogue.'
-      );
-
-      return cache;
-    } catch (error) {
-      console.warn(
-        'Brit.Tuna: Product loading failed. Using demo catalogue.',
-        error
+        'Brit.Tuna: Supabase products unavailable. Using demo products.',
+        result.error
       );
 
       return cache;
     }
+
+
+    var rows =
+      result.data || [];
+
+
+    var databaseProducts =
+      rows
+        .map(fromRow)
+        .filter(
+          function (product) {
+
+            return (
+              product.active &&
+              product.status === 'active' &&
+              product.packs.length > 0
+            );
+
+          }
+        );
+
+
+    /*
+      Once Supabase contains usable active
+      products, use Supabase instead of
+      mixing them with demo products.
+    */
+
+    if (
+      databaseProducts.length > 0
+    ) {
+
+      cache =
+        databaseProducts;
+
+
+      console.log(
+        'Brit.Tuna: Loaded ' +
+        databaseProducts.length +
+        ' product(s) from Supabase.'
+      );
+
+
+      return cache;
+    }
+
+
+    console.warn(
+      'Brit.Tuna: No active Supabase products with variants. Using demo catalogue.'
+    );
+
+
+    return cache;
+
+
+  } catch (error) {
+
+    console.warn(
+      'Brit.Tuna: Product loading failed. Using demo catalogue.',
+      error
+    );
+
+
+    return cache;
   }
+}
 
   /* ==========================================================
      GET PRODUCTS
   ========================================================== */
 
   function getAll() {
+
     return cache.slice();
+
   }
+
 
   function getById(id) {
-    id = String(id);
 
-    for (var i = 0; i < cache.length; i++) {
-      if (String(cache[i].id) === id) {
+    id =
+      String(id);
+
+
+    for (
+      var i = 0;
+      i < cache.length;
+      i++
+    ) {
+
+      if (
+        String(
+          cache[i].id
+        ) === id
+      ) {
+
         return cache[i];
+
       }
+
     }
+
 
     return null;
   }
+
 
   function getBySlug(slug) {
-    slug = String(slug || '');
 
-    for (var i = 0; i < cache.length; i++) {
-      if (cache[i].slug === slug) {
+    slug =
+      String(
+        slug || ''
+      );
+
+
+    for (
+      var i = 0;
+      i < cache.length;
+      i++
+    ) {
+
+      if (
+        cache[i].slug ===
+        slug
+      ) {
+
         return cache[i];
+
       }
+
     }
+
 
     return null;
   }
+
 
   function getCategory(id) {
-    for (var i = 0; i < CATEGORIES.length; i++) {
-      if (CATEGORIES[i].id === id) {
+
+    for (
+      var i = 0;
+      i < CATEGORIES.length;
+      i++
+    ) {
+
+      if (
+        CATEGORIES[i].id ===
+        id
+      ) {
+
         return CATEGORIES[i];
+
       }
+
     }
+
 
     return null;
   }
 
-  function getVariant(productId, packId) {
-    var product = getById(productId);
+
+  function getVariant(
+    productId,
+    packId
+  ) {
+
+    var product =
+      getById(
+        productId
+      );
+
 
     if (!product) {
+
       return null;
+
     }
 
-    packId = String(packId);
 
-    for (var i = 0; i < product.packs.length; i++) {
-      if (String(product.packs[i].id) === packId) {
+    packId =
+      String(
+        packId
+      );
+
+
+    for (
+      var i = 0;
+      i < product.packs.length;
+      i++
+    ) {
+
+      if (
+        String(
+          product.packs[i].id
+        ) === packId
+      ) {
+
         return {
-          product: product,
-          pack: product.packs[i]
+          product:
+            product,
+
+          pack:
+            product.packs[i]
         };
+
       }
+
     }
+
 
     return null;
   }
+
 
   /* ==========================================================
      PRICING
   ========================================================== */
 
-  function salePrice(price, discount) {
+  function salePrice(
+    price,
+    discount
+  ) {
+
     return Math.round(
-      (Number(price) * (100 - Number(discount || 0))) / 100
+      Number(price) *
+      (
+        100 -
+        Number(
+          discount || 0
+        )
+      ) /
+      100
     );
+
   }
 
+
   /*
-    "From" price uses only AVAILABLE packs.
+    IMPORTANT FIX
+
+    Before:
+    All packs were used for "From" price.
 
     Example:
+
     250g = ₹70, stock 0
     500g = ₹120, stock 40
-    Result: From ₹120
+
+    Old result:
+    From ₹70
+
+    New result:
+    From ₹120
+
+    Only AVAILABLE packs are considered.
   */
 
   function fromPrice(p) {
-    if (!p || !Array.isArray(p.packs)) {
+
+    if (
+      !p ||
+      !Array.isArray(p.packs)
+    ) {
+
       return 0;
+
     }
 
-    var packs = availablePacks(p);
+
+    var packs =
+      availablePacks(p);
+
 
     /*
       If the whole product is out of stock,
@@ -990,925 +1581,2107 @@
     */
 
     if (!packs.length) {
-      packs = p.packs.filter(function (pack) {
-        return pack && pack.active !== false;
-      });
+
+      packs =
+        p.packs.filter(
+          function (pack) {
+
+            return (
+              pack &&
+              pack.active !== false
+            );
+
+          }
+        );
+
     }
 
-    var min = Infinity;
 
-    packs.forEach(function (pack) {
-      var price = salePrice(pack.price, p.discount);
+    var min =
+      Infinity;
 
-      if (price < min) {
-        min = price;
+
+    packs.forEach(
+      function (pack) {
+
+        var price =
+          salePrice(
+            pack.price,
+            p.discount
+          );
+
+
+        if (price < min) {
+
+          min =
+            price;
+
+        }
+
       }
-    });
+    );
 
-    return min === Infinity ? 0 : min;
+
+    return (
+      min === Infinity
+        ? 0
+        : min
+    );
+
   }
 
+
   /*
-    MRP uses the same available pack
+    MRP also uses the same available pack
     selection logic.
+
+    This prevents the old MRP from belonging
+    to a different out-of-stock variant.
   */
 
   function fromMrp(p) {
-    if (!p || !Array.isArray(p.packs)) {
+
+    if (
+      !p ||
+      !Array.isArray(p.packs)
+    ) {
+
       return 0;
+
     }
 
-    var packs = availablePacks(p);
+
+    var packs =
+      availablePacks(p);
+
 
     if (!packs.length) {
-      packs = p.packs.filter(function (pack) {
-        return pack && pack.active !== false;
-      });
+
+      packs =
+        p.packs.filter(
+          function (pack) {
+
+            return (
+              pack &&
+              pack.active !== false
+            );
+
+          }
+        );
+
     }
 
-    var min = Infinity;
 
-    packs.forEach(function (pack) {
-      var price = Number(pack.price);
+    var min =
+      Infinity;
 
-      if (Number.isFinite(price) && price < min) {
-        min = price;
+
+    packs.forEach(
+      function (pack) {
+
+        var price =
+          Number(
+            pack.price
+          );
+
+
+        if (
+          Number.isFinite(price) &&
+          price < min
+        ) {
+
+          min =
+            price;
+
+        }
+
       }
-    });
+    );
 
-    return min === Infinity ? 0 : min;
+
+    return (
+      min === Infinity
+        ? 0
+        : min
+    );
+
   }
+
 
   /* ==========================================================
      PRODUCT STOCK
   ========================================================== */
 
   function productStockStatus(product) {
+
     if (!product) {
+
       return 'out_of_stock';
+
     }
+
 
     /*
       For real Supabase products,
       calculate stock from variants.
     */
 
-    if (product.source === 'supabase') {
-      var available = availablePacks(product);
+    if (
+      product.source ===
+      'supabase'
+    ) {
+
+      var available =
+        availablePacks(
+          product
+        );
+
 
       if (!available.length) {
+
         return 'out_of_stock';
+
       }
 
-      var total = available.reduce(function (sum, pack) {
-        return sum + Number(pack.stockQuantity || 0);
-      }, 0);
 
-      if (total > 0 && total <= 10) {
+      var total =
+        available.reduce(
+          function (
+            sum,
+            pack
+          ) {
+
+            return (
+              sum +
+              Number(
+                pack.stockQuantity ||
+                0
+              )
+            );
+
+          },
+          0
+        );
+
+
+      if (
+        total > 0 &&
+        total <= 10
+      ) {
+
         return 'low_stock';
+
       }
+
 
       return 'in_stock';
+
     }
+
 
     /*
       Demo products keep their existing
       manual stock status.
     */
 
-    return product.stock || 'in_stock';
+    return (
+      product.stock ||
+      'in_stock'
+    );
+
   }
+
 
   function stockLabel(p) {
-    var status = productStockStatus(p);
 
-    return STOCK_LABELS[status] || 'Stock unknown';
+    var status =
+      productStockStatus(
+        p
+      );
+
+
+    return (
+      STOCK_LABELS[status] ||
+      'Stock unknown'
+    );
+
   }
+
 
   /* ==========================================================
      PRODUCT IMAGE
   ========================================================== */
 
   function xmlEscape(s) {
+
     return String(s)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
+      .replace(
+        /&/g,
+        '&amp;'
+      )
+      .replace(
+        /</g,
+        '&lt;'
+      )
+      .replace(
+        />/g,
+        '&gt;'
+      );
+
   }
 
-  function imageFor(p) {
-    /* 1. SELLER-UPLOADED PRODUCT IMAGES */
+function imageFor(p) {
 
-    if (p && Array.isArray(p.images) && p.images.length) {
-      /* First preference: seller-selected primary image. */
+  /*
+    ======================================================
+    1. SELLER-UPLOADED PRODUCT IMAGES
+    ======================================================
+  */
 
-      var primaryImage = p.images.find(function (image) {
-        return (
-          image &&
-          image.primary === true &&
-          typeof image.url === 'string' &&
-          image.url.trim() !== ''
-        );
-      });
+  if (
+    p &&
+    Array.isArray(p.images) &&
+    p.images.length
+  ) {
 
-      if (primaryImage) {
-        return primaryImage.url;
-      }
+    /*
+      First preference:
+      seller-selected primary image.
+    */
 
-      /* Second preference: first valid uploaded image. */
+    var primaryImage =
+      p.images.find(
+        function (image) {
 
-      var firstImage = p.images.find(function (image) {
-        return (
-          image && typeof image.url === 'string' && image.url.trim() !== ''
-        );
-      });
+          return (
+            image &&
+            image.primary === true &&
+            typeof image.url === 'string' &&
+            image.url.trim() !== ''
+          );
 
-      if (firstImage) {
-        return firstImage.url;
-      }
+        }
+      );
+
+
+    if (primaryImage) {
+
+      return primaryImage.url;
+
     }
 
-    /* 2. OLD products.image_url */
 
-    if (p && typeof p.image === 'string' && p.image.trim() !== '') {
-      return p.image;
+    /*
+      Second preference:
+      first valid uploaded image.
+    */
+
+    var firstImage =
+      p.images.find(
+        function (image) {
+
+          return (
+            image &&
+            typeof image.url === 'string' &&
+            image.url.trim() !== ''
+          );
+
+        }
+      );
+
+
+    if (firstImage) {
+
+      return firstImage.url;
+
     }
 
-    /* 3. CATEGORY PLACEHOLDER */
+  }
 
-    var cat = getCategory(p.category) || {
-      icon: '🛒',
-      color: '#f3ead4'
+
+  /*
+    ======================================================
+    2. OLD products.image_url
+    ======================================================
+  */
+
+  if (
+    p &&
+    typeof p.image === 'string' &&
+    p.image.trim() !== ''
+  ) {
+
+    return p.image;
+
+  }
+
+
+  /*
+    ======================================================
+    3. CATEGORY PLACEHOLDER
+    ======================================================
+  */
+
+  var cat =
+    getCategory(
+      p.category
+    ) || {
+      icon:
+        '🛒',
+
+      color:
+        '#f3ead4'
     };
 
-    var svg =
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">' +
-      '<rect width="400" height="300" fill="' +
-      cat.color +
-      '"/>' +
-      '<text x="200" y="165" font-size="110" text-anchor="middle">' +
-      cat.icon +
-      '</text>' +
-      '<text x="200" y="262" font-size="22" text-anchor="middle" fill="#7a1f2b" font-family="sans-serif">' +
-      xmlEscape(p.name) +
-      '</text>' +
-      '</svg>';
 
-    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
-  }
+  var svg =
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">' +
 
+    '<rect width="400" height="300" fill="' +
+    cat.color +
+    '"/>' +
+
+    '<text x="200" y="165" font-size="110" text-anchor="middle">' +
+    cat.icon +
+    '</text>' +
+
+    '<text x="200" y="262" font-size="22" text-anchor="middle" fill="#7a1f2b" font-family="sans-serif">' +
+    xmlEscape(
+      p.name
+    ) +
+    '</text>' +
+
+    '</svg>';
+
+
+  return (
+    'data:image/svg+xml;charset=utf-8,' +
+    encodeURIComponent(
+      svg
+    )
+  );
+
+}
   /* ==========================================================
      FILTER / SEARCH / SORT
   ========================================================== */
 
   function filter(opts) {
-    opts = opts || {};
 
-    var q = String(opts.q || '')
-      .toLowerCase()
-      .trim();
+    opts =
+      opts || {};
 
-    var range = null;
 
-    PRICE_RANGES.forEach(function (r) {
-      if (r.id === opts.price) {
-        range = r;
-      }
-    });
+    var q =
+      String(
+        opts.q || ''
+      )
+        .toLowerCase()
+        .trim();
 
-    var list = cache.filter(function (p) {
-      if (
-        opts.category &&
-        opts.category !== 'all' &&
-        p.category !== opts.category
-      ) {
-        return false;
-      }
 
-      if (q) {
-        var cat = getCategory(p.category);
+    var range =
+      null;
 
-        var hay = (
-          p.name +
-          ' ' +
-          p.short +
-          ' ' +
-          (cat ? cat.name : '')
-        ).toLowerCase();
 
-        var ok = q.split(/\s+/).every(function (word) {
-          return hay.indexOf(word) !== -1;
-        });
+    PRICE_RANGES.forEach(
+      function (r) {
 
-        if (!ok) {
-          return false;
+        if (
+          r.id ===
+          opts.price
+        ) {
+
+          range =
+            r;
+
         }
+
       }
+    );
 
-      if (range) {
-        /* Uses first AVAILABLE price. */
 
-        var price = fromPrice(p);
+    var list =
+      cache.filter(
+        function (p) {
 
-        if (price < range.min || price > range.max) {
-          return false;
+          if (
+            opts.category &&
+            opts.category !== 'all' &&
+            p.category !==
+              opts.category
+          ) {
+
+            return false;
+
+          }
+
+
+          if (q) {
+
+            var cat =
+              getCategory(
+                p.category
+              );
+
+
+            var hay =
+              (
+                p.name +
+                ' ' +
+                p.short +
+                ' ' +
+                (
+                  cat
+                    ? cat.name
+                    : ''
+                )
+              )
+                .toLowerCase();
+
+
+            var ok =
+              q
+                .split(/\s+/)
+                .every(
+                  function (word) {
+
+                    return (
+                      hay.indexOf(
+                        word
+                      ) !== -1
+                    );
+
+                  }
+                );
+
+
+            if (!ok) {
+
+              return false;
+
+            }
+
+          }
+
+
+          if (range) {
+
+            /*
+              Uses first AVAILABLE price.
+            */
+
+            var price =
+              fromPrice(
+                p
+              );
+
+
+            if (
+              price < range.min ||
+              price > range.max
+            ) {
+
+              return false;
+
+            }
+
+          }
+
+
+          return true;
+
         }
-      }
+      );
 
-      return true;
-    });
 
-    switch (opts.sort) {
+    switch (
+      opts.sort
+    ) {
+
       case 'price-asc':
-        list.sort(function (a, b) {
-          return fromPrice(a) - fromPrice(b);
-        });
+
+        list.sort(
+          function (a, b) {
+
+            return (
+              fromPrice(a) -
+              fromPrice(b)
+            );
+
+          }
+        );
+
         break;
+
 
       case 'price-desc':
-        list.sort(function (a, b) {
-          return fromPrice(b) - fromPrice(a);
-        });
+
+        list.sort(
+          function (a, b) {
+
+            return (
+              fromPrice(b) -
+              fromPrice(a)
+            );
+
+          }
+        );
+
         break;
+
 
       case 'name-asc':
-        list.sort(function (a, b) {
-          return a.name.localeCompare(b.name);
-        });
+
+        list.sort(
+          function (a, b) {
+
+            return (
+              a.name.localeCompare(
+                b.name
+              )
+            );
+
+          }
+        );
+
         break;
+
 
       case 'name-desc':
-        list.sort(function (a, b) {
-          return b.name.localeCompare(a.name);
-        });
+
+        list.sort(
+          function (a, b) {
+
+            return (
+              b.name.localeCompare(
+                a.name
+              )
+            );
+
+          }
+        );
+
         break;
+
 
       default:
+
         break;
+
     }
 
+
     return list;
+
   }
+
 
   /* ==========================================================
      URL HELPERS
   ========================================================== */
 
   function absoluteUrl(path) {
+
     try {
-      return new URL(path, window.location.href).href;
+
+      return new URL(
+        path,
+        window.location.href
+      ).href;
+
     } catch (error) {
+
       return path;
-    }
-  }
 
-  function productUrl(p) {
-    if (!p || p.id === null || p.id === undefined) {
-      return 'product-details.html';
     }
 
-    return 'product-details.html?id=' + encodeURIComponent(String(p.id));
   }
+
+
+function productUrl(p) {
+
+  if (!p || p.id === null || p.id === undefined) {
+
+    return 'product-details.html';
+
+  }
+
+  return (
+    'product-details.html?id=' +
+    encodeURIComponent(
+      String(
+        p.id
+      )
+    )
+  );
+
+}
 
   /* ==========================================================
      PRODUCT CARD
+     IMPORTANT:
      First AVAILABLE pack is used for
      Add to Cart and WhatsApp.
   ========================================================== */
 
-  function cardHTML(p) {
-    if (!p || !p.packs.length) {
-      return '';
-    }
+ function cardHTML(p) {
 
-    var cat = getCategory(p.category);
+  if (
+    !p ||
+    !p.packs.length
+  ) {
 
-    var productStatus = productStockStatus(p);
+    return '';
 
-    var out = productStatus === 'out_of_stock';
-
-    /* Never automatically choose an out-of-stock first variant. */
-
-    var first = firstAvailablePack(p);
-
-    var displayPack = first || p.packs[0];
-
-    var msg =
-      'Hello Brit.Tuna, I would like to order:\n' +
-      'Product: ' +
-      p.name +
-      '\nPack size: ' +
-      (displayPack ? displayPack.label : '') +
-      '\nQuantity: 1' +
-      '\nLink: ' +
-      absoluteUrl(productUrl(p));
-
-    var mrp = fromMrp(p);
-
-    var now = fromPrice(p);
-
-    var packText = p.packs
-      .map(function (pack) {
-        var text = U.escapeHtml(pack.label);
-
-        if (!packHasStock(pack)) {
-          text += ' (Out of stock)';
-        }
-
-        return text;
-      })
-      .join(' · ');
-
-    return (
-      '<article class="product-card">' +
-      /* PRODUCT IMAGE + WISHLIST */
-
-      '<div class="pc-image-wrap">' +
-      /* WISHLIST BUTTON */
-
-      '<button ' +
-      'type="button" ' +
-      'class="pc-wishlist js-wishlist" ' +
-      'data-wishlist-id="' +
-      U.escapeHtml(String(p.id)) +
-      '" ' +
-      'aria-label="Add ' +
-      U.escapeHtml(p.name) +
-      ' to wishlist" ' +
-      'aria-pressed="false" ' +
-      'title="Add to Wishlist">' +
-      '<span class="wishlist-heart" aria-hidden="true">♡</span>' +
-      '</button>' +
-      /* PRODUCT IMAGE LINK */
-
-      '<a class="pc-img" href="' +
-      productUrl(p) +
-      '">' +
-      '<img src="' +
-      imageFor(p) +
-      '" alt="' +
-      U.escapeHtml(p.name) +
-      '" loading="lazy" width="400" height="300" data-pid="' +
-      U.escapeHtml(String(p.id)) +
-      '">' +
-      /* DISCOUNT BADGE */
-
-      (p.discount
-        ? '<span class="pc-badge">' + p.discount + '% OFF</span>'
-        : '') +
-      '</a>' +
-      '</div>' +
-      /* PRODUCT BODY */
-
-      '<div class="pc-body">' +
-      '<p class="pc-cat">' +
-      U.escapeHtml(cat ? cat.name : '') +
-      '</p>' +
-      '<h3 class="pc-name">' +
-      '<a href="' +
-      productUrl(p) +
-      '">' +
-      U.escapeHtml(p.name) +
-      '</a>' +
-      '</h3>' +
-      '<p class="pc-short">' +
-      U.escapeHtml(p.short) +
-      '</p>' +
-      '<p class="pc-packs">Packs: ' +
-      packText +
-      '</p>' +
-      /* PRICE */
-
-      '<p class="pc-price">' +
-      '<span class="price-from">From</span> ' +
-      '<span class="price-now">' +
-      U.formatINR(now) +
-      '</span>' +
-      (p.discount
-        ? ' <span class="price-old">' + U.formatINR(mrp) + '</span>'
-        : '') +
-      '</p>' +
-      /* STOCK */
-
-      '<p class="stock stock-' +
-      productStatus +
-      '">' +
-      STOCK_LABELS[productStatus] +
-      '</p>' +
-      /* ACTIONS */
-
-      '<div class="pc-actions">' +
-      /* ADD TO CART */
-
-      '<button ' +
-      'type="button" ' +
-      'class="btn btn-primary btn-sm js-add-card" ' +
-      'data-product-id="' +
-      U.escapeHtml(String(p.id)) +
-      '"' +
-      (out ? ' disabled' : '') +
-      '>' +
-      (out ? 'Out of stock' : 'Add to Cart') +
-      '</button>' +
-      /* WHATSAPP */
-
-      '<a ' +
-      'class="btn btn-whatsapp btn-sm" ' +
-      'href="' +
-      U.whatsappLink(msg) +
-      '" ' +
-      'target="_blank" ' +
-      'rel="noopener">' +
-      'WhatsApp' +
-      '</a>' +
-      '</div>' +
-      '</div>' +
-      '</article>'
-    );
   }
 
+
+  var cat =
+    getCategory(
+      p.category
+    );
+
+
+  var productStatus =
+    productStockStatus(
+      p
+    );
+
+
+  var out =
+    productStatus ===
+    'out_of_stock';
+
+
+  /*
+    IMPORTANT FIX:
+
+    Never automatically choose
+    an out-of-stock first variant.
+  */
+
+  var first =
+    firstAvailablePack(
+      p
+    );
+
+
+  var displayPack =
+    first ||
+    p.packs[0];
+
+
+  var msg =
+    'Hello Brit.Tuna, I would like to order:\n' +
+    'Product: ' +
+    p.name +
+    '\nPack size: ' +
+    (
+      displayPack
+        ? displayPack.label
+        : ''
+    ) +
+    '\nQuantity: 1' +
+    '\nLink: ' +
+    absoluteUrl(
+      productUrl(p)
+    );
+
+
+  var mrp =
+    fromMrp(
+      p
+    );
+
+
+  var now =
+    fromPrice(
+      p
+    );
+
+
+  var packText =
+    p.packs
+      .map(
+        function (pack) {
+
+          var text =
+            U.escapeHtml(
+              pack.label
+            );
+
+
+          if (
+            !packHasStock(
+              pack
+            )
+          ) {
+
+            text +=
+              ' (Out of stock)';
+
+          }
+
+
+          return text;
+
+        }
+      )
+      .join(' · ');
+
+
+  return (
+
+    '<article class="product-card">' +
+
+
+    /* ================================================
+       PRODUCT IMAGE + WISHLIST
+    ================================================ */
+
+    '<div class="pc-image-wrap">' +
+
+
+    /* WISHLIST BUTTON */
+
+    '<button ' +
+    'type="button" ' +
+    'class="pc-wishlist js-wishlist" ' +
+    'data-wishlist-id="' +
+    U.escapeHtml(
+      String(
+        p.id
+      )
+    ) +
+    '" ' +
+    'aria-label="Add ' +
+    U.escapeHtml(
+      p.name
+    ) +
+    ' to wishlist" ' +
+    'aria-pressed="false" ' +
+    'title="Add to Wishlist">' +
+
+    '<span class="wishlist-heart" aria-hidden="true">♡</span>' +
+
+    '</button>' +
+
+
+    /* PRODUCT IMAGE LINK */
+
+    '<a class="pc-img" href="' +
+    productUrl(p) +
+    '">' +
+
+
+    '<img src="' +
+    imageFor(p) +
+    '" alt="' +
+    U.escapeHtml(
+      p.name
+    ) +
+    '" loading="lazy" width="400" height="300" data-pid="' +
+    U.escapeHtml(
+      String(
+        p.id
+      )
+    ) +
+    '">' +
+
+
+    /* DISCOUNT BADGE */
+
+    (
+      p.discount
+        ? '<span class="pc-badge">' +
+          p.discount +
+          '% OFF</span>'
+        : ''
+    ) +
+
+
+    '</a>' +
+
+
+    '</div>' +
+
+
+    /* ================================================
+       PRODUCT BODY
+    ================================================ */
+
+    '<div class="pc-body">' +
+
+
+    '<p class="pc-cat">' +
+
+    U.escapeHtml(
+      cat
+        ? cat.name
+        : ''
+    ) +
+
+    '</p>' +
+
+
+    '<h3 class="pc-name">' +
+
+    '<a href="' +
+    productUrl(p) +
+    '">' +
+
+    U.escapeHtml(
+      p.name
+    ) +
+
+    '</a>' +
+
+    '</h3>' +
+
+
+    '<p class="pc-short">' +
+
+    U.escapeHtml(
+      p.short
+    ) +
+
+    '</p>' +
+
+
+    '<p class="pc-packs">Packs: ' +
+
+    packText +
+
+    '</p>' +
+
+
+    /* ================================================
+       PRICE
+    ================================================ */
+
+    '<p class="pc-price">' +
+
+    '<span class="price-from">From</span> ' +
+
+    '<span class="price-now">' +
+
+    U.formatINR(
+      now
+    ) +
+
+    '</span>' +
+
+
+    (
+      p.discount
+        ? ' <span class="price-old">' +
+
+          U.formatINR(
+            mrp
+          ) +
+
+          '</span>'
+        : ''
+    ) +
+
+    '</p>' +
+
+
+    /* ================================================
+       STOCK
+    ================================================ */
+
+    '<p class="stock stock-' +
+    productStatus +
+    '">' +
+
+    STOCK_LABELS[
+      productStatus
+    ] +
+
+    '</p>' +
+
+
+    /* ================================================
+       ACTIONS
+    ================================================ */
+
+    '<div class="pc-actions">' +
+
+
+    /* ADD TO CART */
+
+    '<button ' +
+    'type="button" ' +
+    'class="btn btn-primary btn-sm js-add-card" ' +
+    'data-product-id="' +
+
+    U.escapeHtml(
+      String(
+        p.id
+      )
+    ) +
+
+    '"' +
+
+
+    (
+      out
+        ? ' disabled'
+        : ''
+    ) +
+
+    '>' +
+
+
+    (
+      out
+        ? 'Out of stock'
+        : 'Add to Cart'
+    ) +
+
+    '</button>' +
+
+
+    /* WHATSAPP */
+
+    '<a ' +
+    'class="btn btn-whatsapp btn-sm" ' +
+    'href="' +
+
+    U.whatsappLink(
+      msg
+    ) +
+
+    '" ' +
+    'target="_blank" ' +
+    'rel="noopener">' +
+
+    'WhatsApp' +
+
+    '</a>' +
+
+
+    '</div>' +
+
+
+    '</div>' +
+
+
+    '</article>'
+
+  );
+
+}
   /* ==========================================================
      IMAGE FALLBACK
   ========================================================== */
 
   function placeholderFor(id) {
-    var product = getById(id);
+
+    var product =
+      getById(
+        id
+      );
+
 
     if (!product) {
+
       return '';
+
     }
 
-    var category = getCategory(product.category);
+
+    var category =
+      getCategory(
+        product.category
+      );
+
 
     if (!category) {
+
       return '';
+
     }
+
 
     var svg =
       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">' +
+
       '<rect width="400" height="300" fill="' +
       category.color +
       '"/>' +
+
       '<text x="200" y="165" font-size="110" text-anchor="middle">' +
       category.icon +
       '</text>' +
+
       '</svg>';
 
-    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+
+    return (
+      'data:image/svg+xml;charset=utf-8,' +
+      encodeURIComponent(
+        svg
+      )
+    );
+
   }
+
 
   document.addEventListener(
     'error',
 
     function (e) {
-      var target = e.target;
+
+      var target =
+        e.target;
+
 
       if (
         target &&
         target.tagName === 'IMG' &&
-        target.getAttribute('data-pid') &&
-        !target.getAttribute('data-fb')
+        target.getAttribute(
+          'data-pid'
+        ) &&
+        !target.getAttribute(
+          'data-fb'
+        )
       ) {
-        target.setAttribute('data-fb', '1');
 
-        target.src = placeholderFor(target.getAttribute('data-pid'));
+        target.setAttribute(
+          'data-fb',
+          '1'
+        );
+
+
+        target.src =
+          placeholderFor(
+            target.getAttribute(
+              'data-pid'
+            )
+          );
+
       }
+
     },
 
     true
   );
+
 
   /* ==========================================================
      OFFERS
   ========================================================== */
 
   function offersHTML() {
+
     return cache
-      .filter(function (product) {
-        return product.discount > 0;
-      })
-      .slice(0, 8)
-      .map(function (product) {
-        return (
-          '<a class="offer-tile" href="' +
-          productUrl(product) +
-          '">' +
-          '<img src="' +
-          imageFor(product) +
-          '" alt="" loading="lazy" data-pid="' +
-          product.id +
-          '">' +
-          '<span class="offer-pct">' +
-          product.discount +
-          '% OFF</span>' +
-          '<h3>' +
-          U.escapeHtml(product.name) +
-          '</h3>' +
-          '<p>From ' +
-          U.formatINR(fromPrice(product)) +
-          (product.discount
-            ? ' <s>' + U.formatINR(fromMrp(product)) + '</s>'
-            : '') +
-          '</p>' +
-          '</a>'
-        );
-      })
+      .filter(
+        function (product) {
+
+          return (
+            product.discount > 0
+          );
+
+        }
+      )
+      .slice(
+        0,
+        8
+      )
+      .map(
+        function (product) {
+
+          return (
+            '<a class="offer-tile" href="' +
+            productUrl(
+              product
+            ) +
+            '">' +
+
+            '<img src="' +
+            imageFor(
+              product
+            ) +
+            '" alt="" loading="lazy" data-pid="' +
+            product.id +
+            '">' +
+
+            '<span class="offer-pct">' +
+            product.discount +
+            '% OFF</span>' +
+
+            '<h3>' +
+            U.escapeHtml(
+              product.name
+            ) +
+            '</h3>' +
+
+            '<p>From ' +
+
+            U.formatINR(
+              fromPrice(
+                product
+              )
+            ) +
+
+            (
+              product.discount
+                ? ' <s>' +
+                  U.formatINR(
+                    fromMrp(
+                      product
+                    )
+                  ) +
+                  '</s>'
+                : ''
+            ) +
+
+            '</p>' +
+
+            '</a>'
+          );
+
+        }
+      )
       .join('');
+
   }
+
 
   /* ==========================================================
      GRID
   ========================================================== */
 
-  function renderGrid(el, list) {
-    if (!el) {
-      return;
-    }
+ function renderGrid(
+  el,
+  list
+) {
 
-    el.innerHTML = list.map(cardHTML).join('');
+  if (!el) {
 
-    /*
-      Product cards are recreated whenever
-      search, filter or sort changes.
+    return;
 
-      Refresh wishlist heart state after
-      every grid render.
-    */
-
-    updateWishlistButtons();
   }
 
+
+  el.innerHTML =
+    list
+      .map(
+        cardHTML
+      )
+      .join('');
+
+
+  /*
+    Product cards are recreated whenever
+    search, filter or sort changes.
+
+    Refresh wishlist heart state after
+    every grid render.
+  */
+
+  updateWishlistButtons();
+
+}
   /* ==========================================================
      TOAST
   ========================================================== */
 
   function toast(message) {
-    if (window.BTUI && window.BTUI.toast) {
-      window.BTUI.toast(message);
-    }
-  }
 
-  /* ==========================================================
+    if (
+      window.BTUI &&
+      window.BTUI.toast
+    ) {
+
+      window.BTUI.toast(
+        message
+      );
+
+    }
+
+  }
+     /* ==========================================================
      HOME PAGE
   ========================================================== */
 
   function initHome() {
-    var featuredGrid = document.getElementById('featured-products');
 
-    var bestsellerGrid = document.getElementById('bestsellers-grid');
+    var featuredGrid =
+      document.getElementById(
+        'featured-products'
+      );
+
+var bestsellerGrid =
+  document.getElementById(
+    'bestsellers-grid'
+  );
+
 
     if (featuredGrid) {
-      var featured = cache.filter(function (product) {
-        return product.featured || product.source === 'supabase';
-      });
 
-      renderGrid(featuredGrid, featured.slice(0, 8));
+      var featured =
+        cache.filter(
+          function (product) {
+
+            return (
+              product.featured ||
+              product.source ===
+                'supabase'
+            );
+
+          }
+        );
+
+
+      renderGrid(
+        featuredGrid,
+        featured.slice(
+          0,
+          8
+        )
+      );
+
     }
+
 
     if (bestsellerGrid) {
-      var bestsellers = cache.filter(function (product) {
-        return product.bestseller || product.source === 'supabase';
-      });
 
-      renderGrid(bestsellerGrid, bestsellers.slice(0, 8));
+      var bestsellers =
+        cache.filter(
+          function (product) {
+
+            return (
+              product.bestseller ||
+              product.source ===
+                'supabase'
+            );
+
+          }
+        );
+
+
+      renderGrid(
+        bestsellerGrid,
+        bestsellers.slice(
+          0,
+          8
+        )
+      );
+
     }
 
-    var offers = document.getElementById('offers-grid');
+
+    var offers =
+      document.getElementById(
+        'offers-grid'
+      );
+
 
     if (offers) {
-      offers.innerHTML = offersHTML();
+
+      offers.innerHTML =
+        offersHTML();
+
     }
+
   }
+
 
   /* ==========================================================
      SHOP PAGE
   ========================================================== */
 
   function initShop() {
-    var grid = document.getElementById('product-grid');
 
-    if (!grid) {
-      console.warn('Brit.Tuna: product-grid not found.');
-      return;
-    }
+  var grid =
+    document.getElementById(
+      'product-grid'
+    );
 
-    var searchInput = document.getElementById('search-input');
-    var categorySelect = document.getElementById('category-filter');
-    var priceSelect = document.getElementById('price-filter');
-    var sortSelect = document.getElementById('sort-select');
-    var empty = document.getElementById('empty-state');
-    var count = document.getElementById('result-count');
+  if (!grid) {
+    console.warn(
+      'Brit.Tuna: product-grid not found.'
+    );
+    return;
+  }
 
-    /* Fill category options */
 
-    if (categorySelect) {
-      categorySelect.innerHTML =
-        '<option value="all">All categories</option>';
+  var searchInput =
+    document.getElementById(
+      'search-input'
+    );
 
-      CATEGORIES.forEach(function (category) {
-        var option = document.createElement('option');
 
-        option.value = category.id;
-        option.textContent = category.name;
+  var categorySelect =
+    document.getElementById(
+      'category-filter'
+    );
 
-        categorySelect.appendChild(option);
-      });
-    }
 
-    /* Fill price options */
+  var priceSelect =
+    document.getElementById(
+      'price-filter'
+    );
 
-    if (priceSelect) {
-      priceSelect.innerHTML = '';
 
-      PRICE_RANGES.forEach(function (range) {
-        var option = document.createElement('option');
+  var sortSelect =
+    document.getElementById(
+      'sort-select'
+    );
 
-        option.value = range.id;
-        option.textContent = range.label;
 
-        priceSelect.appendChild(option);
-      });
-    }
+  var empty =
+    document.getElementById(
+      'empty-state'
+    );
 
-    /* Fill sort options */
 
-    if (sortSelect) {
-      sortSelect.innerHTML = '';
+  var count =
+    document.getElementById(
+      'result-count'
+    );
 
-      var sortOptions = [
-        { id: 'default', name: 'Sort: Featured' },
-        { id: 'price-asc', name: 'Price: Low to High' },
-        { id: 'price-desc', name: 'Price: High to Low' },
-        { id: 'name-asc', name: 'Name: A to Z' },
-        { id: 'name-desc', name: 'Name: Z to A' }
-      ];
 
-      sortOptions.forEach(function (item) {
-        var option = document.createElement('option');
+  /*
+    Fill category options
+  */
+  if (categorySelect) {
 
-        option.value = item.id;
-        option.textContent = item.name;
+    categorySelect.innerHTML =
+      '<option value="all">All categories</option>';
 
-        sortSelect.appendChild(option);
-      });
-    }
+    CATEGORIES.forEach(
+      function (category) {
 
-    /* Read URL parameters */
+        var option =
+          document.createElement(
+            'option'
+          );
 
-    var params = new URLSearchParams(window.location.search);
+        option.value =
+          category.id;
 
-    /* Search from URL. Example: shop.html?q=peanuts */
+        option.textContent =
+          category.name;
 
-    var urlSearch = params.get('q');
+        categorySelect.appendChild(
+          option
+        );
 
-    if (searchInput && urlSearch) {
-      searchInput.value = urlSearch;
-    }
-
-    /* Category from URL. Example: shop.html?category=peanuts */
-
-    var urlCategory = params.get('category');
-
-    if (categorySelect && urlCategory) {
-      var normalizedCategory = normalizeCategory(urlCategory);
-
-      if (getCategory(normalizedCategory)) {
-        categorySelect.value = normalizedCategory;
       }
+    );
+
+  }
+
+
+  /*
+    Fill price options
+  */
+  if (priceSelect) {
+
+    priceSelect.innerHTML = '';
+
+    PRICE_RANGES.forEach(
+      function (range) {
+
+        var option =
+          document.createElement(
+            'option'
+          );
+
+        option.value =
+          range.id;
+
+        option.textContent =
+          range.label;
+
+        priceSelect.appendChild(
+          option
+        );
+
+      }
+    );
+
+  }
+
+
+  /*
+    Fill sort options
+  */
+  if (sortSelect) {
+
+    sortSelect.innerHTML = '';
+
+    var sortOptions = [
+
+      {
+        id: 'default',
+        name: 'Sort: Featured'
+      },
+
+      {
+        id: 'price-asc',
+        name: 'Price: Low to High'
+      },
+
+      {
+        id: 'price-desc',
+        name: 'Price: High to Low'
+      },
+
+      {
+        id: 'name-asc',
+        name: 'Name: A to Z'
+      },
+
+      {
+        id: 'name-desc',
+        name: 'Name: Z to A'
+      }
+
+    ];
+
+
+    sortOptions.forEach(
+      function (item) {
+
+        var option =
+          document.createElement(
+            'option'
+          );
+
+        option.value =
+          item.id;
+
+        option.textContent =
+          item.name;
+
+        sortSelect.appendChild(
+          option
+        );
+
+      }
+    );
+
+  }
+
+
+  /*
+    Read URL parameters
+  */
+  var params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+
+  /*
+    Search from URL
+    Example:
+    shop.html?q=peanuts
+  */
+  var urlSearch =
+    params.get('q');
+
+
+  if (
+    searchInput &&
+    urlSearch
+  ) {
+
+    searchInput.value =
+      urlSearch;
+
+  }
+
+
+  /*
+    Category from URL
+    Example:
+    shop.html?category=peanuts
+  */
+  var urlCategory =
+    params.get(
+      'category'
+    );
+
+
+  if (
+    categorySelect &&
+    urlCategory
+  ) {
+
+    var normalizedCategory =
+      normalizeCategory(
+        urlCategory
+      );
+
+
+    if (
+      getCategory(
+        normalizedCategory
+      )
+    ) {
+
+      categorySelect.value =
+        normalizedCategory;
+
     }
 
-    /* Render products */
+  }
 
-    function render() {
-      try {
-        var list = filter({
-          q: searchInput ? searchInput.value : '',
-          category: categorySelect ? categorySelect.value : 'all',
-          price: priceSelect ? priceSelect.value : 'all',
-          sort: sortSelect ? sortSelect.value : 'default'
+
+  /*
+    Render products
+  */
+  function render() {
+
+    try {
+
+      var list =
+        filter({
+
+          q:
+            searchInput
+              ? searchInput.value
+              : '',
+
+          category:
+            categorySelect
+              ? categorySelect.value
+              : 'all',
+
+          price:
+            priceSelect
+              ? priceSelect.value
+              : 'all',
+
+          sort:
+            sortSelect
+              ? sortSelect.value
+              : 'default'
+
         });
 
-        renderGrid(grid, list);
 
-        if (count) {
-          count.textContent =
-            'Showing ' + list.length + ' of ' + cache.length + ' products';
-        }
+      /*
+        Render product cards
+      */
+      renderGrid(
+        grid,
+        list
+      );
 
-        if (empty) {
-          empty.hidden = list.length > 0;
-        }
 
-        grid.hidden = list.length === 0;
-      } catch (error) {
-        console.error('Brit.Tuna: Shop render error.', error);
+      /*
+        Product count
+      */
+      if (count) {
 
-        grid.hidden = false;
+        count.textContent =
+          'Showing ' +
+          list.length +
+          ' of ' +
+          cache.length +
+          ' products';
 
-        grid.innerHTML =
-          '<p class="state-error" role="alert">' +
-          'Sorry, products could not be loaded. Please refresh the page.' +
-          '</p>';
       }
+
+
+      /*
+        Empty search result
+      */
+      if (empty) {
+
+        empty.hidden =
+          list.length > 0;
+
+      }
+
+
+      /*
+        Show / hide grid
+      */
+      grid.hidden =
+        list.length === 0;
+
+
+    } catch (error) {
+
+      console.error(
+        'Brit.Tuna: Shop render error.',
+        error
+      );
+
+
+      grid.hidden =
+        false;
+
+
+      grid.innerHTML =
+        '<p class="state-error" role="alert">' +
+        'Sorry, products could not be loaded. Please refresh the page.' +
+        '</p>';
+
     }
 
-    if (searchInput) {
-      searchInput.addEventListener('input', render);
-    }
-
-    if (categorySelect) {
-      categorySelect.addEventListener('change', render);
-    }
-
-    if (priceSelect) {
-      priceSelect.addEventListener('change', render);
-    }
-
-    if (sortSelect) {
-      sortSelect.addEventListener('change', render);
-    }
-
-    /* Initial product render */
-
-    render();
   }
+
+
+  /*
+    Search event
+  */
+  if (searchInput) {
+
+    searchInput.addEventListener(
+      'input',
+      render
+    );
+
+  }
+
+
+  /*
+    Category event
+  */
+  if (categorySelect) {
+
+    categorySelect.addEventListener(
+      'change',
+      render
+    );
+
+  }
+
+
+  /*
+    Price event
+  */
+  if (priceSelect) {
+
+    priceSelect.addEventListener(
+      'change',
+      render
+    );
+
+  }
+
+
+  /*
+    Sort event
+  */
+  if (sortSelect) {
+
+    sortSelect.addEventListener(
+      'change',
+      render
+    );
+
+  }
+
+
+  /*
+    Initial product render
+  */
+  render();
+
+}
+
 
   /* ==========================================================
      PRODUCTS PAGE
   ========================================================== */
 
-  function initProducts() {
-    var grid = document.getElementById('product-grid');
+ function initProducts() {
 
-    if (!grid) {
-      console.warn('Brit.Tuna: Products product-grid not found.');
-      return;
-    }
+  var grid =
+    document.getElementById(
+      'product-grid'
+    );
 
-    var empty = document.getElementById('empty-state');
-    var count = document.getElementById('result-count');
-    var sortSelect = document.getElementById('sort-select');
+  if (!grid) {
+    console.warn(
+      'Brit.Tuna: Products product-grid not found.'
+    );
+    return;
+  }
 
-    /* Get category from URL. Example: products.html?category=peanuts */
 
-    var category = new URLSearchParams(window.location.search).get(
+  var empty =
+    document.getElementById(
+      'empty-state'
+    );
+
+
+  var count =
+    document.getElementById(
+      'result-count'
+    );
+
+
+  var sortSelect =
+    document.getElementById(
+      'sort-select'
+    );
+
+
+  /*
+    Get category from URL
+    Example:
+    products.html?category=peanuts
+  */
+  var category =
+    new URLSearchParams(
+      window.location.search
+    ).get(
       'category'
     );
 
-    /* Add Sort By options */
 
-    if (sortSelect) {
-      sortSelect.innerHTML = '';
+  /*
+    Add Sort By options
+  */
+  if (sortSelect) {
 
-      var sortOptions = [
-        { id: 'default', name: 'Sort: Featured' },
-        { id: 'price-asc', name: 'Price: Low to High' },
-        { id: 'price-desc', name: 'Price: High to Low' },
-        { id: 'name-asc', name: 'Name: A to Z' },
-        { id: 'name-desc', name: 'Name: Z to A' }
-      ];
+    sortSelect.innerHTML = '';
 
-      sortOptions.forEach(function (item) {
-        var option = document.createElement('option');
-
-        option.value = item.id;
-        option.textContent = item.name;
-
-        sortSelect.appendChild(option);
-      });
-    }
-
-    /* Render products */
-
-    function render() {
-      var list = filter({
-        category: category ? normalizeCategory(category) : 'all',
-        price: 'all',
-        sort: sortSelect ? sortSelect.value : 'default'
-      });
-
-      renderGrid(grid, list);
-
-      if (count) {
-        count.textContent =
-          'Showing ' + list.length + ' of ' + cache.length + ' products';
+    var sortOptions = [
+      {
+        id: 'default',
+        name: 'Sort: Featured'
+      },
+      {
+        id: 'price-asc',
+        name: 'Price: Low to High'
+      },
+      {
+        id: 'price-desc',
+        name: 'Price: High to Low'
+      },
+      {
+        id: 'name-asc',
+        name: 'Name: A to Z'
+      },
+      {
+        id: 'name-desc',
+        name: 'Name: Z to A'
       }
+    ];
 
-      if (empty) {
-        empty.hidden = list.length > 0;
+
+    sortOptions.forEach(
+      function (item) {
+
+        var option =
+          document.createElement(
+            'option'
+          );
+
+        option.value =
+          item.id;
+
+        option.textContent =
+          item.name;
+
+        sortSelect.appendChild(
+          option
+        );
+
       }
+    );
 
-      grid.hidden = list.length === 0;
-    }
-
-    if (sortSelect) {
-      sortSelect.addEventListener('change', render);
-    }
-
-    render();
   }
 
+
+  /*
+    Render products
+  */
+  function render() {
+
+    var list =
+      filter({
+
+        category:
+          category
+            ? normalizeCategory(
+                category
+              )
+            : 'all',
+
+        price:
+          'all',
+
+        sort:
+          sortSelect
+            ? sortSelect.value
+            : 'default'
+
+      });
+
+
+    renderGrid(
+      grid,
+      list
+    );
+
+
+    /*
+      Result count
+    */
+    if (count) {
+
+      count.textContent =
+        'Showing ' +
+        list.length +
+        ' of ' +
+        cache.length +
+        ' products';
+
+    }
+
+
+    /*
+      Empty state
+    */
+    if (empty) {
+
+      empty.hidden =
+        list.length > 0;
+
+    }
+
+
+    /*
+      Product grid
+    */
+    grid.hidden =
+      list.length === 0;
+
+  }
+
+
+  /*
+    Sort change
+  */
+  if (sortSelect) {
+
+    sortSelect.addEventListener(
+      'change',
+      render
+    );
+
+  }
+
+
+  /*
+    Initial render
+  */
+  render();
+
+}
   /* ==========================================================
      PRODUCT DETAILS
   ========================================================== */
 
   function initDetails() {
-    var box = document.getElementById('product-detail');
 
-    if (!box) {
-      return;
-    }
+  var box =
+    document.getElementById(
+      'product-detail'
+    );
 
-    /* ======================================================
-       READ PRODUCT FROM URL
 
-       New links:  product-details.html?id=7
-       Old links:  product-details.html?slug=t-shirt
-    ====================================================== */
+  if (!box) {
 
-    var params = new URLSearchParams(window.location.search);
+    return;
 
-    var id = params.get('id');
+  }
 
-    var slug = params.get('slug');
 
-    /*
-      Always use the unique product ID first.
+  /* ======================================================
+     READ PRODUCT FROM URL
+     
+     New links:
+     product-details.html?id=7
 
-      This prevents duplicate product names from
-      opening the wrong Supabase product.
-    */
+     Old slug links are still supported:
+     product-details.html?slug=t-shirt
+  ====================================================== */
 
-    var p = id ? getById(id) : slug ? getBySlug(slug) : null;
+  var params =
+    new URLSearchParams(
+      window.location.search
+    );
 
-    /* PRODUCT NOT FOUND */
 
-    if (!p) {
-      box.innerHTML =
-        '<div class="empty-state">' +
-        '<h2>Product not found</h2>' +
-        '<p>This product may no longer be available.</p>' +
-        '<a class="btn btn-primary" href="shop.html">Back to Shop</a>' +
-        '</div>';
+  var id =
+    params.get(
+      'id'
+    );
 
-      return;
-    }
 
-    /* NO PRODUCT VARIANTS / PACKS */
+  var slug =
+    params.get(
+      'slug'
+    );
 
-    if (!p.packs || !p.packs.length) {
-      box.innerHTML =
-        '<div class="empty-state">' +
-        '<h2>Product unavailable</h2>' +
-        '<p>No active pack sizes are currently available for this product.</p>' +
-        '<a class="btn btn-primary" href="shop.html">Back to Shop</a>' +
-        '</div>';
 
-      return;
-    }
+  /*
+    IMPORTANT FIX:
 
-    /* PRODUCT CATEGORY */
+    Always use the unique product ID first.
 
-    var cat = getCategory(p.category);
+    This prevents duplicate product names such as:
 
-    /* ======================================================
-       SELECT DEFAULT PACK
+    t shirt
+    t shirt
 
-       Do not automatically use p.packs[0].
-       First choose a pack that actually has stock.
-    ====================================================== */
+    from opening the wrong Supabase product.
+  */
 
-    var selectedPack = firstAvailablePack(p);
+  var p =
+    id
+      ? getById(id)
+      : (
+          slug
+            ? getBySlug(slug)
+            : null
+        );
 
-    /*
-      If ALL variants are out of stock,
-      keep the first variant only for display.
-      Add to Cart / Buy Now stay disabled.
-    */
 
-    if (!selectedPack) {
-      selectedPack = p.packs[0];
-    }
+  /* ======================================================
+     PRODUCT NOT FOUND
+  ====================================================== */
 
-    /* PRODUCT DETAILS STATE */
+  if (!p) {
 
-    var state = {
-      packId: String(selectedPack.id),
-      qty: 1
-    };
+    box.innerHTML =
+      '<div class="empty-state">' +
 
-    /* PRODUCT STOCK STATUS */
+      '<h2>Product not found</h2>' +
 
-    var productStatus = productStockStatus(p);
+      '<p>This product may no longer be available.</p>' +
 
-    var allOut = productStatus === 'out_of_stock';
+      '<a class="btn btn-primary" href="shop.html">Back to Shop</a>' +
 
-    /*
-      Buy Now is only possible for real, orderable packs.
-    */
+      '</div>';
 
-    var buyNowAllowed = isOrderable(p, selectedPack);
 
+    return;
+
+  }
+
+
+  /* ======================================================
+     NO PRODUCT VARIANTS / PACKS
+  ====================================================== */
+
+  if (
+    !p.packs ||
+    !p.packs.length
+  ) {
+
+    box.innerHTML =
+      '<div class="empty-state">' +
+
+      '<h2>Product unavailable</h2>' +
+
+      '<p>No active pack sizes are currently available for this product.</p>' +
+
+      '<a class="btn btn-primary" href="shop.html">Back to Shop</a>' +
+
+      '</div>';
+
+
+    return;
+
+  }
+
+
+  /* ======================================================
+     PRODUCT CATEGORY
+  ====================================================== */
+
+  var cat =
+    getCategory(
+      p.category
+    );
+
+
+  /* ======================================================
+     SELECT DEFAULT PACK
+
+     IMPORTANT:
+
+     Do not automatically use p.packs[0].
+
+     First choose a pack that actually has stock.
+
+     Example:
+
+     XL  = stock 0
+     XXL = stock 20
+
+     Result:
+     XXL will automatically be selected.
+  ====================================================== */
+
+  var selectedPack =
+    firstAvailablePack(
+      p
+    );
+
+
+  /*
+    If ALL variants are out of stock,
+    keep the first variant only for display.
+
+    Add to Cart / Buy Now can remain disabled.
+  */
+
+  if (!selectedPack) {
+
+    selectedPack =
+      p.packs[0];
+
+  }
+
+
+  /* ======================================================
+     PRODUCT DETAILS STATE
+  ====================================================== */
+
+  var state = {
+
+    packId:
+      String(
+        selectedPack.id
+      ),
+
+    qty:
+      1
+
+  };
+
+
+  /* ======================================================
+     PRODUCT STOCK STATUS
+  ====================================================== */
+
+  var productStatus =
+    productStockStatus(
+      p
+    );
+
+
+  var allOut =
+    productStatus ===
+    'out_of_stock';
+     
     /* ======================================================
        PACK OPTIONS
 
@@ -1916,45 +3689,114 @@
        but radio is disabled.
     ====================================================== */
 
-    var packOptions = p.packs
-      .map(function (pack) {
-        var available = packHasStock(pack);
+    var packOptions =
+      p.packs
+        .map(
+          function (pack) {
 
-        var checked = String(pack.id) === String(state.packId);
+            var available =
+              packHasStock(
+                pack
+              );
 
-        var packPrice = salePrice(pack.price, p.discount);
 
-        return (
-          '<label class="pack-option' +
-          (!available ? ' pack-option-disabled' : '') +
-          '">' +
-          '<input type="radio" name="pack" value="' +
-          U.escapeHtml(String(pack.id)) +
-          '"' +
-          (checked ? ' checked' : '') +
-          (!available ? ' disabled' : '') +
-          '>' +
-          '<span class="pack-option-main">' +
-          '<span class="pack-option-name">' +
-          U.escapeHtml(pack.label) +
-          '</span>' +
-          '<span class="pack-option-price">' +
-          U.formatINR(packPrice) +
-          '</span>' +
-          '</span>' +
-          '<span class="pack-option-stock">' +
-          U.escapeHtml(packStockLabel(pack)) +
-          '</span>' +
-          '</label>'
-        );
-      })
-      .join('');
+            var checked =
+              String(
+                pack.id
+              ) ===
+              String(
+                state.packId
+              );
 
-    var selectedNow = salePrice(selectedPack.price, p.discount);
 
-    var selectedMrp = Number(selectedPack.price);
+            var packPrice =
+              salePrice(
+                pack.price,
+                p.discount
+              );
 
-    var detailStockText = packStockLabel(selectedPack);
+
+            return (
+              '<label class="pack-option' +
+              (
+                !available
+                  ? ' pack-option-disabled'
+                  : ''
+              ) +
+              '">' +
+
+              '<input type="radio" name="pack" value="' +
+              U.escapeHtml(
+                String(
+                  pack.id
+                )
+              ) +
+              '"' +
+
+              (
+                checked
+                  ? ' checked'
+                  : ''
+              ) +
+
+              (
+                !available
+                  ? ' disabled'
+                  : ''
+              ) +
+
+              '>' +
+
+              '<span class="pack-option-main">' +
+
+              '<span class="pack-option-name">' +
+              U.escapeHtml(
+                pack.label
+              ) +
+              '</span>' +
+
+              '<span class="pack-option-price">' +
+              U.formatINR(
+                packPrice
+              ) +
+              '</span>' +
+
+              '</span>' +
+
+              '<span class="pack-option-stock">' +
+              U.escapeHtml(
+                packStockLabel(
+                  pack
+                )
+              ) +
+              '</span>' +
+
+              '</label>'
+            );
+
+          }
+        )
+        .join('');
+
+
+    var selectedNow =
+      salePrice(
+        selectedPack.price,
+        p.discount
+      );
+
+
+    var selectedMrp =
+      Number(
+        selectedPack.price
+      );
+
+
+    var detailStockText =
+      packStockLabel(
+        selectedPack
+      );
+
 
     var detailsWhatsappMessage =
       'Hello Brit.Tuna, I would like to order:\n' +
@@ -1964,471 +3806,1029 @@
       selectedPack.label +
       '\nQuantity: 1' +
       '\nLink: ' +
-      absoluteUrl(productUrl(p));
+      absoluteUrl(
+        productUrl(p)
+      );
 
-    /* ======================================================
-       PRODUCT IMAGE GALLERY
 
-       Supabase -> product_images -> fromRow() -> p.images
-    ====================================================== */
+   /* ======================================================
+   DETAILS HTML
+====================================================== */
 
-    var detailImages = [];
+/* ======================================================
+   PRODUCT IMAGE GALLERY
+====================================================== */
 
-    /* GET VALID SELLER-UPLOADED IMAGES */
+/*
+  Seller uploaded images come from:
 
-    if (Array.isArray(p.images)) {
-      detailImages = p.images
-        .filter(function (image) {
+  Supabase
+      ↓
+  product_images
+      ↓
+  fromRow()
+      ↓
+  p.images
+*/
+
+
+var detailImages = [];
+
+
+/*
+  ======================================================
+  GET VALID SELLER-UPLOADED IMAGES
+  ======================================================
+*/
+
+if (
+  Array.isArray(p.images)
+) {
+
+  detailImages =
+    p.images
+      .filter(
+        function (image) {
+
           return (
-            image && typeof image.url === 'string' && image.url.trim() !== ''
+            image &&
+            typeof image.url === 'string' &&
+            image.url.trim() !== ''
           );
-        })
-        .map(function (image) {
+
+        }
+      )
+      .map(
+        function (image) {
+
           return {
-            id: image.id || null,
-            url: String(image.url).trim(),
-            storagePath: image.storagePath || '',
-            sortOrder: Number(image.sortOrder || 0),
-            primary: image.primary === true
+
+            id:
+              image.id || null,
+
+            url:
+              String(
+                image.url
+              ).trim(),
+
+            storagePath:
+              image.storagePath || '',
+
+            sortOrder:
+              Number(
+                image.sortOrder || 0
+              ),
+
+            primary:
+              image.primary === true
+
           };
-        });
+
+        }
+      );
+
+}
+
+
+/*
+  ======================================================
+  SORT IMAGES
+
+  1. Primary image first
+  2. Then sort_order
+  ======================================================
+*/
+
+detailImages.sort(
+  function (a, b) {
+
+    if (
+      a.primary === true &&
+      b.primary !== true
+    ) {
+
+      return -1;
+
     }
 
-    /* SORT IMAGES: primary first, then sort_order */
 
-    detailImages.sort(function (a, b) {
-      if (a.primary === true && b.primary !== true) {
-        return -1;
-      }
+    if (
+      a.primary !== true &&
+      b.primary === true
+    ) {
 
-      if (a.primary !== true && b.primary === true) {
-        return 1;
-      }
+      return 1;
 
-      return Number(a.sortOrder || 0) - Number(b.sortOrder || 0);
-    });
-
-    /*
-      OLD PRODUCT FALLBACK
-
-      If product_images does not contain anything,
-      use products.image_url / generated placeholder.
-    */
-
-    if (!detailImages.length) {
-      detailImages.push({
-        id: null,
-        url: imageFor(p),
-        storagePath: '',
-        sortOrder: 1,
-        primary: true
-      });
     }
 
-    /* MAIN IMAGE: detailImages[0] (primary sorted first) */
 
-    var mainImageIndex = 0;
+    return (
+      Number(
+        a.sortOrder || 0
+      ) -
+      Number(
+        b.sortOrder || 0
+      )
+    );
 
-    var mainImageUrl = detailImages[0].url;
+  }
+);
 
-    /* CREATE THUMBNAILS */
 
-    var thumbnailHtml = detailImages
-      .map(function (image, index) {
+/*
+  ======================================================
+  OLD PRODUCT FALLBACK
+
+  If product_images does not contain anything,
+  use products.image_url / generated placeholder.
+  ======================================================
+*/
+
+if (!detailImages.length) {
+
+  detailImages.push({
+
+    id:
+      null,
+
+    url:
+      imageFor(p),
+
+    storagePath:
+      '',
+
+    sortOrder:
+      1,
+
+    primary:
+      true
+
+  });
+
+}
+
+
+/*
+  ======================================================
+  MAIN IMAGE
+
+  Because primary image was sorted first,
+  detailImages[0] is the main image.
+  ======================================================
+*/
+
+var mainImageIndex =
+  0;
+
+
+var mainImageUrl =
+  detailImages[0].url;
+
+
+/*
+  ======================================================
+  CREATE THUMBNAILS
+  ======================================================
+*/
+
+var thumbnailHtml =
+  detailImages
+    .map(
+      function (image, index) {
+
         return (
           '<button ' +
+
           'type="button" ' +
+
           'class="product-detail-thumbnail' +
-          (index === mainImageIndex ? ' active' : '') +
+
+          (
+            index === mainImageIndex
+              ? ' active'
+              : ''
+          ) +
+
           '" ' +
+
           'data-image-index="' +
           index +
           '" ' +
+
           'data-image-url="' +
-          U.escapeHtml(image.url) +
+          U.escapeHtml(
+            image.url
+          ) +
           '" ' +
+
           'aria-label="View ' +
-          U.escapeHtml(p.name) +
+          U.escapeHtml(
+            p.name
+          ) +
           ' image ' +
           (index + 1) +
           '">' +
+
+
           '<img ' +
+
           'src="' +
-          U.escapeHtml(image.url) +
+          U.escapeHtml(
+            image.url
+          ) +
           '" ' +
+
           'alt="' +
-          U.escapeHtml(p.name) +
+          U.escapeHtml(
+            p.name
+          ) +
           ' image ' +
           (index + 1) +
           '" ' +
+
           'loading="lazy" ' +
+
           'data-pid="' +
-          U.escapeHtml(String(p.id)) +
+          U.escapeHtml(
+            String(
+              p.id
+            )
+          ) +
           '">' +
+
+
           '</button>'
         );
-      })
-      .join('');
 
-    /* ======================================================
-       BUILD PRODUCT DETAILS
-    ====================================================== */
+      }
+    )
+    .join('');
+/* ======================================================
+   BUILD PRODUCT DETAILS
+====================================================== */
 
-    box.innerHTML =
-      '<div class="product-detail-grid">' +
-      /* LEFT — PRODUCT IMAGES */
+box.innerHTML =
+  '<div class="product-detail-grid">' +
 
-      '<div class="product-detail-media">' +
-      /* MAIN IMAGE */
 
-      '<div class="product-detail-main-image">' +
-      '<img ' +
-      'id="pd-image" ' +
-      'src="' +
-      U.escapeHtml(mainImageUrl) +
-      '" ' +
-      'alt="' +
-      U.escapeHtml(p.name) +
-      '" ' +
-      'data-pid="' +
-      U.escapeHtml(String(p.id)) +
-      '">' +
-      /* DISCOUNT BADGE */
+  /* ====================================================
+     LEFT — PRODUCT IMAGES
+  ==================================================== */
 
-      (p.discount
-        ? '<span class="pc-badge product-detail-badge">' +
-          p.discount +
-          '% OFF</span>'
-        : '') +
-      '</div>' +
-      /* THUMBNAILS */
+  '<div class="product-detail-media">' +
 
-      '<div class="product-detail-thumbnails" id="pd-thumbnails">' +
-      thumbnailHtml +
-      '</div>' +
-      '</div>' +
-      /* RIGHT — PRODUCT INFORMATION */
 
-      '<div class="product-detail-content">' +
-      /* CATEGORY */
+  /* MAIN IMAGE */
 
-      '<p class="product-detail-category">' +
-      U.escapeHtml(cat ? cat.name : p.category || '') +
-      '</p>' +
-      /* PRODUCT NAME */
+  '<div class="product-detail-main-image">' +
 
-      '<h1 class="product-detail-title">' +
-      U.escapeHtml(p.name) +
-      '</h1>' +
-      /* SHORT DESCRIPTION */
+  '<img ' +
+  'id="pd-image" ' +
+  'src="' +
+  U.escapeHtml(
+    mainImageUrl
+  ) +
+  '" ' +
+  'alt="' +
+  U.escapeHtml(
+    p.name
+  ) +
+  '" ' +
+  'data-pid="' +
+  U.escapeHtml(
+    String(
+      p.id
+    )
+  ) +
+  '">' +
 
-      (p.short
-        ? '<p class="product-detail-short">' + U.escapeHtml(p.short) + '</p>'
-        : '') +
-      /* PRICE */
 
-      '<div class="product-detail-price">' +
-      '<span id="pd-price" class="price-now">' +
-      U.formatINR(selectedNow) +
-      '</span>' +
-      '<span id="pd-mrp" class="price-old">' +
-      (p.discount ? U.formatINR(selectedMrp) : '') +
-      '</span>' +
-      (p.discount
-        ? '<span class="product-detail-discount">' +
-          p.discount +
-          '% OFF</span>'
-        : '') +
-      '</div>' +
-      /* STOCK */
+  /* DISCOUNT BADGE */
 
-      '<p id="pd-stock" class="stock stock-' +
-      (packHasStock(selectedPack) ? 'in_stock' : 'out_of_stock') +
-      '">' +
-      U.escapeHtml(detailStockText) +
-      '</p>' +
-      /* PACK SIZE */
+  (
+    p.discount
+      ? '<span class="pc-badge product-detail-badge">' +
+        p.discount +
+        '% OFF</span>'
+      : ''
+  ) +
 
-      '<div class="product-pack-section">' +
-      '<h3>Select pack size</h3>' +
-      '<div class="pack-options">' +
-      packOptions +
-      '</div>' +
-      '</div>' +
-      /* QUANTITY */
+  '</div>' +
 
-      '<div class="product-qty-section">' +
-      '<h3>Quantity</h3>' +
-      '<div class="qty-control">' +
-      '<button ' +
-      'type="button" ' +
-      'id="qty-dec" ' +
-      'aria-label="Decrease quantity">' +
-      '−' +
-      '</button>' +
-      '<input ' +
-      'id="qty-input" ' +
-      'type="number" ' +
-      'min="1" ' +
-      'max="99" ' +
-      'value="1" ' +
-      'inputmode="numeric" ' +
-      'aria-label="Quantity">' +
-      '<button ' +
-      'type="button" ' +
-      'id="qty-inc" ' +
-      'aria-label="Increase quantity">' +
-      '+' +
-      '</button>' +
-      '</div>' +
-      '</div>' +
-      /* TOTAL */
 
-      '<div class="product-detail-total">' +
-      '<span>Total</span>' +
-      '<strong id="pd-total">' +
-      U.formatINR(selectedNow) +
-      '</strong>' +
-      '</div>' +
-      /* ACTION BUTTONS */
+  /* THUMBNAILS */
 
-      '<div class="product-detail-actions">' +
-      /* ADD TO CART */
+  '<div class="product-detail-thumbnails" id="pd-thumbnails">' +
 
-      '<button ' +
-      'type="button" ' +
-      'id="pd-add" ' +
-      'class="btn btn-primary"' +
-      (allOut ? ' disabled' : '') +
-      '>' +
-      (allOut ? 'Out of stock' : 'Add to Cart') +
-      '</button>' +
-      /* BUY NOW */
+  thumbnailHtml +
 
-      '<button ' +
-      'type="button" ' +
-      'id="pd-buy-now" ' +
-      'class="btn btn-buy-now"' +
-      (buyNowAllowed ? '' : ' disabled') +
-      '>' +
-      (buyNowAllowed
-        ? 'Buy Now'
-        : allOut || !packHasStock(selectedPack)
-        ? 'Out of stock'
-        : 'Unavailable') +
-      '</button>' +
-      /* WISHLIST */
+  '</div>' +
 
-      '<button ' +
-      'type="button" ' +
-      'id="pd-wishlist" ' +
-      'class="btn btn-wishlist js-wishlist" ' +
-      'data-wishlist-id="' +
-      U.escapeHtml(String(p.id)) +
-      '" ' +
-      'aria-label="Add ' +
-      U.escapeHtml(p.name) +
-      ' to wishlist" ' +
-      'aria-pressed="false" ' +
-      'title="Add to Wishlist">' +
-      '<span class="wishlist-heart" aria-hidden="true">♡</span> ' +
-      '<span class="wishlist-text">Wishlist</span>' +
-      '</button>' +
-      '</div>' +
-      /* WHATSAPP */
 
-      '<a ' +
-      'id="pd-whatsapp" ' +
-      'class="btn btn-whatsapp product-detail-whatsapp" ' +
-      'href="' +
-      U.whatsappLink(detailsWhatsappMessage) +
-      '" ' +
-      'target="_blank" ' +
-      'rel="noopener">' +
-      'Order on WhatsApp' +
-      '</a>' +
-      /* PRODUCT HIGHLIGHTS */
+  '</div>' +
 
-      '<div class="product-highlights">' +
-      '<h2>Product Highlights</h2>' +
-      '<div class="product-highlight-grid">' +
-      /* CATEGORY */
 
-      '<div class="product-highlight-item">' +
-      '<span>Category</span>' +
-      '<strong>' +
-      U.escapeHtml(cat ? cat.name : p.category || '—') +
-      '</strong>' +
-      '</div>' +
-      /* PACK SIZE */
+  /* ====================================================
+     RIGHT — PRODUCT INFORMATION
+  ==================================================== */
 
-      '<div class="product-highlight-item">' +
-      '<span>Pack Size</span>' +
-      '<strong id="pd-highlight-pack">' +
-      U.escapeHtml(selectedPack.label) +
-      '</strong>' +
-      '</div>' +
-      /* AVAILABILITY */
+  '<div class="product-detail-content">' +
 
-      '<div class="product-highlight-item">' +
-      '<span>Availability</span>' +
-      '<strong id="pd-highlight-stock">' +
-      U.escapeHtml(detailStockText) +
-      '</strong>' +
-      '</div>' +
-      /* PRODUCT TYPE */
 
-      (p.productType
-        ? '<div class="product-highlight-item">' +
-          '<span>Product Type</span>' +
-          '<strong>' +
-          U.escapeHtml(p.productType) +
-          '</strong>' +
-          '</div>'
-        : '') +
-      '</div>' +
-      '</div>' +
-      /* PRODUCT DESCRIPTION */
+  /* CATEGORY */
 
-      '<div class="product-detail-description">' +
-      '<h2>Product Details</h2>' +
-      '<p>' +
-      U.escapeHtml(p.description || p.short || '') +
-      '</p>' +
-      '</div>' +
-      /* INGREDIENTS */
+  '<p class="product-detail-category">' +
 
-      (p.ingredients
-        ? '<div class="product-info-row">' +
-          '<strong>Ingredients</strong>' +
-          '<span>' +
-          U.escapeHtml(p.ingredients) +
-          '</span>' +
-          '</div>'
-        : '') +
-      /* ALLERGEN */
+  U.escapeHtml(
+    cat
+      ? cat.name
+      : p.category || ''
+  ) +
 
-      (p.allergens
-        ? '<div class="product-info-row">' +
-          '<strong>Allergen Information</strong>' +
-          '<span>' +
-          U.escapeHtml(p.allergens) +
-          '</span>' +
-          '</div>'
-        : '') +
-      /* STORAGE */
+  '</p>' +
 
-      (p.storage
-        ? '<div class="product-info-row">' +
-          '<strong>Storage</strong>' +
-          '<span>' +
-          U.escapeHtml(p.storage) +
-          '</span>' +
-          '</div>'
-        : '') +
-      '</div>' +
-      '</div>';
 
-    /* ======================================================
-       PRODUCT IMAGE THUMBNAIL CLICK
-    ====================================================== */
+  /* PRODUCT NAME */
 
-    var pdMainImage = document.getElementById('pd-image');
+  '<h1 class="product-detail-title">' +
 
-    var pdThumbnailButtons = box.querySelectorAll(
-      '.product-detail-thumbnail'
-    );
+  U.escapeHtml(
+    p.name
+  ) +
 
-    pdThumbnailButtons.forEach(function (button) {
-      button.addEventListener('click', function () {
-        var imageUrl = button.getAttribute('data-image-url');
+  '</h1>' +
 
-        if (!imageUrl || !pdMainImage) {
+
+  /* SHORT DESCRIPTION */
+
+  (
+    p.short
+      ? '<p class="product-detail-short">' +
+        U.escapeHtml(
+          p.short
+        ) +
+        '</p>'
+      : ''
+  ) +
+
+
+  /* ====================================================
+     PRICE
+  ==================================================== */
+
+  '<div class="product-detail-price">' +
+
+  '<span id="pd-price" class="price-now">' +
+
+  U.formatINR(
+    selectedNow
+  ) +
+
+  '</span>' +
+
+
+  '<span id="pd-mrp" class="price-old">' +
+
+  (
+    p.discount
+      ? U.formatINR(
+          selectedMrp
+        )
+      : ''
+  ) +
+
+  '</span>' +
+
+
+  (
+    p.discount
+      ? '<span class="product-detail-discount">' +
+        p.discount +
+        '% OFF</span>'
+      : ''
+  ) +
+
+  '</div>' +
+
+
+  /* ====================================================
+     STOCK
+  ==================================================== */
+
+  '<p id="pd-stock" class="stock stock-' +
+
+  (
+    packHasStock(
+      selectedPack
+    )
+      ? 'in_stock'
+      : 'out_of_stock'
+  ) +
+
+  '">' +
+
+  U.escapeHtml(
+    detailStockText
+  ) +
+
+  '</p>' +
+
+
+  /* ====================================================
+     PACK SIZE
+  ==================================================== */
+
+  '<div class="product-pack-section">' +
+
+  '<h3>Select pack size</h3>' +
+
+  '<div class="pack-options">' +
+
+  packOptions +
+
+  '</div>' +
+
+  '</div>' +
+
+
+  /* ====================================================
+     QUANTITY
+  ==================================================== */
+
+  '<div class="product-qty-section">' +
+
+  '<h3>Quantity</h3>' +
+
+  '<div class="qty-control">' +
+
+  '<button ' +
+  'type="button" ' +
+  'id="qty-dec" ' +
+  'aria-label="Decrease quantity">' +
+  '−' +
+  '</button>' +
+
+  '<input ' +
+  'id="qty-input" ' +
+  'type="number" ' +
+  'min="1" ' +
+  'max="99" ' +
+  'value="1" ' +
+  'inputmode="numeric" ' +
+  'aria-label="Quantity">' +
+
+  '<button ' +
+  'type="button" ' +
+  'id="qty-inc" ' +
+  'aria-label="Increase quantity">' +
+  '+' +
+  '</button>' +
+
+  '</div>' +
+
+  '</div>' +
+
+
+  /* ====================================================
+     TOTAL
+  ==================================================== */
+
+  '<div class="product-detail-total">' +
+
+  '<span>Total</span>' +
+
+  '<strong id="pd-total">' +
+
+  U.formatINR(
+    selectedNow
+  ) +
+
+  '</strong>' +
+
+  '</div>' +
+
+
+  /* ====================================================
+     ACTION BUTTONS
+  ==================================================== */
+
+  '<div class="product-detail-actions">' +
+
+
+  /* ADD TO CART */
+
+  '<button ' +
+  'type="button" ' +
+  'id="pd-add" ' +
+  'class="btn btn-primary"' +
+
+  (
+    allOut
+      ? ' disabled'
+      : ''
+  ) +
+
+  '>' +
+
+  (
+    allOut
+      ? 'Out of stock'
+      : 'Add to Cart'
+  ) +
+
+  '</button>' +
+
+/* BUY NOW */
+
+'<button ' +
+'type="button" ' +
+'id="pd-buy-now" ' +
+'class="btn btn-buy-now"' +
+
+(
+  allOut
+    ? ' disabled'
+    : ''
+) +
+
+'>' +
+
+(
+  allOut
+    ? 'Unavailable'
+    : 'Buy Now'
+) +
+
+'</button>' +
+
+
+/* WISHLIST */
+
+'<button ' +
+'type="button" ' +
+'id="pd-wishlist" ' +
+'class="btn btn-wishlist js-wishlist" ' +
+'data-wishlist-id="' +
+U.escapeHtml(
+  String(
+    p.id
+  )
+) +
+'" ' +
+'aria-label="Add ' +
+U.escapeHtml(
+  p.name
+) +
+' to wishlist" ' +
+'aria-pressed="false" ' +
+'title="Add to Wishlist">' +
+
+'<span class="wishlist-heart" aria-hidden="true">♡</span> ' +
+'<span class="wishlist-text">Wishlist</span>' +
+
+'</button>' +
+
+'</div>' +
+
+  /* ====================================================
+     WHATSAPP
+  ==================================================== */
+
+  '<a ' +
+  'id="pd-whatsapp" ' +
+  'class="btn btn-whatsapp product-detail-whatsapp" ' +
+  'href="' +
+
+  U.whatsappLink(
+    detailsWhatsappMessage
+  ) +
+
+  '" ' +
+  'target="_blank" ' +
+  'rel="noopener">' +
+
+  'Order on WhatsApp' +
+
+  '</a>' +
+
+
+  /* ====================================================
+     PRODUCT HIGHLIGHTS
+  ==================================================== */
+
+  '<div class="product-highlights">' +
+
+  '<h2>Product Highlights</h2>' +
+
+  '<div class="product-highlight-grid">' +
+
+
+  /* CATEGORY */
+
+  '<div class="product-highlight-item">' +
+
+  '<span>Category</span>' +
+
+  '<strong>' +
+
+  U.escapeHtml(
+    cat
+      ? cat.name
+      : p.category || '—'
+  ) +
+
+  '</strong>' +
+
+  '</div>' +
+
+
+  /* PACK SIZE */
+
+  '<div class="product-highlight-item">' +
+
+  '<span>Pack Size</span>' +
+
+  '<strong id="pd-highlight-pack">' +
+
+  U.escapeHtml(
+    selectedPack.label
+  ) +
+
+  '</strong>' +
+
+  '</div>' +
+
+
+  /* AVAILABILITY */
+
+  '<div class="product-highlight-item">' +
+
+  '<span>Availability</span>' +
+
+  '<strong id="pd-highlight-stock">' +
+
+  U.escapeHtml(
+    detailStockText
+  ) +
+
+  '</strong>' +
+
+  '</div>' +
+
+
+  /* PRODUCT TYPE */
+
+  (
+    p.productType
+      ? '<div class="product-highlight-item">' +
+
+        '<span>Product Type</span>' +
+
+        '<strong>' +
+
+        U.escapeHtml(
+          p.productType
+        ) +
+
+        '</strong>' +
+
+        '</div>'
+      : ''
+  ) +
+
+
+  '</div>' +
+
+  '</div>' +
+
+
+  /* ====================================================
+     PRODUCT DESCRIPTION
+  ==================================================== */
+
+  '<div class="product-detail-description">' +
+
+  '<h2>Product Details</h2>' +
+
+  '<p>' +
+
+  U.escapeHtml(
+    p.description ||
+    p.short ||
+    ''
+  ) +
+
+  '</p>' +
+
+  '</div>' +
+
+
+  /* ====================================================
+     INGREDIENTS
+  ==================================================== */
+
+  (
+    p.ingredients
+      ? '<div class="product-info-row">' +
+
+        '<strong>Ingredients</strong>' +
+
+        '<span>' +
+
+        U.escapeHtml(
+          p.ingredients
+        ) +
+
+        '</span>' +
+
+        '</div>'
+      : ''
+  ) +
+
+
+  /* ====================================================
+     ALLERGEN
+  ==================================================== */
+
+  (
+    p.allergens
+      ? '<div class="product-info-row">' +
+
+        '<strong>Allergen Information</strong>' +
+
+        '<span>' +
+
+        U.escapeHtml(
+          p.allergens
+        ) +
+
+        '</span>' +
+
+        '</div>'
+      : ''
+  ) +
+
+
+  /* ====================================================
+     STORAGE
+  ==================================================== */
+
+  (
+    p.storage
+      ? '<div class="product-info-row">' +
+
+        '<strong>Storage</strong>' +
+
+        '<span>' +
+
+        U.escapeHtml(
+          p.storage
+        ) +
+
+        '</span>' +
+
+        '</div>'
+      : ''
+  ) +
+
+
+  '</div>' +
+
+  '</div>';
+
+
+/* ======================================================
+   PRODUCT IMAGE THUMBNAIL CLICK
+====================================================== */
+
+var pdMainImage =
+  document.getElementById(
+    'pd-image'
+  );
+
+
+var pdThumbnailButtons =
+  box.querySelectorAll(
+    '.product-detail-thumbnail'
+  );
+
+
+pdThumbnailButtons.forEach(
+  function (button) {
+
+    button.addEventListener(
+      'click',
+
+      function () {
+
+        var imageUrl =
+          button.getAttribute(
+            'data-image-url'
+          );
+
+
+        if (
+          !imageUrl ||
+          !pdMainImage
+        ) {
+
           return;
+
         }
 
-        /* Change large product image. */
 
-        pdMainImage.src = imageUrl;
+        /*
+          Change large product image.
+        */
 
-        /* Remove active state from all thumbnails. */
+        pdMainImage.src =
+          imageUrl;
 
-        pdThumbnailButtons.forEach(function (item) {
-          item.classList.remove('active');
-        });
 
-        /* Add active state to selected thumbnail. */
+        /*
+          Remove active state
+          from all thumbnails.
+        */
 
-        button.classList.add('active');
-      });
-    });
+        pdThumbnailButtons.forEach(
+          function (item) {
 
+            item.classList.remove(
+              'active'
+            );
+
+          }
+        );
+
+
+        /*
+          Add active state
+          to selected thumbnail.
+        */
+
+        button.classList.add(
+          'active'
+        );
+
+      }
+    );
+
+  }
+);
     /* ======================================================
        DETAILS ELEMENTS
     ====================================================== */
 
-    var priceEl = document.getElementById('pd-price');
+    var priceEl =
+      document.getElementById(
+        'pd-price'
+      );
 
-    var mrpEl = document.getElementById('pd-mrp');
 
-    var totalEl = document.getElementById('pd-total');
+    var mrpEl =
+      document.getElementById(
+        'pd-mrp'
+      );
 
-    var stockEl = document.getElementById('pd-stock');
 
-    var waEl = document.getElementById('pd-whatsapp');
+    var totalEl =
+      document.getElementById(
+        'pd-total'
+      );
 
-    var qtyEl = document.getElementById('qty-input');
 
-    var addButton = document.getElementById('pd-add');
+    var stockEl =
+      document.getElementById(
+        'pd-stock'
+      );
 
-    var buyButton = document.getElementById('pd-buy-now');
+
+    var waEl =
+      document.getElementById(
+        'pd-whatsapp'
+      );
+
+
+    var qtyEl =
+      document.getElementById(
+        'qty-input'
+      );
+
+
+    var addButton =
+      document.getElementById(
+        'pd-add'
+      );
+
 
     /* ======================================================
        CURRENT PACK
 
+       IMPORTANT:
        Never silently fall back to p.packs[0]
        when a valid selected pack exists.
     ====================================================== */
 
     function currentPack() {
-      var variant = getVariant(p.id, state.packId);
 
-      if (variant && variant.pack) {
+      var variant =
+        getVariant(
+          p.id,
+          state.packId
+        );
+
+
+      if (
+        variant &&
+        variant.pack
+      ) {
+
         return variant.pack;
+
       }
 
-      return firstAvailablePack(p) || p.packs[0];
+
+      return (
+        firstAvailablePack(
+          p
+        ) ||
+        p.packs[0]
+      );
+
     }
+
 
     /* ======================================================
        UPDATE PRODUCT DETAILS
     ====================================================== */
 
     function update() {
-      var pack = currentPack();
+
+      var pack =
+        currentPack();
+
 
       if (!pack) {
+
         return;
+
       }
 
-      var available = packHasStock(pack);
 
-      var now = salePrice(pack.price, p.discount);
+      var available =
+        packHasStock(
+          pack
+        );
 
-      priceEl.textContent = U.formatINR(now);
 
-      mrpEl.textContent = p.discount ? U.formatINR(pack.price) : '';
+      var now =
+        salePrice(
+          pack.price,
+          p.discount
+        );
 
-      totalEl.textContent = U.formatINR(now * state.qty);
+
+      priceEl.textContent =
+        U.formatINR(
+          now
+        );
+
+
+      mrpEl.textContent =
+        p.discount
+          ? U.formatINR(
+              pack.price
+            )
+          : '';
+
+
+      totalEl.textContent =
+        U.formatINR(
+          now *
+          state.qty
+        );
+
 
       /* SELECTED PACK STOCK */
 
       if (stockEl) {
-        stockEl.textContent = packStockLabel(pack);
+
+        stockEl.textContent =
+          packStockLabel(
+            pack
+          );
+
 
         stockEl.className =
-          'stock ' + (available ? 'stock-in_stock' : 'stock-out_of_stock');
+          'stock ' +
+          (
+            available
+              ? 'stock-in_stock'
+              : 'stock-out_of_stock'
+          );
+
       }
+
 
       /*
         Add button depends on SELECTED PACK,
@@ -2436,27 +4836,18 @@
       */
 
       if (addButton) {
-        addButton.disabled = !available;
 
-        addButton.textContent = available ? 'Add to Cart' : 'Out of stock';
+        addButton.disabled =
+          !available;
+
+
+        addButton.textContent =
+          available
+            ? 'Add to Cart'
+            : 'Out of stock';
+
       }
 
-      /*
-        Buy Now depends on SELECTED PACK and on the
-        product being a real, orderable Supabase product.
-      */
-
-      if (buyButton) {
-        var orderable = isOrderable(p, pack);
-
-        buyButton.disabled = !orderable;
-
-        buyButton.textContent = orderable
-          ? 'Buy Now'
-          : available
-          ? 'Unavailable'
-          : 'Out of stock';
-      }
 
       /* WHATSAPP MESSAGE */
 
@@ -2469,559 +4860,1121 @@
         '\nQuantity: ' +
         state.qty +
         '\nLink: ' +
-        absoluteUrl(productUrl(p));
+        absoluteUrl(
+          productUrl(p)
+        );
+
 
       if (waEl) {
-        waEl.href = U.whatsappLink(msg);
+
+        waEl.href =
+          U.whatsappLink(
+            msg
+          );
+
       }
+
     }
+
 
     /* ======================================================
        QUANTITY
     ====================================================== */
 
     function setQty(number) {
-      number = parseInt(number, 10);
 
-      if (!number || number < 1) {
-        number = 1;
+      number =
+        parseInt(
+          number,
+          10
+        );
+
+
+      if (
+        !number ||
+        number < 1
+      ) {
+
+        number =
+          1;
+
       }
 
-      if (number > 99) {
-        number = 99;
+
+      if (
+        number > 99
+      ) {
+
+        number =
+          99;
+
       }
 
-      var pack = currentPack();
+
+      var pack =
+        currentPack();
+
 
       if (!pack) {
+
         return;
+
       }
 
-      /* Do not allow quantity above database variant stock. */
+
+      /*
+        Do not allow quantity above
+        database variant stock.
+      */
 
       if (
         pack.stockQuantity !== null &&
         pack.stockQuantity !== undefined &&
-        number > Number(pack.stockQuantity)
+        number >
+          Number(
+            pack.stockQuantity
+          )
       ) {
-        number = Number(pack.stockQuantity);
+
+        number =
+          Number(
+            pack.stockQuantity
+          );
+
 
         if (number < 1) {
-          number = 1;
+
+          number =
+            1;
+
         }
 
-        toast('Only ' + pack.stockQuantity + ' available in this pack.');
+
+        toast(
+          'Only ' +
+          pack.stockQuantity +
+          ' available in this pack.'
+        );
+
       }
 
-      state.qty = number;
 
-      qtyEl.value = number;
+      state.qty =
+        number;
+
+
+      qtyEl.value =
+        number;
+
 
       update();
+
     }
+
 
     /* ======================================================
        PACK CHANGE
     ====================================================== */
 
-    box.addEventListener('change', function (e) {
-      if (e.target.name !== 'pack') {
-        return;
+    box.addEventListener(
+      'change',
+
+      function (e) {
+
+        if (
+          e.target.name !==
+          'pack'
+        ) {
+
+          return;
+
+        }
+
+
+        var selected =
+          getVariant(
+            p.id,
+            e.target.value
+          );
+
+
+        if (
+          !selected ||
+          !selected.pack
+        ) {
+
+          return;
+
+        }
+
+
+        /*
+          Extra protection.
+
+          Disabled radios normally cannot
+          trigger this, but still verify stock.
+        */
+
+        if (
+          !packHasStock(
+            selected.pack
+          )
+        ) {
+
+          toast(
+            'This pack is currently out of stock.'
+          );
+
+          return;
+
+        }
+
+
+        state.packId =
+          String(
+            selected.pack.id
+          );
+
+
+        state.qty =
+          1;
+
+
+        qtyEl.value =
+          1;
+
+
+        update();
+
       }
+    );
 
-      var selected = getVariant(p.id, e.target.value);
-
-      if (!selected || !selected.pack) {
-        return;
-      }
-
-      /*
-        Extra protection.
-
-        Disabled radios normally cannot
-        trigger this, but still verify stock.
-      */
-
-      if (!packHasStock(selected.pack)) {
-        toast('This pack is currently out of stock.');
-
-        return;
-      }
-
-      state.packId = String(selected.pack.id);
-
-      state.qty = 1;
-
-      qtyEl.value = 1;
-
-      update();
-    });
 
     /* ======================================================
        QUANTITY BUTTONS
     ====================================================== */
 
-    document.getElementById('qty-dec').addEventListener('click', function () {
-      setQty(state.qty - 1);
-    });
+    document
+      .getElementById(
+        'qty-dec'
+      )
+      .addEventListener(
+        'click',
 
-    document.getElementById('qty-inc').addEventListener('click', function () {
-      setQty(state.qty + 1);
-    });
+        function () {
 
-    qtyEl.addEventListener('change', function () {
-      setQty(qtyEl.value);
-    });
+          setQty(
+            state.qty - 1
+          );
+
+        }
+      );
+
+
+    document
+      .getElementById(
+        'qty-inc'
+      )
+      .addEventListener(
+        'click',
+
+        function () {
+
+          setQty(
+            state.qty + 1
+          );
+
+        }
+      );
+
+
+    qtyEl.addEventListener(
+      'change',
+
+      function () {
+
+        setQty(
+          qtyEl.value
+        );
+
+      }
+    );
+
 
     /* ======================================================
        ADD TO CART — PRODUCT DETAILS
     ====================================================== */
 
-    addButton.addEventListener('click', async function () {
-      if (!window.BTCart) {
-        console.error('Brit.Tuna: Cart is not available.');
+    addButton.addEventListener(
+      'click',
 
-        toast('Cart is unavailable. Please refresh the page.');
-
-        return;
-      }
-
-      var button = this;
-
-      var pack = currentPack();
-
-      if (!pack || !packHasStock(pack)) {
-        toast('This pack is currently out of stock.');
-
-        button.disabled = true;
-
-        button.textContent = 'Out of stock';
-
-        return;
-      }
-
-      button.disabled = true;
-
-      button.textContent = 'Adding...';
-
-      try {
-        var ok = await window.BTCart.add(p.id, pack.id, state.qty);
-
-        if (ok) {
-          toast(
-            p.name + ' (' + pack.label + ') × ' + state.qty + ' added to cart'
-          );
-        }
-      } catch (error) {
-        console.error('Brit.Tuna: Add to cart failed.', error);
-
-        toast('Unable to add this product. Please try again.');
-      } finally {
-        /* Re-check selected variant. */
-
-        var current = currentPack();
-
-        var stillAvailable = current && packHasStock(current);
-
-        button.disabled = !stillAvailable;
-
-        button.textContent = stillAvailable ? 'Add to Cart' : 'Out of stock';
-      }
-    });
-
-    /* ======================================================
-       BUY NOW — PRODUCT DETAILS
-
-       Sends ONLY product id, variant id and quantity.
-       Does NOT touch the cart. No price is sent:
-       the backend must read the price itself.
-    ====================================================== */
-
-    if (buyButton) {
-      buyButton.addEventListener('click', function () {
-        var pack = currentPack();
-
-        if (!isOrderable(p, pack)) {
-          toast('This pack cannot be ordered right now.');
-
-          return;
-        }
-
-        var qty = Number(state.qty);
+      async function () {
 
         if (
-          !Number.isInteger(qty) ||
-          qty < 1 ||
-          qty > 99 ||
-          qty > Number(pack.stockQuantity)
+          !window.BTCart
         ) {
-          toast('Please choose a valid quantity.');
+
+          console.error(
+            'Brit.Tuna: Cart is not available.'
+          );
+
+          toast(
+            'Cart is unavailable. Please refresh the page.'
+          );
 
           return;
+
         }
+
+
+        var button =
+          this;
+
+
+        var oldText =
+          button.textContent;
+
+
+        var pack =
+          currentPack();
+
+
+        if (
+          !pack ||
+          !packHasStock(
+            pack
+          )
+        ) {
+
+          toast(
+            'This pack is currently out of stock.'
+          );
+
+
+          button.disabled =
+            true;
+
+
+          button.textContent =
+            'Out of stock';
+
+
+          return;
+
+        }
+
+
+        button.disabled =
+          true;
+
+
+        button.textContent =
+          'Adding...';
+
 
         try {
-          window.sessionStorage.setItem(
-            'bt_buy_now',
 
-            JSON.stringify({
-              productId: p.databaseId,
-              variantId: pack.variantId,
-              quantity: qty,
-              createdAt: Date.now()
-            })
-          );
+          var ok =
+            await window.BTCart.add(
+              p.id,
+              pack.id,
+              state.qty
+            );
+
+
+          if (ok) {
+
+            toast(
+              p.name +
+              ' (' +
+              pack.label +
+              ') × ' +
+              state.qty +
+              ' added to cart'
+            );
+
+          }
+
+
         } catch (error) {
-          console.error('Brit.Tuna: Buy Now handoff failed.', error);
 
-          toast('Unable to start checkout. Please try again.');
+          console.error(
+            'Brit.Tuna: Add to cart failed.',
+            error
+          );
 
-          return;
+
+          toast(
+            'Unable to add this product. Please try again.'
+          );
+
+
+        } finally {
+
+          /*
+            Re-check selected variant.
+
+            Do NOT use only p.stock here.
+          */
+
+          var current =
+            currentPack();
+
+
+          var available =
+            current &&
+            packHasStock(
+              current
+            );
+
+
+          button.disabled =
+            !available;
+
+
+          button.textContent =
+            available
+              ? 'Add to Cart'
+              : 'Out of stock';
+
         }
 
-        window.location.href = 'checkout.html?mode=buynow';
-      });
-    }
+      }
+    );
 
-    /* ======================================================
-       INITIAL DETAILS UPDATE
-    ====================================================== */
 
-    update();
+  /* ======================================================
+   INITIAL DETAILS UPDATE
+====================================================== */
 
-    /*
-      Update Product Details wishlist button state.
+update();
 
-      ♡ = not wishlisted
-      ♥ = already wishlisted
-    */
+/*
+  Update Product Details
+  Wishlist button state.
+
+  ♡ = not wishlisted
+  ♥ = already wishlisted
+*/
+
+updateWishlistButtons();
+
+
+/* ======================================================
+   RELATED PRODUCTS
+====================================================== */
+
+var related =
+  document.getElementById(
+    'related-grid'
+  );
+
+
+if (related) {
+
+  var same =
+    cache.filter(
+      function (item) {
+
+        return (
+          item.category ===
+            p.category &&
+          item.id !==
+            p.id
+        );
+
+      }
+    );
+
+
+  var others =
+    cache.filter(
+      function (item) {
+
+        return (
+          item.category !==
+          p.category
+        );
+
+      }
+    );
+
+
+  renderGrid(
+    related,
+
+    same
+      .concat(
+        others
+      )
+      .slice(
+        0,
+        4
+      )
+  );
+
+}
+
+}
+    /* ==========================================================
+   WISHLIST
+========================================================== */
+
+function wishlistAvailable() {
+
+  return !!(
+    window.BTWishlist &&
+    typeof window.BTWishlist.has === 'function' &&
+    typeof window.BTWishlist.toggle === 'function'
+  );
+
+}
+
+
+/* ==========================================================
+   UPDATE WISHLIST BUTTONS
+========================================================== */
+
+function updateWishlistButtons() {
+
+  if (!wishlistAvailable()) {
+
+    return;
+
+  }
+
+
+  document
+    .querySelectorAll(
+      '.js-wishlist'
+    )
+    .forEach(
+      function (button) {
+
+        var productId =
+          button.getAttribute(
+            'data-wishlist-id'
+          );
+
+
+        var active =
+          window.BTWishlist.has(
+            productId
+          );
+
+
+        var heart =
+          button.querySelector(
+            '.wishlist-heart'
+          );
+
+
+        var text =
+          button.querySelector(
+            '.wishlist-text'
+          );
+
+
+        button.classList.toggle(
+          'active',
+          active
+        );
+
+
+        if (heart) {
+
+          heart.textContent =
+            active
+              ? '♥'
+              : '♡';
+
+        }
+
+
+        if (text) {
+
+          text.textContent =
+            active
+              ? 'Wishlisted'
+              : 'Wishlist';
+
+        }
+
+
+        button.setAttribute(
+          'aria-pressed',
+          active
+            ? 'true'
+            : 'false'
+        );
+
+
+        button.setAttribute(
+          'aria-label',
+          active
+            ? 'Remove from wishlist'
+            : 'Add to wishlist'
+        );
+
+
+        button.title =
+          active
+            ? 'Remove from Wishlist'
+            : 'Add to Wishlist';
+
+      }
+    );
+
+}
+
+
+/* ==========================================================
+   INITIALIZE WISHLIST
+========================================================== */
+
+async function initializeWishlistUI() {
+
+  if (
+    !window.BTWishlist ||
+    typeof window.BTWishlist.initialize !== 'function'
+  ) {
+
+    return;
+
+  }
+
+
+  try {
+
+    await window.BTWishlist.initialize();
 
     updateWishlistButtons();
 
-    /* ======================================================
-       RELATED PRODUCTS
-    ====================================================== */
 
-    var related = document.getElementById('related-grid');
+  } catch (error) {
 
-    if (related) {
-      var same = cache.filter(function (item) {
-        return item.category === p.category && item.id !== p.id;
-      });
-
-      var others = cache.filter(function (item) {
-        return item.category !== p.category;
-      });
-
-      renderGrid(related, same.concat(others).slice(0, 4));
-    }
-  }
-
-  /* ==========================================================
-     WISHLIST
-  ========================================================== */
-
-  function wishlistAvailable() {
-    return !!(
-      window.BTWishlist &&
-      typeof window.BTWishlist.has === 'function' &&
-      typeof window.BTWishlist.toggle === 'function'
+    console.error(
+      'Brit.Tuna: Wishlist initialization failed.',
+      error
     );
+
   }
 
-  /* UPDATE WISHLIST BUTTONS */
+}
 
-  function updateWishlistButtons() {
-    if (!wishlistAvailable()) {
-      return;
-    }
 
-    document.querySelectorAll('.js-wishlist').forEach(function (button) {
-      var productId = button.getAttribute('data-wishlist-id');
+/* ==========================================================
+   WISHLIST CHANGE EVENT
+========================================================== */
 
-      var active = window.BTWishlist.has(productId);
+document.addEventListener(
+  'bt:wishlist-change',
 
-      var heart = button.querySelector('.wishlist-heart');
+  function () {
 
-      var text = button.querySelector('.wishlist-text');
+    updateWishlistButtons();
 
-      button.classList.toggle('active', active);
+  }
+);
 
-      if (heart) {
-        heart.textContent = active ? '♥' : '♡';
-      }
 
-      if (text) {
-        text.textContent = active ? 'Wishlisted' : 'Wishlist';
-      }
+/* ==========================================================
+   WISHLIST BUTTON CLICK
+========================================================== */
 
-      button.setAttribute('aria-pressed', active ? 'true' : 'false');
+document.addEventListener(
+  'click',
 
-      button.setAttribute(
-        'aria-label',
-        active ? 'Remove from wishlist' : 'Add to wishlist'
+  async function (event) {
+
+    var button =
+      event.target.closest(
+        '.js-wishlist'
       );
 
-      button.title = active ? 'Remove from Wishlist' : 'Add to Wishlist';
-    });
-  }
-
-  /* INITIALIZE WISHLIST */
-
-  async function initializeWishlistUI() {
-    if (
-      !window.BTWishlist ||
-      typeof window.BTWishlist.initialize !== 'function'
-    ) {
-      return;
-    }
-
-    try {
-      await window.BTWishlist.initialize();
-
-      updateWishlistButtons();
-    } catch (error) {
-      console.error('Brit.Tuna: Wishlist initialization failed.', error);
-    }
-  }
-
-  /* WISHLIST CHANGE EVENT */
-
-  document.addEventListener('bt:wishlist-change', function () {
-    updateWishlistButtons();
-  });
-
-  /* WISHLIST BUTTON CLICK */
-
-  document.addEventListener('click', async function (event) {
-    var button = event.target.closest('.js-wishlist');
 
     if (!button) {
+
       return;
+
     }
+
 
     event.preventDefault();
 
     event.stopPropagation();
 
-    if (!wishlistAvailable()) {
-      console.error('Brit.Tuna: Wishlist is unavailable.');
 
-      toast('Wishlist is unavailable. Please refresh the page.');
+    if (!wishlistAvailable()) {
+
+      console.error(
+        'Brit.Tuna: Wishlist is unavailable.'
+      );
+
+
+      toast(
+        'Wishlist is unavailable. Please refresh the page.'
+      );
+
 
       return;
+
     }
 
-    var productId = button.getAttribute('data-wishlist-id');
 
-    var product = getById(productId);
+    var productId =
+      button.getAttribute(
+        'data-wishlist-id'
+      );
+
+
+    var product =
+      getById(
+        productId
+      );
+
 
     if (!product) {
-      toast('Product is unavailable.');
+
+      toast(
+        'Product is unavailable.'
+      );
 
       return;
+
     }
 
-    var wasWishlisted = window.BTWishlist.has(productId);
 
-    button.disabled = true;
+    var wasWishlisted =
+      window.BTWishlist.has(
+        productId
+      );
+
+
+    button.disabled =
+      true;
+
 
     try {
-      var result = await window.BTWishlist.toggle(productId);
 
-      if (result && result.loginRequired) {
+      var result =
+        await window.BTWishlist.toggle(
+          productId
+        );
+
+
+      if (
+        result &&
+        result.loginRequired
+      ) {
+
         return;
+
       }
+
 
       updateWishlistButtons();
 
+
       if (wasWishlisted) {
-        toast(product.name + ' removed from wishlist');
+
+        toast(
+          product.name +
+          ' removed from wishlist'
+        );
+
       } else {
-        toast(product.name + ' added to wishlist');
+
+        toast(
+          product.name +
+          ' added to wishlist'
+        );
+
       }
+
+
     } catch (error) {
-      console.error('Brit.Tuna: Wishlist update failed.', error);
 
-      toast('Unable to update wishlist. Please try again.');
+      console.error(
+        'Brit.Tuna: Wishlist update failed.',
+        error
+      );
+
+
+      toast(
+        'Unable to update wishlist. Please try again.'
+      );
+
+
     } finally {
-      button.disabled = false;
+
+      button.disabled =
+        false;
+
     }
-  });
 
-  /* ==========================================================
-     PRODUCT CARD ADD TO CART
+  }
+);
 
-     Never automatically add product.packs[0].
-     Always find the first pack that actually has stock.
-  ========================================================== */
 
-  document.addEventListener('click', async function (e) {
-    var button = e.target.closest('.js-add-card');
+/* ==========================================================
+   PRODUCT CARD ADD TO CART
+
+   IMPORTANT FIX:
+   Never automatically add product.packs[0].
+
+   Always find the first pack that actually
+   has stock.
+========================================================== */
+
+document.addEventListener(
+  'click',
+
+  async function (e) {
+
+    var button =
+      e.target.closest(
+        '.js-add-card'
+      );
+
 
     if (!button) {
-      return;
-    }
-
-    var product = getById(button.getAttribute('data-product-id'));
-
-    if (!product || !product.packs || !product.packs.length) {
-      toast('Product is unavailable.');
 
       return;
+
     }
+
+
+    var product =
+      getById(
+        button.getAttribute(
+          'data-product-id'
+        )
+      );
+
+
+    if (
+      !product ||
+      !product.packs ||
+      !product.packs.length
+    ) {
+
+      toast(
+        'Product is unavailable.'
+      );
+
+      return;
+
+    }
+
 
     if (!window.BTCart) {
-      console.error('Brit.Tuna: Cart is not available.');
 
-      toast('Cart is unavailable. Please refresh the page.');
+      console.error(
+        'Brit.Tuna: Cart is not available.'
+      );
+
+
+      toast(
+        'Cart is unavailable. Please refresh the page.'
+      );
 
       return;
+
     }
 
-    /* Never use product.packs[0] because first variant may have stock 0. */
 
-    var pack = firstAvailablePack(product);
+    /*
+      Never use product.packs[0]
+      because first variant may have stock 0.
+    */
 
-    /* No available pack means whole product is out of stock. */
+    var pack =
+      firstAvailablePack(
+        product
+      );
+
+
+    /*
+      No available pack means
+      whole product is out of stock.
+    */
 
     if (!pack) {
-      toast('This product is currently out of stock.');
 
-      button.disabled = true;
+      toast(
+        'This product is currently out of stock.'
+      );
 
-      button.textContent = 'Out of stock';
+
+      button.disabled =
+        true;
+
+
+      button.textContent =
+        'Out of stock';
+
 
       return;
+
     }
 
-    /* Extra stock protection */
 
-    if (!packHasStock(pack)) {
-      toast(pack.label + ' is currently out of stock.');
+    /*
+      Extra stock protection
+    */
+
+    if (
+      !packHasStock(
+        pack
+      )
+    ) {
+
+      toast(
+        pack.label +
+        ' is currently out of stock.'
+      );
+
 
       return;
+
     }
 
-    button.disabled = true;
 
-    button.textContent = 'Adding...';
+    button.disabled =
+      true;
+
+
+    button.textContent =
+      'Adding...';
+
 
     try {
-      var ok = await window.BTCart.add(product.id, pack.id, 1);
+
+      var ok =
+        await window.BTCart.add(
+          product.id,
+          pack.id,
+          1
+        );
+
 
       if (ok) {
-        toast(product.name + ' (' + pack.label + ') added to cart');
+
+        toast(
+          product.name +
+          ' (' +
+          pack.label +
+          ') added to cart'
+        );
+
       }
+
+
     } catch (error) {
-      console.error('Brit.Tuna: Add to cart failed.', error);
 
-      toast('Unable to add this product. Please try again.');
+      console.error(
+        'Brit.Tuna: Add to cart failed.',
+        error
+      );
+
+
+      toast(
+        'Unable to add this product. Please try again.'
+      );
+
+
     } finally {
-      /* Re-check stock after cart operation. */
 
-      var stillAvailable = firstAvailablePack(product);
+      /*
+        Re-check stock after
+        cart operation.
+      */
 
-      button.disabled = !stillAvailable;
+      var stillAvailable =
+        firstAvailablePack(
+          product
+        );
 
-      button.textContent = stillAvailable ? 'Add to Cart' : 'Out of stock';
+
+      button.disabled =
+        !stillAvailable;
+
+
+      button.textContent =
+        stillAvailable
+          ? 'Add to Cart'
+          : 'Out of stock';
+
     }
-  });
 
-  /* ==========================================================
-     BOOT
-  ========================================================== */
+  }
+);
 
-  document.addEventListener('DOMContentLoaded', async function () {
-    var page = document.body.getAttribute('data-page');
+/* ==========================================================
+   BOOT
+========================================================== */
+
+document.addEventListener(
+  'DOMContentLoaded',
+
+  async function () {
+
+    var page =
+      document.body.getAttribute(
+        'data-page'
+      );
+
 
     try {
-      /* First load products from Supabase. */
+
+      /*
+        First load products from Supabase.
+      */
 
       await load();
+
 
       /*
         Render the current page first.
 
-        Wishlist buttons must exist in the DOM
-        before wishlist state is applied.
+        This is important because wishlist
+        buttons must exist in the DOM before
+        wishlist state is applied.
       */
 
-      if (page === 'home') {
+      if (
+        page ===
+        'home'
+      ) {
+
         initHome();
-      } else if (page === 'shop') {
+
+      } else if (
+        page ===
+        'shop'
+      ) {
+
         initShop();
-      } else if (page === 'products') {
+
+      } else if (
+        page ===
+        'products'
+      ) {
+
         initProducts();
-      } else if (page === 'product-details') {
+
+      } else if (
+        page ===
+        'product-details'
+      ) {
+
         initDetails();
+
       }
 
+
       /*
-        Initialize wishlist AFTER product cards/details
-        are rendered.
+        Initialize wishlist AFTER
+        product cards/details are rendered.
+
+        This changes:
+
+        ♡ -> not wishlisted
+        ♥ -> wishlisted
       */
 
       await initializeWishlistUI();
+
+
     } catch (error) {
-      console.error('Brit.Tuna: Product initialization failed.', error);
+
+      console.error(
+        'Brit.Tuna: Product initialization failed.',
+        error
+      );
+
     }
-  });
+
+  }
+);
 
   /* ==========================================================
      PUBLIC API
   ========================================================== */
 
   window.BTProducts = {
-    categories: CATEGORIES,
 
-    priceRanges: PRICE_RANGES,
+    categories:
+      CATEGORIES,
 
-    load: load,
+    priceRanges:
+      PRICE_RANGES,
 
-    getAll: getAll,
+    load:
+      load,
 
-    getById: getById,
+    getAll:
+      getAll,
 
-    getBySlug: getBySlug,
+    getById:
+      getById,
 
-    getCategory: getCategory,
+    getBySlug:
+      getBySlug,
 
-    getVariant: getVariant,
+    getCategory:
+      getCategory,
 
-    salePrice: salePrice,
+    getVariant:
+      getVariant,
 
-    fromPrice: fromPrice,
+    salePrice:
+      salePrice,
 
-    imageFor: imageFor,
+    fromPrice:
+      fromPrice,
 
-    stockLabel: stockLabel,
+    imageFor:
+      imageFor,
 
-    filter: filter,
+    stockLabel:
+      stockLabel,
 
-    cardHTML: cardHTML,
+    filter:
+      filter,
 
-    productUrl: productUrl,
+    cardHTML:
+      cardHTML,
+
+    productUrl:
+      productUrl,
+
 
     /*
       Stock helper functions are exposed
-      because cart.js and checkout can use these.
+      because cart.js can use these later.
     */
 
-    packHasStock: packHasStock,
+    packHasStock:
+      packHasStock,
 
-    availablePacks: availablePacks,
+    availablePacks:
+      availablePacks,
 
-    firstAvailablePack: firstAvailablePack,
+    firstAvailablePack:
+      firstAvailablePack,
 
-    hasAvailableStock: hasAvailableStock,
+    hasAvailableStock:
+      hasAvailableStock,
 
-    packStockLabel: packStockLabel,
+    packStockLabel:
+      packStockLabel,
 
-    productStockStatus: productStockStatus,
+    productStockStatus:
+      productStockStatus
 
-    /* True only for real Supabase products with a real variant and stock. */
-
-    isOrderable: isOrderable
   };
+
+
 })();
