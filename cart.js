@@ -31,8 +31,13 @@
   function escapeHtml(value) {
     var U = getUtil();
 
-    if (U && typeof U.escapeHtml === 'function') {
-      return U.escapeHtml(String(value || ''));
+    if (
+      U &&
+      typeof U.escapeHtml === 'function'
+    ) {
+      return U.escapeHtml(
+        String(value || '')
+      );
     }
 
     return String(value || '')
@@ -46,29 +51,51 @@
   function formatINR(value) {
     var U = getUtil();
 
-    if (U && typeof U.formatINR === 'function') {
-      return U.formatINR(Number(value || 0));
+    if (
+      U &&
+      typeof U.formatINR === 'function'
+    ) {
+      return U.formatINR(
+        Number(value || 0)
+      );
     }
 
     try {
-      return new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR',
-        maximumFractionDigits: 0
-      }).format(Number(value || 0));
+      return new Intl.NumberFormat(
+        'en-IN',
+        {
+          style: 'currency',
+          currency: 'INR',
+          maximumFractionDigits: 0
+        }
+      ).format(
+        Number(value || 0)
+      );
     } catch (error) {
-      return '₹' + Number(value || 0);
+      return (
+        '₹' +
+        Number(value || 0)
+      );
     }
   }
 
   function clampQty(value) {
-    var qty = parseInt(value, 10);
+    var qty =
+      parseInt(
+        value,
+        10
+      );
 
-    if (!qty || qty < 1) {
+    if (
+      !qty ||
+      qty < 1
+    ) {
       qty = 1;
     }
 
-    if (qty > MAX_QTY) {
+    if (
+      qty > MAX_QTY
+    ) {
       qty = MAX_QTY;
     }
 
@@ -76,7 +103,12 @@
   }
 
   function normalizeId(value) {
-    return String(value === null || value === undefined ? '' : value);
+    return String(
+      value === null ||
+      value === undefined
+        ? ''
+        : value
+    );
   }
 
   /* ==========================================================
@@ -91,15 +123,21 @@
 
   function readRaw() {
     try {
-      var raw = window.localStorage.getItem(KEY);
+      var raw =
+        window.localStorage.getItem(
+          KEY
+        );
 
       if (!raw) {
         return [];
       }
 
-      var data = JSON.parse(raw);
+      var data =
+        JSON.parse(raw);
 
-      if (!Array.isArray(data)) {
+      if (
+        !Array.isArray(data)
+      ) {
         return [];
       }
 
@@ -115,42 +153,78 @@
         })
         .map(function (item) {
           return {
-            productId: normalizeId(item.productId),
-            packId: normalizeId(item.packId),
-            qty: clampQty(item.qty)
+            productId:
+              normalizeId(
+                item.productId
+              ),
+
+            packId:
+              normalizeId(
+                item.packId
+              ),
+
+            qty:
+              clampQty(
+                item.qty
+              )
           };
         });
     } catch (error) {
-      console.error('Brit.Tuna: Could not read cart.', error);
+      console.error(
+        'Brit.Tuna: Could not read cart.',
+        error
+      );
 
       return [];
     }
   }
 
   function write(items) {
-    var clean = (items || [])
-      .filter(function (item) {
-        return (
-          item &&
-          item.productId !== undefined &&
-          item.packId !== undefined
-        );
-      })
-      .map(function (item) {
-        return {
-          productId: normalizeId(item.productId),
-          packId: normalizeId(item.packId),
-          qty: clampQty(item.qty)
-        };
-      });
+    var clean =
+      (items || [])
+        .filter(function (item) {
+          return (
+            item &&
+            item.productId !== undefined &&
+            item.packId !== undefined
+          );
+        })
+        .map(function (item) {
+          return {
+            productId:
+              normalizeId(
+                item.productId
+              ),
+
+            packId:
+              normalizeId(
+                item.packId
+              ),
+
+            qty:
+              clampQty(
+                item.qty
+              )
+          };
+        });
 
     try {
-      window.localStorage.setItem(KEY, JSON.stringify(clean));
+      window.localStorage.setItem(
+        KEY,
+        JSON.stringify(clean)
+      );
     } catch (error) {
-      console.error('Brit.Tuna: Could not save cart.', error);
+      console.error(
+        'Brit.Tuna: Could not save cart.',
+        error
+      );
     }
 
-    document.dispatchEvent(new CustomEvent('bt:cart-changed'));
+    document.dispatchEvent(
+      new CustomEvent(
+        'bt:cart-changed'
+      )
+    );
   }
 
   /* ==========================================================
@@ -158,13 +232,20 @@
   ========================================================== */
 
   async function ensureProductsLoaded() {
-    if (!window.BTProducts) {
-      console.error('Brit.Tuna: BTProducts is not available.');
+    if (
+      !window.BTProducts
+    ) {
+      console.error(
+        'Brit.Tuna: BTProducts is not available.'
+      );
 
       return false;
     }
 
-    if (typeof window.BTProducts.load === 'function') {
+    if (
+      typeof window.BTProducts.load ===
+      'function'
+    ) {
       try {
         await window.BTProducts.load();
       } catch (error) {
@@ -184,10 +265,14 @@
      GET VARIANT
   ========================================================== */
 
-  function getVariant(productId, packId) {
+  function getVariant(
+    productId,
+    packId
+  ) {
     if (
       !window.BTProducts ||
-      typeof window.BTProducts.getVariant !== 'function'
+      typeof window.BTProducts.getVariant !==
+        'function'
     ) {
       return null;
     }
@@ -216,12 +301,18 @@
 
     if (
       window.BTProducts &&
-      typeof window.BTProducts.productStockStatus === 'function'
+      typeof window.BTProducts.productStockStatus ===
+        'function'
     ) {
-      return window.BTProducts.productStockStatus(product);
+      return window.BTProducts.productStockStatus(
+        product
+      );
     }
 
-    return product.stock || 'in_stock';
+    return (
+      product.stock ||
+      'in_stock'
+    );
   }
 
   /* ==========================================================
@@ -231,15 +322,23 @@
   ========================================================== */
 
   function read() {
-    var items = readRaw();
+    var items =
+      readRaw();
 
-    if (!window.BTProducts) {
+    if (
+      !window.BTProducts
+    ) {
       return items;
     }
 
-    return items.filter(function (item) {
-      return !!getVariant(item.productId, item.packId);
-    });
+    return items.filter(
+      function (item) {
+        return !!getVariant(
+          item.productId,
+          item.packId
+        );
+      }
+    );
   }
 
   /* ==========================================================
@@ -247,22 +346,36 @@
   ========================================================== */
 
   async function getSession() {
-    if (!window.supabaseClient) {
-      console.error('Brit.Tuna: Supabase client is not available.');
+    if (
+      !window.supabaseClient
+    ) {
+      console.error(
+        'Brit.Tuna: Supabase client is not available.'
+      );
 
       return null;
     }
 
     try {
-      var result = await window.supabaseClient.auth.getSession();
+      var result =
+        await window.supabaseClient
+          .auth
+          .getSession();
 
       if (result.error) {
-        console.error('Brit.Tuna: Session error:', result.error);
+        console.error(
+          'Brit.Tuna: Session error:',
+          result.error
+        );
 
         return null;
       }
 
-      return result.data ? result.data.session : null;
+      return (
+        result.data
+          ? result.data.session
+          : null
+      );
     } catch (error) {
       console.error(
         'Brit.Tuna: Unable to check login session.',
@@ -277,18 +390,36 @@
      PENDING ADD TO CART
   ========================================================== */
 
-  function savePendingCartAction(productId, packId, qty) {
+  function savePendingCartAction(
+    productId,
+    packId,
+    qty
+  ) {
     try {
       window.localStorage.setItem(
         PENDING_KEY,
         JSON.stringify({
-          productId: normalizeId(productId),
-          packId: normalizeId(packId),
-          qty: clampQty(qty)
+          productId:
+            normalizeId(
+              productId
+            ),
+
+          packId:
+            normalizeId(
+              packId
+            ),
+
+          qty:
+            clampQty(
+              qty
+            )
         })
       );
 
-      window.localStorage.setItem(AFTER_LOGIN_KEY, 'cart.html');
+      window.localStorage.setItem(
+        AFTER_LOGIN_KEY,
+        'cart.html'
+      );
     } catch (error) {
       console.error(
         'Brit.Tuna: Could not save pending cart action.',
@@ -310,46 +441,90 @@
       return null;
     }
 
-    var stock = Number(pack.stockQuantity);
+    var stock =
+      Number(
+        pack.stockQuantity
+      );
 
-    if (!Number.isFinite(stock)) {
+    if (
+      !Number.isFinite(stock)
+    ) {
       return null;
     }
 
-    return Math.max(0, Math.floor(stock));
+    return Math.max(
+      0,
+      Math.floor(stock)
+    );
   }
 
-  function safeQtyForPack(qty, pack) {
-    qty = clampQty(qty);
+  function safeQtyForPack(
+    qty,
+    pack
+  ) {
+    qty =
+      clampQty(qty);
 
-    var stock = availableStock(pack);
+    var stock =
+      availableStock(
+        pack
+      );
 
-    if (stock === null) {
+    if (
+      stock === null
+    ) {
       return qty;
     }
 
-    if (stock <= 0) {
+    if (
+      stock <= 0
+    ) {
       return 0;
     }
 
-    return Math.min(qty, stock, MAX_QTY);
+    return Math.min(
+      qty,
+      stock,
+      MAX_QTY
+    );
   }
 
   /* ==========================================================
      INTERNAL ADD
   ========================================================== */
 
-  function addDirect(productId, packId, qty) {
-    productId = normalizeId(productId);
-    packId = normalizeId(packId);
+  function addDirect(
+    productId,
+    packId,
+    qty
+  ) {
+    productId =
+      normalizeId(
+        productId
+      );
 
-    var variant = getVariant(productId, packId);
+    packId =
+      normalizeId(
+        packId
+      );
+
+    var variant =
+      getVariant(
+        productId,
+        packId
+      );
 
     if (!variant) {
-      console.error('Brit.Tuna: Product variant not found.', {
-        productId: productId,
-        packId: packId
-      });
+      console.error(
+        'Brit.Tuna: Product variant not found.',
+        {
+          productId:
+            productId,
+
+          packId:
+            packId
+        }
+      );
 
       return false;
     }
@@ -360,50 +535,93 @@
       from product variants.
     */
 
-    if (getProductStockStatus(variant.product) === 'out_of_stock') {
+    if (
+      getProductStockStatus(
+        variant.product
+      ) === 'out_of_stock'
+    ) {
       return false;
     }
 
-    var stock = availableStock(variant.pack);
+    var stock =
+      availableStock(
+        variant.pack
+      );
 
-    if (stock !== null && stock <= 0) {
+    if (
+      stock !== null &&
+      stock <= 0
+    ) {
       return false;
     }
 
-    var items = readRaw();
+    var items =
+      readRaw();
 
-    var found = null;
+    var found =
+      null;
 
-    items.forEach(function (item) {
-      if (
-        normalizeId(item.productId) === productId &&
-        normalizeId(item.packId) === packId
-      ) {
-        found = item;
+    items.forEach(
+      function (item) {
+        if (
+          normalizeId(
+            item.productId
+          ) === productId &&
+          normalizeId(
+            item.packId
+          ) === packId
+        ) {
+          found =
+            item;
+        }
       }
-    });
+    );
 
-    var addQty = clampQty(qty);
+    var addQty =
+      clampQty(
+        qty
+      );
 
     if (found) {
-      var requested = clampQty(found.qty + addQty);
+      var requested =
+        clampQty(
+          found.qty +
+          addQty
+        );
 
-      found.qty = safeQtyForPack(requested, variant.pack);
+      found.qty =
+        safeQtyForPack(
+          requested,
+          variant.pack
+        );
     } else {
-      var firstQty = safeQtyForPack(addQty, variant.pack);
+      var firstQty =
+        safeQtyForPack(
+          addQty,
+          variant.pack
+        );
 
-      if (firstQty <= 0) {
+      if (
+        firstQty <= 0
+      ) {
         return false;
       }
 
       items.push({
-        productId: productId,
-        packId: packId,
-        qty: firstQty
+        productId:
+          productId,
+
+        packId:
+          packId,
+
+        qty:
+          firstQty
       });
     }
 
-    write(items);
+    write(
+      items
+    );
 
     return true;
   }
@@ -414,28 +632,53 @@
      Login required.
   ========================================================== */
 
-  async function add(productId, packId, qty) {
-    var ready = await ensureProductsLoaded();
+  async function add(
+    productId,
+    packId,
+    qty
+  ) {
+    var ready =
+      await ensureProductsLoaded();
 
     if (!ready) {
       return false;
     }
 
-    productId = normalizeId(productId);
-    packId = normalizeId(packId);
+    productId =
+      normalizeId(
+        productId
+      );
 
-    var variant = getVariant(productId, packId);
+    packId =
+      normalizeId(
+        packId
+      );
+
+    var variant =
+      getVariant(
+        productId,
+        packId
+      );
 
     if (!variant) {
-      console.error('Brit.Tuna: Invalid product or pack.', {
-        productId: productId,
-        packId: packId
-      });
+      console.error(
+        'Brit.Tuna: Invalid product or pack.',
+        {
+          productId:
+            productId,
+
+          packId:
+            packId
+        }
+      );
 
       return false;
     }
 
-    var stock = availableStock(variant.pack);
+    var stock =
+      availableStock(
+        variant.pack
+      );
 
     /*
       IMPORTANT FIX:
@@ -444,23 +687,38 @@
     */
 
     if (
-      getProductStockStatus(variant.product) === 'out_of_stock' ||
-      (stock !== null && stock <= 0)
+      getProductStockStatus(
+        variant.product
+      ) === 'out_of_stock' ||
+      (
+        stock !== null &&
+        stock <= 0
+      )
     ) {
       return false;
     }
 
-    var session = await getSession();
+    var session =
+      await getSession();
 
     if (!session) {
-      savePendingCartAction(productId, packId, qty);
+      savePendingCartAction(
+        productId,
+        packId,
+        qty
+      );
 
-      window.location.href = 'login.html';
+      window.location.href =
+        'login.html';
 
       return false;
     }
 
-    return addDirect(productId, packId, qty);
+    return addDirect(
+      productId,
+      packId,
+      qty
+    );
   }
 
   /* ==========================================================
@@ -468,22 +726,28 @@
   ========================================================== */
 
   async function restorePendingAction() {
-    var session = await getSession();
+    var session =
+      await getSession();
 
     if (!session) {
       return false;
     }
 
-    var ready = await ensureProductsLoaded();
+    var ready =
+      await ensureProductsLoaded();
 
     if (!ready) {
       return false;
     }
 
-    var raw = null;
+    var raw =
+      null;
 
     try {
-      raw = window.localStorage.getItem(PENDING_KEY);
+      raw =
+        window.localStorage.getItem(
+          PENDING_KEY
+        );
     } catch (error) {
       return false;
     }
@@ -492,13 +756,17 @@
       return false;
     }
 
-    var pending = null;
+    var pending =
+      null;
 
     try {
-      pending = JSON.parse(raw);
+      pending =
+        JSON.parse(raw);
     } catch (error) {
       try {
-        window.localStorage.removeItem(PENDING_KEY);
+        window.localStorage.removeItem(
+          PENDING_KEY
+        );
       } catch (removeError) {
         /* Ignore */
       }
@@ -512,7 +780,9 @@
       pending.packId === undefined
     ) {
       try {
-        window.localStorage.removeItem(PENDING_KEY);
+        window.localStorage.removeItem(
+          PENDING_KEY
+        );
       } catch (removeError) {
         /* Ignore */
       }
@@ -520,15 +790,24 @@
       return false;
     }
 
-    var success = addDirect(
-      normalizeId(pending.productId),
-      normalizeId(pending.packId),
-      pending.qty
-    );
+    var success =
+      addDirect(
+        normalizeId(
+          pending.productId
+        ),
+
+        normalizeId(
+          pending.packId
+        ),
+
+        pending.qty
+      );
 
     if (success) {
       try {
-        window.localStorage.removeItem(PENDING_KEY);
+        window.localStorage.removeItem(
+          PENDING_KEY
+        );
       } catch (error) {
         /* Ignore */
       }
@@ -543,11 +822,26 @@
      SET QUANTITY
   ========================================================== */
 
-  function setQty(productId, packId, qty) {
-    productId = normalizeId(productId);
-    packId = normalizeId(packId);
+  function setQty(
+    productId,
+    packId,
+    qty
+  ) {
+    productId =
+      normalizeId(
+        productId
+      );
 
-    var variant = getVariant(productId, packId);
+    packId =
+      normalizeId(
+        packId
+      );
+
+    var variant =
+      getVariant(
+        productId,
+        packId
+      );
 
     if (!variant) {
       return false;
@@ -557,40 +851,68 @@
       Product became completely unavailable.
     */
 
-    if (getProductStockStatus(variant.product) === 'out_of_stock') {
-      remove(productId, packId);
+    if (
+      getProductStockStatus(
+        variant.product
+      ) === 'out_of_stock'
+    ) {
+      remove(
+        productId,
+        packId
+      );
 
       return false;
     }
 
-    var nextQty = safeQtyForPack(qty, variant.pack);
+    var nextQty =
+      safeQtyForPack(
+        qty,
+        variant.pack
+      );
 
-    if (nextQty <= 0) {
-      remove(productId, packId);
+    if (
+      nextQty <= 0
+    ) {
+      remove(
+        productId,
+        packId
+      );
 
       return false;
     }
 
-    var items = readRaw();
+    var items =
+      readRaw();
 
-    var found = false;
+    var found =
+      false;
 
-    items.forEach(function (item) {
-      if (
-        normalizeId(item.productId) === productId &&
-        normalizeId(item.packId) === packId
-      ) {
-        item.qty = nextQty;
+    items.forEach(
+      function (item) {
+        if (
+          normalizeId(
+            item.productId
+          ) === productId &&
+          normalizeId(
+            item.packId
+          ) === packId
+        ) {
+          item.qty =
+            nextQty;
 
-        found = true;
+          found =
+            true;
+        }
       }
-    });
+    );
 
     if (!found) {
       return false;
     }
 
-    write(items);
+    write(
+      items
+    );
 
     return true;
   }
@@ -599,18 +921,37 @@
      REMOVE
   ========================================================== */
 
-  function remove(productId, packId) {
-    productId = normalizeId(productId);
-    packId = normalizeId(packId);
-
-    var items = readRaw().filter(function (item) {
-      return !(
-        normalizeId(item.productId) === productId &&
-        normalizeId(item.packId) === packId
+  function remove(
+    productId,
+    packId
+  ) {
+    productId =
+      normalizeId(
+        productId
       );
-    });
 
-    write(items);
+    packId =
+      normalizeId(
+        packId
+      );
+
+    var items =
+      readRaw().filter(
+        function (item) {
+          return !(
+            normalizeId(
+              item.productId
+            ) === productId &&
+            normalizeId(
+              item.packId
+            ) === packId
+          );
+        }
+      );
+
+    write(
+      items
+    );
   }
 
   /* ==========================================================
@@ -626,9 +967,20 @@
   ========================================================== */
 
   function count() {
-    return readRaw().reduce(function (total, item) {
-      return total + clampQty(item.qty);
-    }, 0);
+    return readRaw().reduce(
+      function (
+        total,
+        item
+      ) {
+        return (
+          total +
+          clampQty(
+            item.qty
+          )
+        );
+      },
+      0
+    );
   }
 
   /* ==========================================================
@@ -636,53 +988,89 @@
   ========================================================== */
 
   function lines() {
-    if (!window.BTProducts) {
+    if (
+      !window.BTProducts
+    ) {
       return [];
     }
 
-    var result = [];
+    var result =
+      [];
 
-    readRaw().forEach(function (item) {
-      var variant = getVariant(item.productId, item.packId);
+    readRaw().forEach(
+      function (item) {
+        var variant =
+          getVariant(
+            item.productId,
+            item.packId
+          );
 
-      /*
-        Product may have been removed,
-        disabled or variant deleted.
-      */
+        /*
+          Product may have been removed,
+          disabled or variant deleted.
+        */
 
-      if (!variant) {
-        return;
+        if (!variant) {
+          return;
+        }
+
+        /*
+          Do not render products that are
+          completely out of stock.
+        */
+
+        if (
+          getProductStockStatus(
+            variant.product
+          ) === 'out_of_stock'
+        ) {
+          return;
+        }
+
+        var qty =
+          safeQtyForPack(
+            item.qty,
+            variant.pack
+          );
+
+        if (
+          qty <= 0
+        ) {
+          return;
+        }
+
+        var unit =
+          window.BTProducts.salePrice(
+            variant.pack.price,
+            variant.product.discount
+          );
+
+        result.push({
+          product:
+            variant.product,
+
+          pack:
+            variant.pack,
+
+          qty:
+            qty,
+
+          mrpUnit:
+            Number(
+              variant.pack.price
+            ),
+
+          unit:
+            Number(
+              unit
+            ),
+
+          lineTotal:
+            Number(unit) *
+            qty
+        });
       }
-
-      /*
-        Do not render products that are
-        completely out of stock.
-      */
-
-      if (getProductStockStatus(variant.product) === 'out_of_stock') {
-        return;
-      }
-
-      var qty = safeQtyForPack(item.qty, variant.pack);
-
-      if (qty <= 0) {
-        return;
-      }
-
-      var unit = window.BTProducts.salePrice(
-        variant.pack.price,
-        variant.product.discount
-      );
-
-      result.push({
-        product: variant.product,
-        pack: variant.pack,
-        qty: qty,
-        mrpUnit: Number(variant.pack.price),
-        unit: Number(unit),
-        lineTotal: Number(unit) * qty
-      });
-    });
+    );
 
     return result;
   }
@@ -692,24 +1080,50 @@
   ========================================================== */
 
   function totals() {
-    var cartLines = lines();
+    var cartLines =
+      lines();
 
-    var mrp = 0;
-    var subtotal = 0;
-    var items = 0;
+    var mrp =
+      0;
 
-    cartLines.forEach(function (line) {
-      mrp += line.mrpUnit * line.qty;
-      subtotal += line.lineTotal;
-      items += line.qty;
-    });
+    var subtotal =
+      0;
+
+    var items =
+      0;
+
+    cartLines.forEach(
+      function (line) {
+        mrp +=
+          line.mrpUnit *
+          line.qty;
+
+        subtotal +=
+          line.lineTotal;
+
+        items +=
+          line.qty;
+      }
+    );
 
     return {
-      itemCount: items,
-      mrpTotal: mrp,
-      savings: Math.max(0, mrp - subtotal),
-      subtotal: subtotal,
-      total: subtotal
+      itemCount:
+        items,
+
+      mrpTotal:
+        mrp,
+
+      savings:
+        Math.max(
+          0,
+          mrp - subtotal
+        ),
+
+      subtotal:
+        subtotal,
+
+      total:
+        subtotal
     };
   }
 
@@ -718,93 +1132,184 @@
   ========================================================== */
 
   function lineHTML(line) {
-    var url = window.BTProducts.productUrl(line.product);
+    var url =
+      window.BTProducts.productUrl(
+        line.product
+      );
 
-    var imageUrl = window.BTProducts.imageFor(line.product);
+    var imageUrl =
+      window.BTProducts.imageFor(
+        line.product
+      );
 
-    var stock = availableStock(line.pack);
+    var stock =
+      availableStock(
+        line.pack
+      );
 
-    var stockText = '';
+    var stockText =
+      '';
 
-    if (stock !== null) {
+    if (
+      stock !== null
+    ) {
       stockText =
         '<span class="cart-stock">' +
-        escapeHtml(String(stock)) +
+        escapeHtml(
+          String(stock)
+        ) +
         ' available</span>';
     }
 
     return (
       '<article class="cart-line" ' +
+
       'data-product="' +
-      escapeHtml(String(line.product.id)) +
+      escapeHtml(
+        String(
+          line.product.id
+        )
+      ) +
+
       '" data-pack="' +
-      escapeHtml(String(line.pack.id)) +
+      escapeHtml(
+        String(
+          line.pack.id
+        )
+      ) +
+
       '">' +
+
       '<a class="cart-img" href="' +
-      escapeHtml(url) +
+      escapeHtml(
+        url
+      ) +
       '">' +
+
       '<img src="' +
-      escapeHtml(imageUrl) +
+      escapeHtml(
+        imageUrl
+      ) +
+
       '" alt="' +
-      escapeHtml(line.product.name) +
+      escapeHtml(
+        line.product.name
+      ) +
+
       '" width="96" height="72" ' +
+
       'loading="lazy" ' +
+
       'data-pid="' +
-      escapeHtml(String(line.product.id)) +
+      escapeHtml(
+        String(
+          line.product.id
+        )
+      ) +
       '">' +
+
       '</a>' +
+
       '<div class="cart-info">' +
+
       '<h3>' +
+
       '<a href="' +
-      escapeHtml(url) +
+      escapeHtml(
+        url
+      ) +
       '">' +
-      escapeHtml(line.product.name) +
+
+      escapeHtml(
+        line.product.name
+      ) +
+
       '</a>' +
+
       '</h3>' +
+
       '<p class="cart-meta">' +
+
       'Pack: ' +
-      escapeHtml(line.pack.label) +
+
+      escapeHtml(
+        line.pack.label
+      ) +
+
       ' · ' +
-      formatINR(line.unit) +
+
+      formatINR(
+        line.unit
+      ) +
+
       ' each' +
+
       '</p>' +
+
       stockText +
+
       '<button type="button" ' +
       'class="link-btn" ' +
       'data-action="remove">' +
       'Remove' +
       '</button>' +
+
       '</div>' +
+
       '<div class="qty">' +
+
       '<button type="button" ' +
       'data-action="dec" ' +
       'aria-label="Decrease quantity">' +
       '−' +
       '</button>' +
+
       '<input type="number" ' +
       'min="1" ' +
       'max="' +
-      (stock !== null
-        ? Math.min(MAX_QTY, Math.max(1, stock))
-        : MAX_QTY) +
+      (
+        stock !== null
+          ? Math.min(
+              MAX_QTY,
+              Math.max(
+                1,
+                stock
+              )
+            )
+          : MAX_QTY
+      ) +
       '" ' +
+
       'value="' +
       line.qty +
       '" ' +
+
       'data-action="set" ' +
+
       'inputmode="numeric" ' +
+
       'aria-label="Quantity for ' +
-      escapeHtml(line.product.name) +
+      escapeHtml(
+        line.product.name
+      ) +
       '">' +
+
       '<button type="button" ' +
       'data-action="inc" ' +
       'aria-label="Increase quantity">' +
       '+' +
       '</button>' +
+
       '</div>' +
+
       '<p class="cart-total">' +
-      formatINR(line.lineTotal) +
+
+      formatINR(
+        line.lineTotal
+      ) +
+
       '</p>' +
+
       '</article>'
     );
   }
@@ -816,36 +1321,67 @@
   function summaryRows(t) {
     return (
       '<div class="summary-row">' +
+
       '<span>Items (' +
       t.itemCount +
       ')</span>' +
+
       '<span>' +
-      formatINR(t.mrpTotal) +
+      formatINR(
+        t.mrpTotal
+      ) +
       '</span>' +
+
       '</div>' +
-      (t.savings > 0
-        ? '<div class="summary-row summary-save">' +
-          '<span>Discount</span>' +
-          '<span>− ' +
-          formatINR(t.savings) +
-          '</span>' +
-          '</div>'
-        : '') +
+
+      (
+        t.savings > 0
+          ?
+            '<div class="summary-row summary-save">' +
+
+            '<span>Discount</span>' +
+
+            '<span>− ' +
+            formatINR(
+              t.savings
+            ) +
+            '</span>' +
+
+            '</div>'
+          :
+            ''
+      ) +
+
       '<div class="summary-row">' +
+
       '<span>Subtotal</span>' +
+
       '<span>' +
-      formatINR(t.subtotal) +
+      formatINR(
+        t.subtotal
+      ) +
       '</span>' +
+
       '</div>' +
+
       '<div class="summary-row">' +
+
       '<span>Shipping</span>' +
+
       '<span>Not configured yet</span>' +
+
       '</div>' +
+
       '<div class="summary-row summary-total">' +
+
       '<span>Total</span>' +
+
       '<span>' +
-      formatINR(t.total) +
+      formatINR(
+        t.total
+      ) +
       '</span>' +
+
       '</div>'
     );
   }
@@ -855,10 +1391,25 @@
   ========================================================== */
 
   function renderCartPage() {
-    var empty = document.getElementById('cart-empty');
-    var content = document.getElementById('cart-content');
-    var itemsEl = document.getElementById('cart-items');
-    var summaryEl = document.getElementById('cart-summary');
+    var empty =
+      document.getElementById(
+        'cart-empty'
+      );
+
+    var content =
+      document.getElementById(
+        'cart-content'
+      );
+
+    var itemsEl =
+      document.getElementById(
+        'cart-items'
+      );
+
+    var summaryEl =
+      document.getElementById(
+        'cart-summary'
+      );
 
     /*
       Not cart.html.
@@ -868,47 +1419,67 @@
       return;
     }
 
-    var cartLines = lines();
+    var cartLines =
+      lines();
 
-    if (!cartLines.length) {
+    if (
+      !cartLines.length
+    ) {
       if (empty) {
-        empty.hidden = false;
+        empty.hidden =
+          false;
       }
 
       if (content) {
-        content.hidden = true;
+        content.hidden =
+          true;
       }
 
-      itemsEl.innerHTML = '';
+      itemsEl.innerHTML =
+        '';
 
       if (summaryEl) {
-        summaryEl.innerHTML = '';
+        summaryEl.innerHTML =
+          '';
       }
 
       return;
     }
 
     if (empty) {
-      empty.hidden = true;
+      empty.hidden =
+        true;
     }
 
     if (content) {
-      content.hidden = false;
+      content.hidden =
+        false;
     }
 
-    itemsEl.innerHTML = cartLines.map(lineHTML).join('');
+    itemsEl.innerHTML =
+      cartLines
+        .map(lineHTML)
+        .join('');
 
     if (summaryEl) {
       summaryEl.innerHTML =
         '<h2>Order summary</h2>' +
-        summaryRows(totals()) +
+
+        summaryRows(
+          totals()
+        ) +
+
         '<p class="notice notice-small">' +
+
         'Cart prices are loaded from the current product catalogue. Final price and stock must still be verified securely before payment.' +
+
         '</p>' +
+
         '<a class="btn btn-primary btn-block" ' +
         'href="checkout.html">' +
         'Proceed to Checkout' +
         '</a>' +
+
         '<a class="btn btn-outline btn-block" ' +
         'href="shop.html">' +
         'Continue Shopping' +
@@ -921,32 +1492,30 @@
   ========================================================== */
 
   function renderCheckoutSummary() {
-    var el = document.getElementById('checkout-summary');
+    var el =
+      document.getElementById(
+        'checkout-summary'
+      );
 
     if (!el) {
       return;
     }
 
-    /*
-      Buy Now checkout renders its own single-item summary.
-      Do not overwrite it with the whole cart.
-    */
+    var cartLines =
+      lines();
 
     if (
-      new URLSearchParams(window.location.search).get('mode') ===
-      'buynow'
+      !cartLines.length
     ) {
-      return;
-    }
-
-    var cartLines = lines();
-
-    if (!cartLines.length) {
       el.innerHTML =
         '<h2>Order summary</h2>' +
+
         '<p>Your cart is empty.</p>' +
+
         '<a class="btn btn-primary btn-block" href="shop.html">' +
+
         'Go to Shop' +
+
         '</a>';
 
       return;
@@ -954,27 +1523,50 @@
 
     el.innerHTML =
       '<h2>Order summary</h2>' +
+
       '<ul class="summary-list">' +
+
       cartLines
         .map(function (line) {
           return (
             '<li>' +
+
             '<span>' +
-            escapeHtml(line.product.name) +
+
+            escapeHtml(
+              line.product.name
+            ) +
+
             ' (' +
-            escapeHtml(line.pack.label) +
+
+            escapeHtml(
+              line.pack.label
+            ) +
+
             ') × ' +
+
             line.qty +
+
             '</span>' +
+
             '<span>' +
-            formatINR(line.lineTotal) +
+
+            formatINR(
+              line.lineTotal
+            ) +
+
             '</span>' +
+
             '</li>'
           );
         })
         .join('') +
+
       '</ul>' +
-      summaryRows(totals());
+
+      summaryRows(
+        totals()
+      );
   }
 
   /* ==========================================================
@@ -993,7 +1585,8 @@
   ========================================================== */
 
   async function initializeCart() {
-    var ready = await ensureProductsLoaded();
+    var ready =
+      await ensureProductsLoaded();
 
     if (!ready) {
       /*
@@ -1009,124 +1602,256 @@
 
     renderAll();
 
-    document.dispatchEvent(new CustomEvent('bt:cart-ready'));
+    document.dispatchEvent(
+      new CustomEvent(
+        'bt:cart-ready'
+      )
+    );
 
-    console.log('Brit.Tuna: Cart ready.');
+    console.log(
+      'Brit.Tuna: Cart ready.'
+    );
   }
 
   /* ==========================================================
      CART BUTTON EVENTS
   ========================================================== */
 
-  document.addEventListener('click', function (event) {
-    var button = event.target.closest('[data-action]');
+  document.addEventListener(
+    'click',
 
-    var line = event.target.closest('.cart-line');
+    function (event) {
+      var button =
+        event.target.closest(
+          '[data-action]'
+        );
 
-    if (!button || !line) {
-      return;
-    }
+      var line =
+        event.target.closest(
+          '.cart-line'
+        );
 
-    var productId = normalizeId(line.getAttribute('data-product'));
-
-    var packId = normalizeId(line.getAttribute('data-pack'));
-
-    var action = button.getAttribute('data-action');
-
-    var current = 1;
-
-    readRaw().forEach(function (item) {
       if (
-        normalizeId(item.productId) === productId &&
-        normalizeId(item.packId) === packId
+        !button ||
+        !line
       ) {
-        current = clampQty(item.qty);
+        return;
       }
-    });
 
-    if (action === 'remove') {
-      remove(productId, packId);
-    } else if (action === 'inc') {
-      setQty(productId, packId, current + 1);
-    } else if (action === 'dec') {
-      /*
-        Quantity 1 -> minus:
-        keep minimum quantity at 1.
+      var productId =
+        normalizeId(
+          line.getAttribute(
+            'data-product'
+          )
+        );
 
-        Customer can use Remove.
-      */
+      var packId =
+        normalizeId(
+          line.getAttribute(
+            'data-pack'
+          )
+        );
 
-      setQty(productId, packId, Math.max(1, current - 1));
+      var action =
+        button.getAttribute(
+          'data-action'
+        );
+
+      var current =
+        1;
+
+      readRaw().forEach(
+        function (item) {
+          if (
+            normalizeId(
+              item.productId
+            ) === productId &&
+            normalizeId(
+              item.packId
+            ) === packId
+          ) {
+            current =
+              clampQty(
+                item.qty
+              );
+          }
+        }
+      );
+
+      if (
+        action ===
+        'remove'
+      ) {
+        remove(
+          productId,
+          packId
+        );
+      } else if (
+        action ===
+        'inc'
+      ) {
+        setQty(
+          productId,
+          packId,
+          current + 1
+        );
+      } else if (
+        action ===
+        'dec'
+      ) {
+        /*
+          Quantity 1 -> minus:
+          keep minimum quantity at 1.
+
+          Customer can use Remove.
+        */
+
+        setQty(
+          productId,
+          packId,
+          Math.max(
+            1,
+            current - 1
+          )
+        );
+      }
     }
-  });
+  );
 
   /* ==========================================================
      QUANTITY INPUT
   ========================================================== */
 
-  document.addEventListener('change', function (event) {
-    var input = event.target.closest('input[data-action="set"]');
+  document.addEventListener(
+    'change',
 
-    var line = event.target.closest('.cart-line');
+    function (event) {
+      var input =
+        event.target.closest(
+          'input[data-action="set"]'
+        );
 
-    if (!input || !line) {
-      return;
+      var line =
+        event.target.closest(
+          '.cart-line'
+        );
+
+      if (
+        !input ||
+        !line
+      ) {
+        return;
+      }
+
+      setQty(
+        normalizeId(
+          line.getAttribute(
+            'data-product'
+          )
+        ),
+
+        normalizeId(
+          line.getAttribute(
+            'data-pack'
+          )
+        ),
+
+        input.value
+      );
     }
-
-    setQty(
-      normalizeId(line.getAttribute('data-product')),
-      normalizeId(line.getAttribute('data-pack')),
-      input.value
-    );
-  });
+  );
 
   /* ==========================================================
      CART CHANGED
   ========================================================== */
 
-  document.addEventListener('bt:cart-changed', function () {
-    renderAll();
-  });
+  document.addEventListener(
+    'bt:cart-changed',
+
+    function () {
+      renderAll();
+    }
+  );
 
   /* ==========================================================
      OTHER TAB STORAGE CHANGE
   ========================================================== */
 
-  window.addEventListener('storage', function (event) {
-    if (event.key === KEY) {
-      renderAll();
+  window.addEventListener(
+    'storage',
 
-      document.dispatchEvent(new CustomEvent('bt:cart-changed'));
+    function (event) {
+      if (
+        event.key === KEY
+      ) {
+        renderAll();
+
+        document.dispatchEvent(
+          new CustomEvent(
+            'bt:cart-changed'
+          )
+        );
+      }
     }
-  });
+  );
 
   /* ==========================================================
      PAGE LOAD
   ========================================================== */
 
-  document.addEventListener('DOMContentLoaded', function () {
-    initializeCart().catch(function (error) {
-      console.error('Brit.Tuna: Cart initialization failed.', error);
+  document.addEventListener(
+    'DOMContentLoaded',
 
-      renderAll();
-    });
-  });
+    function () {
+      initializeCart()
+        .catch(function (error) {
+          console.error(
+            'Brit.Tuna: Cart initialization failed.',
+            error
+          );
+
+          renderAll();
+        });
+    }
+  );
 
   /* ==========================================================
      PUBLIC API
   ========================================================== */
 
   window.BTCart = {
-    add: add,
-    addDirect: addDirect,
-    restorePendingAction: restorePendingAction,
-    setQty: setQty,
-    remove: remove,
-    clear: clear,
-    count: count,
-    lines: lines,
-    totals: totals,
-    render: renderAll,
-    initialize: initializeCart
+    add:
+      add,
+
+    addDirect:
+      addDirect,
+
+    restorePendingAction:
+      restorePendingAction,
+
+    setQty:
+      setQty,
+
+    remove:
+      remove,
+
+    clear:
+      clear,
+
+    count:
+      count,
+
+    lines:
+      lines,
+
+    totals:
+      totals,
+
+    render:
+      renderAll,
+
+    initialize:
+      initializeCart
   };
+
 })();
