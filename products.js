@@ -311,6 +311,22 @@
   }
 
 
+  /* A pack can be ordered (Buy Now / checkout) only when it belongs to a
+     real Supabase product, has a real numeric variant id and has stock.
+     Demo products never qualify. */
+  function isOrderable(product, pack) {
+    return !!(
+      product &&
+      pack &&
+      product.source === 'supabase' &&
+      Number.isInteger(Number(product.databaseId)) &&
+      Number(product.databaseId) > 0 &&
+      Number.isInteger(Number(pack.variantId)) &&
+      Number(pack.variantId) > 0 &&
+      packHasStock(pack)
+    );
+  }
+
   function packStockLabel(pack) {
     if (!pack) {
       return 'Out of stock';
@@ -2888,6 +2904,60 @@ var bestsellerGrid =
 
     }
 
+
+    /* SHOP BY FOOD CATEGORY (#category-grid was never filled) */
+
+    var categoryGrid =
+      document.getElementById(
+        'category-grid'
+      );
+
+
+    if (categoryGrid) {
+
+      categoryGrid.innerHTML =
+        CATEGORIES.map(
+          function (category) {
+
+            var total =
+              cache.filter(
+                function (product) {
+                  return (
+                    product.category ===
+                    category.id
+                  );
+                }
+              ).length;
+
+            return (
+              '<a class="cat-card has-photo" ' +
+              'href="products.html?category=' +
+              encodeURIComponent(category.id) +
+              '" style="--cat-bg:' +
+              U.escapeHtml(category.color) +
+              ';--cat-photo:url(\'' +
+              U.escapeHtml(category.photo) +
+              '\')">' +
+              '<h3>' +
+              U.escapeHtml(category.icon) +
+              ' ' +
+              U.escapeHtml(category.name) +
+              '</h3>' +
+              '<p>' +
+              U.escapeHtml(category.blurb) +
+              '</p>' +
+              '<span class="cat-count">' +
+              total +
+              (total === 1 ? ' product' : ' products') +
+              '</span>' +
+              '</a>'
+            );
+
+          }
+        ).join('');
+
+    }
+
   }
 
 
@@ -4346,7 +4416,7 @@ box.innerHTML =
 'class="btn btn-buy-now"' +
 
 (
-  allOut
+  (allOut || !isOrderable(p, selectedPack))
     ? ' disabled'
     : ''
 ) +
@@ -4849,6 +4919,29 @@ pdThumbnailButtons.forEach(
       }
 
 
+      /* Buy Now depends on the SELECTED PACK and on the product
+         being a real, orderable Supabase product. */
+
+      if (buyNowButton) {
+
+        var orderable =
+          isOrderable(p, pack);
+
+        buyNowButton.disabled =
+          !orderable;
+
+        buyNowButton.textContent =
+          orderable
+            ? 'Buy Now'
+            : (
+                available
+                  ? 'Unavailable'
+                  : 'Out of stock'
+              );
+
+      }
+
+
       /* WHATSAPP MESSAGE */
 
       var msg =
@@ -5244,117 +5337,59 @@ pdThumbnailButtons.forEach(
 
 
   /* ======================================================
-     BUY NOW — AMAZON / FLIPKART-STYLE CHECKOUT UI
-     Frontend demonstration only. No real payment is taken.
+     BUY NOW — PRODUCT DETAILS
+
+     Sends ONLY product id, variant id and quantity to
+     checkout.html?mode=buynow. No price is sent (the
+     create_customer_order RPC calculates trusted prices).
+     The cart is NOT touched, so nothing is duplicated.
   ====================================================== */
 
   var buyNowButton = document.getElementById('pd-buy-now');
 
-  function openBuyNowCheckout() {
+  function startBuyNow() {
     var pack = currentPack();
-    var quantity = Math.max(1, Number(state.qty) || 1);
 
-    if (!pack || !packHasStock(pack)) {
-      toast('This pack is currently out of stock.');
+    if (!isOrderable(p, pack)) {
+      toast('This pack cannot be ordered right now.');
       return;
     }
 
-    var unitPrice = Number(pack.salePrice || pack.price || p.price || 0);
-    var total = unitPrice * quantity;
-    var existing = document.getElementById('bt-buy-checkout');
-    if (existing) existing.remove();
+    var quantity = Number(state.qty);
 
-    var style = document.getElementById('bt-buy-checkout-style');
-    if (!style) {
-      style = document.createElement('style');
-      style.id = 'bt-buy-checkout-style';
-      style.textContent = `
-        #bt-buy-checkout{position:fixed;inset:0;z-index:99999;background:rgba(10,20,14,.62);display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto}
-        #bt-buy-checkout .bt-checkout-panel{background:#fffdf7;color:#183b29;width:min(760px,100%);max-height:94vh;overflow:auto;border-radius:18px;padding:24px;box-shadow:0 20px 70px #0005;font-family:inherit}
-        #bt-buy-checkout .bt-checkout-head{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid #e6e9e3;padding-bottom:14px;margin-bottom:18px}
-        #bt-buy-checkout h2{font-size:24px;margin:0}#bt-buy-checkout h3{font-size:17px;margin:20px 0 10px}
-        #bt-buy-checkout .bt-close{border:0;background:#edf2ed;border-radius:50%;width:38px;height:38px;font-size:23px;cursor:pointer}
-        #bt-buy-checkout .bt-steps{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px;color:#58715f;font-size:13px}
-        #bt-buy-checkout .bt-step{background:#edf3ed;border-radius:30px;padding:7px 12px}
-        #bt-buy-checkout .bt-summary{display:flex;justify-content:space-between;gap:14px;padding:14px;background:#f3f5ed;border-radius:12px}
-        #bt-buy-checkout .bt-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-        #bt-buy-checkout input,#bt-buy-checkout textarea{width:100%;box-sizing:border-box;padding:12px;border:1px solid #ccd6cc;border-radius:9px;background:#fff;font:inherit;color:#183b29}
-        #bt-buy-checkout textarea{min-height:78px;resize:vertical;grid-column:1/-1}
-        #bt-buy-checkout .bt-payment{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
-        #bt-buy-checkout .bt-payment label{border:1px solid #ccd6cc;border-radius:10px;padding:12px;cursor:pointer;font-size:14px}
-        #bt-buy-checkout .bt-payment input{width:auto;margin-right:6px}
-        #bt-buy-checkout .bt-total{display:flex;justify-content:space-between;font-weight:800;font-size:20px;padding:16px 0}
-        #bt-buy-checkout .bt-confirm{width:100%;border:0;border-radius:10px;background:#1f5a3a;color:white;padding:15px;font-size:16px;font-weight:700;cursor:pointer}
-        #bt-buy-checkout .bt-note{font-size:12px;color:#647568;line-height:1.5;margin-top:10px}
-        @media(max-width:560px){#bt-buy-checkout .bt-checkout-panel{padding:17px}#bt-buy-checkout .bt-fields{grid-template-columns:1fr}#bt-buy-checkout .bt-payment{grid-template-columns:1fr}#bt-buy-checkout h2{font-size:20px}}
-      `;
-      document.head.appendChild(style);
+    if (
+      !Number.isInteger(quantity) ||
+      quantity < 1 ||
+      quantity > 99 ||
+      quantity > Number(pack.stockQuantity)
+    ) {
+      toast('Please choose a valid quantity.');
+      return;
     }
 
-    var overlay = document.createElement('div');
-    overlay.id = 'bt-buy-checkout';
-    overlay.innerHTML = `
-      <section class="bt-checkout-panel" role="dialog" aria-modal="true" aria-labelledby="bt-checkout-title">
-        <div class="bt-checkout-head"><div><div style="font-size:12px;color:#758579">BRIT.TUNA SECURE CHECKOUT</div><h2 id="bt-checkout-title">Complete your order</h2></div><button type="button" class="bt-close" aria-label="Close checkout">×</button></div>
-        <div class="bt-steps"><span class="bt-step">1. Delivery</span><span class="bt-step">2. Order summary</span><span class="bt-step">3. Payment</span></div>
-        <h3>1. Delivery address</h3>
-        <form id="bt-checkout-form">
-          <div class="bt-fields">
-            <input name="customerName" placeholder="Full name" autocomplete="name" required maxlength="100">
-            <input name="phone" placeholder="Mobile number" inputmode="tel" autocomplete="tel" pattern="[0-9+() -]{8,18}" required>
-            <input name="email" placeholder="Email (optional)" type="email" autocomplete="email">
-            <input name="pincode" placeholder="PIN code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required>
-            <textarea name="address" placeholder="House number, street, area, city, state" autocomplete="street-address" required maxlength="500"></textarea>
-          </div>
-          <h3>2. Order summary</h3>
-          <div class="bt-summary"><div><strong>${escapeText(p.name)}</strong><div style="font-size:13px;color:#647568">${escapeText(pack.label || pack.name || 'Selected pack')} · Qty ${quantity}</div></div><strong>${U.formatINR(total)}</strong></div>
-          <h3>3. Select payment method</h3>
-          <div class="bt-payment">
-            <label><input type="radio" name="paymentMethod" value="UPI" checked> UPI</label>
-            <label><input type="radio" name="paymentMethod" value="Card"> Credit / Debit Card</label>
-            <label><input type="radio" name="paymentMethod" value="Cash on Delivery"> Cash on Delivery</label>
-          </div>
-          <div class="bt-total"><span>Total payable</span><span>${U.formatINR(total)}</span></div>
-          <button class="bt-confirm" type="submit">Continue to payment</button>
-          <p class="bt-note">Demo checkout only. Your details are not submitted and no payment/order is created. UPI and card payments will work only after a secure payment gateway and backend are connected.</p>
-          <div id="bt-checkout-message" role="status" aria-live="polite"></div>
-        </form>
-      </section>`;
-    document.body.appendChild(overlay);
-    document.body.style.overflow = 'hidden';
-
-    function closeCheckout() {
-      overlay.remove();
-      document.body.style.overflow = '';
-      document.removeEventListener('keydown', onEscape);
+    try {
+      window.sessionStorage.setItem(
+        'bt_buy_now',
+        JSON.stringify({
+          productId: String(p.id),
+          packId: String(pack.id),
+          qty: quantity,
+          createdAt: Date.now()
+        })
+      );
+    } catch (error) {
+      console.error('Brit.Tuna: Buy Now handoff failed.', error);
+      toast('Unable to start checkout. Please try again.');
+      return;
     }
-    function onEscape(event) { if (event.key === 'Escape') closeCheckout(); }
-    overlay.querySelector('.bt-close').addEventListener('click', closeCheckout);
-    overlay.addEventListener('click', function (event) { if (event.target === overlay) closeCheckout(); });
-    document.addEventListener('keydown', onEscape);
 
-    overlay.querySelector('#bt-checkout-form').addEventListener('submit', function (event) {
-      event.preventDefault();
-      var message = overlay.querySelector('#bt-checkout-message');
-      if (!this.reportValidity()) return;
-      var method = this.querySelector('input[name="paymentMethod"]:checked').value;
-      message.style.cssText = 'margin-top:12px;padding:12px;border-radius:9px;background:#fff1d9;color:#704b13;font-size:14px;line-height:1.5';
-      message.textContent = method === 'Cash on Delivery'
-        ? 'Cash on Delivery selected. Order placement is not enabled yet. Connect your order backend to confirm this purchase.'
-        : method + ' selected. Payment gateway is not connected yet, so no payment has been charged.';
-    });
-  }
-
-  function escapeText(value) {
-    return String(value == null ? '' : value).replace(/[&<>"']/g, function (ch) {
-      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
-    });
+    window.location.href = 'checkout.html?mode=buynow';
   }
 
   if (buyNowButton) {
     buyNowButton.addEventListener('click', function () {
       if (this.disabled) return;
-      openBuyNowCheckout();
+      startBuyNow();
     });
   }
 
@@ -6088,7 +6123,10 @@ document.addEventListener(
       packStockLabel,
 
     productStockStatus:
-      productStockStatus
+      productStockStatus,
+
+    isOrderable:
+      isOrderable
 
   };
 
