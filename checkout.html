@@ -191,6 +191,23 @@
         hidden
       >
 
+        <!-- CHECKOUT PROGRESS -->
+        <nav class="checkout-progress" aria-label="Checkout progress">
+          <div class="checkout-progress-step is-complete">
+            <span class="checkout-step-number" aria-hidden="true">✓</span>
+            <span><strong>Cart</strong><small>Items selected</small></span>
+          </div>
+          <span class="checkout-progress-line" aria-hidden="true"></span>
+          <div class="checkout-progress-step is-current" aria-current="step">
+            <span class="checkout-step-number" aria-hidden="true">2</span>
+            <span><strong>Delivery</strong><small>Your address</small></span>
+          </div>
+          <span class="checkout-progress-line" aria-hidden="true"></span>
+          <div class="checkout-progress-step">
+            <span class="checkout-step-number" aria-hidden="true">3</span>
+            <span><strong>Confirmation</strong><small>Order placed</small></span>
+          </div>
+        </nav>
 
         <!-- ==========================================
              SELLER CONTROLLED COD STATUS
@@ -223,13 +240,17 @@
           >
 
 
-            <h2>
-              Delivery details
-            </h2>
+            <div class="checkout-section-heading">
+              <span class="checkout-section-icon" aria-hidden="true">⌖</span>
+              <div>
+                <h2>Delivery details</h2>
+                <p>Where should we deliver your Brit.Tuna order?</p>
+              </div>
+            </div>
 
 
-            <p class="form-note">
-
+            <p class="form-note checkout-account-note">
+              <span class="checkout-secure-dot" aria-hidden="true"></span>
               Signed in as
 
               <strong id="checkout-user-email">
@@ -430,20 +451,22 @@
             ======================================= -->
 
             <div
-              class="notice"
+              class="notice checkout-payment-card"
               id="payment-method-box"
-              style="margin-top:14px"
+              style="margin-top:18px"
             >
 
-              <strong>
-                Payment method:
-              </strong>
+              <span class="checkout-payment-icon" aria-hidden="true">₹</span>
+              <div class="checkout-payment-copy">
+                <strong>Cash on Delivery</strong>
+                <small>Pay when your order arrives. Availability is checked for every item.</small>
 
               <br>
 
-              <span id="payment-method-text">
-                Checking COD availability...
-              </span>
+                <span id="payment-method-text">
+                  Checking COD availability...
+                </span>
+              </div>
 
             </div>
 
