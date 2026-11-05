@@ -20,6 +20,61 @@
 
   var MAX_QTY = 99;
 
+  /* Buy Now hand-off (set by products.js, read only on
+     checkout.html?mode=buynow). Never written to the cart. */
+  var BUY_NOW_KEY = 'bt_buy_now';
+
+  function isBuyNowMode() {
+    try {
+      return (
+        new URLSearchParams(window.location.search).get('mode') ===
+        'buynow'
+      );
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function readBuyNow() {
+    if (!isBuyNowMode()) {
+      return null;
+    }
+
+    try {
+      var raw = window.sessionStorage.getItem(BUY_NOW_KEY);
+
+      if (!raw) {
+        return null;
+      }
+
+      var data = JSON.parse(raw);
+
+      if (
+        !data ||
+        data.productId === undefined ||
+        data.packId === undefined
+      ) {
+        return null;
+      }
+
+      return {
+        productId: String(data.productId),
+        packId: String(data.packId),
+        qty: clampQty(data.qty)
+      };
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function clearBuyNow() {
+    try {
+      window.sessionStorage.removeItem(BUY_NOW_KEY);
+    } catch (error) {
+      /* Ignore */
+    }
+  }
+
   /* ==========================================================
      UTILITIES
   ========================================================== */
@@ -122,6 +177,18 @@
   ========================================================== */
 
   function readRaw() {
+    var buyNow = readBuyNow();
+
+    if (buyNow) {
+      return [buyNow];
+    }
+
+    if (isBuyNowMode()) {
+      /* Buy Now page opened without a valid hand-off: empty, and the
+         real cart is deliberately not shown or used. */
+      return [];
+    }
+
     try {
       var raw =
         window.localStorage.getItem(
@@ -180,6 +247,31 @@
   }
 
   function write(items) {
+    if (isBuyNowMode()) {
+      /* Buy Now mode: never touch the real cart. Quantity edits are
+         not offered on checkout, so just keep the hand-off in sync. */
+      var first = (items || [])[0];
+
+      if (first) {
+        try {
+          window.sessionStorage.setItem(
+            BUY_NOW_KEY,
+            JSON.stringify({
+              productId: normalizeId(first.productId),
+              packId: normalizeId(first.packId),
+              qty: clampQty(first.qty),
+              createdAt: Date.now()
+            })
+          );
+        } catch (error) {
+          /* Ignore */
+        }
+      }
+
+      document.dispatchEvent(new CustomEvent('bt:cart-changed'));
+      return;
+    }
+
     var clean =
       (items || [])
         .filter(function (item) {
@@ -959,6 +1051,14 @@
   ========================================================== */
 
   function clear() {
+    if (isBuyNowMode()) {
+      /* Order confirmed from a Buy Now checkout: remove only the
+         Buy Now item. The customer's real cart is left untouched. */
+      clearBuyNow();
+      document.dispatchEvent(new CustomEvent('bt:cart-changed'));
+      return;
+    }
+
     write([]);
   }
 
