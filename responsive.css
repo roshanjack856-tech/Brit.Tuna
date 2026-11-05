@@ -71,3 +71,28 @@
 @media (max-width: 380px) {
   .product-grid { grid-template-columns: 1fr; }
 }
+/* ==========================================================
+   MARKETPLACE REDESIGN — tablet / mobile
+   ========================================================== */
+
+@media (max-width: 900px) {
+  .hero { padding: 36px 0 48px; border-radius: 0 0 22px 22px; }
+  .trust-grid { grid-template-columns: 1fr 1fr; }
+  .promo-row { grid-template-columns: 1fr; }
+  .promo-card { min-height: 150px; }
+}
+
+@media (max-width: 640px) {
+  .hero h1 { font-size: 1.85rem; }
+  .hero-tile { min-height: 110px; }
+  .trust-strip { margin-top: -22px; }
+  .trust-grid { padding: 10px; gap: 6px; }
+  .trust-item { padding: 6px; gap: 8px; }
+  .trust-ic { width: 36px; height: 36px; font-size: 1.05rem; }
+  .trust-item strong { font-size: 0.82rem; }
+  .trust-item span { display: none; }
+  .promo-card { padding: 20px; }
+  .promo-card .promo-emoji { font-size: 4rem; }
+  .section { padding: 32px 0; }
+  .section-title { font-size: 1.35rem; }
+}
