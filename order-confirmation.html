@@ -652,6 +652,58 @@
 
     }
 
+    /* ======================================================
+       BRIT.TUNA ORDER DETAILS — UI/UX POLISH
+       Visual-only update: order confirmation logic unchanged.
+       ====================================================== */
+
+    .confirmation-wrap { max-width: 960px; }
+    .confirmation-message {
+      border: 1px solid rgba(31, 90, 58, 0.12);
+      box-shadow: 0 8px 24px rgba(25, 50, 35, 0.04);
+      line-height: 1.65;
+    }
+    .confirmation-message.success { border-color: #d7e9da; }
+    .confirmation-message.error { border-color: #f2d8d3; }
+    .confirmation-card {
+      border-color: #e5ece5;
+      border-radius: 22px;
+      padding: 30px;
+      box-shadow: 0 12px 36px rgba(25, 50, 35, 0.065);
+    }
+    .confirmation-top { align-items: center; padding-bottom: 22px; border-bottom-color: #e8eee8; }
+    .confirmation-top h2 { font-size: 1.62rem; letter-spacing: -0.025em; }
+    .confirmation-date { line-height: 1.55; }
+    .confirmation-total { padding: 10px 14px; border-radius: 13px; background: #f0f6f1; font-size: 1.28rem; }
+    .confirmation-statuses { margin: 21px 0; }
+    .confirmation-badge { padding: 8px 13px; border: 1px solid rgba(31, 90, 58, 0.08); }
+    .confirmation-badge.payment { border-color: rgba(138, 90, 10, 0.1); }
+    .cod-order-notice, .test-order-notice { border: 1px solid #dceade; line-height: 1.7; }
+    .confirmation-section { margin-top: 29px; }
+    .confirmation-section-title { font-size: 1.28rem; letter-spacing: -0.015em; }
+    .customer-info-box { border: 1px solid #edf0eb; background: #fafcf9; padding: 16px; }
+    .confirmation-item { padding: 19px 0; border-bottom-color: #e8eee8; }
+    .confirmation-product-image-link { width: 100px; height: 100px; flex-basis: 100px; border-radius: 15px; box-shadow: 0 3px 12px rgba(25, 50, 35, 0.06); }
+    .confirmation-item-name { font-size: 1.02rem; line-height: 1.45; }
+    .item-detail { border: 1px solid #ecefe9; }
+    .item-detail.pack { border-color: #e0ebe1; }
+    .status-help { border: 1px solid #edf0eb; line-height: 1.7; }
+    .order-summary { margin-top: 26px; padding-top: 22px; border-top-color: #e5ece5; }
+    .summary-row { margin-bottom: 11px; line-height: 1.5; }
+    .summary-row.total { margin-top: 15px; padding-top: 16px; font-size: 1.22rem; }
+    .confirmation-actions { justify-content: flex-start; margin-top: 30px; }
+    .confirmation-btn { min-height: 46px; padding: 12px 20px; }
+    .confirmation-btn.primary { box-shadow: 0 5px 14px rgba(31, 90, 58, 0.16); }
+    .confirmation-btn.secondary { border-color: #dce6dd; }
+    @media (max-width: 650px) {
+      .confirmation-card { padding: 19px; border-radius: 17px; }
+      .confirmation-top { align-items: flex-start; }
+      .confirmation-total { align-self: flex-start; }
+      .confirmation-product-image-link { width: 82px; height: 82px; flex-basis: 82px; }
+      .confirmation-item-price { margin-left: 97px; }
+      .confirmation-actions { gap: 9px; }
+    }
+
   </style>
 
 </head>
