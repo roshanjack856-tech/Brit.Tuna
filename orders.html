@@ -578,57 +578,6 @@
 
     }
 
-    /* ======================================================
-       BRIT.TUNA ORDERS — UI/UX POLISH
-       Visual-only update: order loading and database logic
-       remain unchanged.
-       ====================================================== */
-
-    .orders-wrap { max-width: 1000px; }
-    .orders-wrap > .orders-message {
-      border: 1px solid rgba(31, 90, 58, 0.12);
-      box-shadow: 0 8px 24px rgba(25, 50, 35, 0.04);
-      line-height: 1.6;
-    }
-    .orders-list { gap: 22px; }
-    .order-card {
-      border-color: #e6ece6;
-      border-radius: 20px;
-      padding: 24px;
-      box-shadow: 0 10px 30px rgba(25, 50, 35, 0.055);
-      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-    }
-    .order-card:hover {
-      border-color: rgba(31, 90, 58, 0.28);
-      box-shadow: 0 14px 36px rgba(25, 50, 35, 0.09);
-      transform: translateY(-2px);
-    }
-    .order-card-top { align-items: center; padding-bottom: 19px; border-bottom-color: #e8eee8; }
-    .order-card h2 { font-size: 1.32rem; letter-spacing: -0.02em; }
-    .order-date { display: inline-flex; align-items: center; gap: 6px; margin-top: 3px; line-height: 1.5; }
-    .order-total { padding: 9px 13px; border-radius: 12px; background: #f0f6f1; font-size: 1.15rem; }
-    .order-statuses { margin: 18px 0 12px; }
-    .order-badge { padding: 8px 12px; border: 1px solid rgba(31, 90, 58, 0.08); letter-spacing: 0.01em; }
-    .order-badge.payment { border-color: rgba(138, 90, 10, 0.1); }
-    .order-item { padding: 18px 0; border-bottom-color: #e8eee8; }
-    .order-product-image-link { width: 96px; height: 96px; flex-basis: 96px; border-radius: 15px; box-shadow: 0 3px 12px rgba(25, 50, 35, 0.06); }
-    .order-item-name { font-size: 0.98rem; line-height: 1.45; }
-    .order-item-price { font-size: 1.02rem; }
-    .shipping-details { border-color: #dceade; background: linear-gradient(135deg, #f5faf6, #fbfdfb); }
-    .order-status-help { border: 1px solid #edf0eb; }
-    .view-order-btn { min-height: 44px; padding: 12px 19px; box-shadow: 0 5px 14px rgba(31, 90, 58, 0.15); }
-    .orders-empty { padding: 54px 22px; border-color: #e5ece5; box-shadow: 0 10px 30px rgba(25, 50, 35, 0.045); }
-    .orders-empty h2 { font-family: "Fraunces", serif; font-size: 1.55rem; }
-    .orders-empty p { max-width: 420px; margin: 0 auto 22px; line-height: 1.7; }
-    @media (max-width: 600px) {
-      .order-card { padding: 17px; border-radius: 16px; }
-      .order-card:hover { transform: none; }
-      .order-card-top { align-items: flex-start; }
-      .order-total { align-self: flex-start; }
-      .order-product-image-link { width: 82px; height: 82px; flex-basis: 82px; }
-      .order-item-price { margin-left: 97px; }
-    }
-
   </style>
 
 </head>
