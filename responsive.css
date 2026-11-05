@@ -96,3 +96,22 @@
   .section { padding: 32px 0; }
   .section-title { font-size: 1.35rem; }
 }
+
+/* ==========================================================
+   SHOPPING UX v2 — mobile
+   ========================================================== */
+
+@media (max-width: 640px) {
+  /* Meesho-style compact 2-column product cards */
+  .pc-img img { padding: 6px; }
+  .pc-name { font-size: 0.92rem; min-height: 2.5em; }
+  .price-now { font-size: 1.15rem; }
+  .pc-actions .btn { min-height: 40px; font-size: 0.85rem; }
+
+  /* Thumb-friendly tap targets */
+  .nav-tab, .chip, .btn { min-height: 40px; }
+  .pack-option { padding: 10px 12px; }
+
+  /* Product page buy box is not sticky on phones */
+  .product-detail-content { position: static; }
+}
