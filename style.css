@@ -4521,15 +4521,7 @@ button {
   --radius: 16px;
 }
 
-body {
-  background: var(--cream);
-}
-
-/* Clean marketplace surface: the rotating photo background is hidden.
-   (script.js still creates it, so nothing is deleted.) */
-.bg-slides {
-  display: none !important;
-}
+/* The rotating photo background (script.js) is kept on every page. */
 
 /* ---------- Motion ---------- */
 @keyframes bt-fade-up {
@@ -4659,7 +4651,7 @@ body {
 .hero {
   background:
     radial-gradient(circle at 85% 15%, rgba(255, 255, 255, 0.14), transparent 45%),
-    linear-gradient(135deg, var(--green-dark), var(--green) 70%);
+    linear-gradient(135deg, rgba(20, 61, 39, 0.88), rgba(31, 90, 58, 0.72) 70%);
   color: #fff;
   min-height: 0;
   padding: 48px 0 56px;
@@ -4864,7 +4856,7 @@ body {
 }
 
 .section-alt {
-  background: var(--cream-2);
+  background: rgba(243, 234, 212, 0.84);
 }
 
 /* ---------- Category tiles ---------- */
@@ -5008,4 +5000,373 @@ footer {
     padding: 10px 0;
     box-shadow: 0 -6px 16px rgba(20, 61, 39, 0.1);
   }
+}
+
+
+/* ==========================================================
+   AMAZON / ALIBABA-STYLE SHOPPING UX  (v2)
+   CSS-only upgrades on the existing markup.
+   ========================================================== */
+
+::selection {
+  background: var(--green);
+  color: #fff;
+}
+
+/* ---------- Loading skeleton shimmer ---------- */
+@keyframes bt-shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.loading {
+  display: block;
+  min-height: 120px;
+  border-radius: 14px;
+  color: transparent !important;
+  background: linear-gradient(90deg, #efe6cf 25%, #f8f1de 37%, #efe6cf 63%);
+  background-size: 800px 100%;
+  animation: bt-shimmer 1.3s linear infinite;
+}
+
+/* ---------- Header: Amazon-style compact + cart pulse ---------- */
+.site-header {
+  backdrop-filter: saturate(1.4) blur(8px);
+  -webkit-backdrop-filter: saturate(1.4) blur(8px);
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.icon-link {
+  transition: transform 0.15s, color 0.15s;
+}
+
+.icon-link:hover {
+  color: var(--green);
+  transform: translateY(-1px);
+}
+
+@keyframes bt-pop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
+.cart-count,
+.wishlist-count {
+  background: var(--red);
+  color: #fff;
+  box-shadow: 0 0 0 2px #fff;
+  animation: bt-pop 0.4s ease;
+}
+
+.nav-tab {
+  position: relative;
+}
+
+.nav-tab::after {
+  content: '';
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 2px;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--red);
+  transform: scaleX(0);
+  transition: transform 0.2s;
+}
+
+.nav-tab:hover::after,
+.nav-tab.active::after {
+  transform: scaleX(1);
+}
+
+/* ---------- Horizontal rails (Alibaba / Meesho style) ---------- */
+.market-category-scroll,
+.market-brand-scroll {
+  scroll-snap-type: x proximity;
+  scroll-padding: 0 16px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.market-category-card,
+.market-brand-card {
+  scroll-snap-align: start;
+}
+
+.market-brand-card {
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.market-brand-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow);
+}
+
+/* ---------- Product cards: Amazon-style ---------- */
+.product-card {
+  position: relative;
+}
+
+.pc-img {
+  aspect-ratio: 1 / 1;
+  background: #fff;
+}
+
+.pc-img img {
+  object-fit: contain;
+  padding: 10px;
+}
+
+.pc-badge {
+  top: 12px;
+  left: 0;
+  border-radius: 0 8px 8px 0;
+  padding: 5px 12px 5px 10px;
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+}
+
+.pc-name {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.5em;
+  line-height: 1.25;
+}
+
+.pc-price {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+
+.price-from {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.stock {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stock::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.pc-actions {
+  flex-wrap: wrap;
+}
+
+.pc-actions .btn {
+  min-height: 42px;
+}
+
+.pc-actions .btn:active {
+  transform: scale(0.97);
+}
+
+/* Wishlist heart */
+.pc-wishlist {
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s, background 0.15s, color 0.15s;
+}
+
+.pc-wishlist:hover {
+  transform: scale(1.12);
+}
+
+.pc-wishlist.active .wishlist-heart {
+  color: var(--red);
+}
+
+/* ---------- Product details page: Amazon-style buy box ---------- */
+.product-detail-grid {
+  align-items: start;
+}
+
+@media (min-width: 901px) {
+  .product-detail-content {
+    position: sticky;
+    top: 120px;
+  }
+
+  .product-detail-main-image {
+    cursor: zoom-in;
+    overflow: hidden;
+  }
+
+  .product-detail-main-image img {
+    transition: transform 0.35s ease;
+  }
+
+  .product-detail-main-image:hover img {
+    transform: scale(1.12);
+  }
+}
+
+.product-detail-thumbnail {
+  border: 2px solid transparent;
+  border-radius: 12px;
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.product-detail-thumbnail:hover {
+  transform: translateY(-2px);
+}
+
+.product-detail-thumbnail.active {
+  border-color: var(--green);
+}
+
+.pack-option {
+  border-radius: 12px;
+  border: 2px solid var(--border);
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.pack-option:hover:not(.pack-option-disabled) {
+  border-color: var(--green);
+  box-shadow: var(--shadow-sm);
+}
+
+.pack-option:has(input:checked) {
+  border-color: var(--green);
+  background: var(--green-soft);
+  box-shadow: 0 0 0 3px rgba(31, 90, 58, 0.14);
+}
+
+.pack-option-disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background: repeating-linear-gradient(
+    135deg, #faf6ea, #faf6ea 8px, #f1ead6 8px, #f1ead6 16px
+  );
+}
+
+.product-detail-total {
+  background: var(--green-soft);
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+.product-detail-actions .btn {
+  min-height: 48px;
+  font-size: 1rem;
+}
+
+.product-highlight-item {
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--border);
+}
+
+/* ---------- Cart & checkout: sticky order summary ---------- */
+@media (min-width: 901px) {
+  .cart-summary,
+  .checkout-summary,
+  .summary-box {
+    position: sticky;
+    top: 120px;
+  }
+}
+
+.cart-line {
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s;
+}
+
+.cart-line:hover {
+  box-shadow: var(--shadow);
+}
+
+.cart-summary,
+.checkout-summary,
+.summary-box {
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+
+.summary-total {
+  font-size: 1.15rem;
+  color: var(--green-dark);
+  border-top: 2px dashed var(--border);
+  padding-top: 10px;
+}
+
+.summary-save {
+  color: #1c7a47;
+}
+
+.qty button {
+  transition: background 0.15s;
+}
+
+.qty button:hover {
+  background: var(--green-soft);
+}
+
+/* ---------- Forms ---------- */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):focus,
+select:focus,
+textarea:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 4px rgba(31, 90, 58, 0.14);
+  outline: 0;
+}
+
+/* ---------- Floating buttons ---------- */
+.wa-float {
+  box-shadow: 0 8px 22px rgba(37, 211, 102, 0.45);
+  transition: transform 0.2s;
+}
+
+.wa-float:hover {
+  transform: scale(1.08);
+}
+
+.toast {
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+/* ---------- Custom scrollbar ---------- */
+html {
+  scrollbar-color: var(--green) var(--cream-2);
+  scrollbar-width: thin;
+}
+
+/* ---------- Footer links ---------- */
+footer a {
+  transition: color 0.15s, padding-left 0.15s;
+}
+
+footer a:hover {
+  color: #fff;
+  padding-left: 4px;
 }
