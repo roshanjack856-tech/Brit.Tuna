@@ -55,82 +55,254 @@
   >
 
 
-  <!-- GOOGLE LOGIN STYLE -->
+  <!-- LOGIN PAGE STYLE -->
 
   <style>
 
-    .auth-divider {
+    /* Clean, centred sign-in layout (header, footer, photo
+       background and hero are hidden on this page only). */
+
+    body[data-page="login"] {
+      background: #f7f9f6;
+      min-height: 100vh;
+    }
+
+    body[data-page="login"] .bg-slides,
+    body[data-page="login"] #site-header,
+    body[data-page="login"] #site-footer,
+    body[data-page="login"] .topbar,
+    body[data-page="login"] .wa-float {
+      display: none !important;
+    }
+
+    .login-page {
+      min-height: 100vh;
       display: flex;
-      align-items: center;
-      gap: 15px;
-      margin: 22px 0;
-      color: #777;
-      font-size: 13px;
-      font-weight: 500;
+      justify-content: center;
+      padding: 28px 16px 48px;
     }
 
-    .auth-divider::before,
-    .auth-divider::after {
-      content: "";
-      flex: 1;
-      height: 1px;
-      background: #dddddd;
+    .login-shell {
+      width: 100%;
+      max-width: 448px;
+      text-align: center;
+      animation: bt-fade-up 0.5s ease both;
     }
 
+    .login-logo {
+      display: inline-block;
+      font-family: "Fraunces", Georgia, serif;
+      font-weight: 700;
+      font-size: 2rem;
+      color: #1f5a3a;
+      text-decoration: none;
+      letter-spacing: -0.01em;
+      margin-bottom: 34px;
+    }
+
+    .login-logo span {
+      color: #d63b2f;
+    }
+
+    .login-shell h1 {
+      font-family: "DM Sans", system-ui, sans-serif;
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: #1b1f1d;
+      margin: 0 0 10px;
+    }
+
+    .login-sub {
+      color: #6b7280;
+      margin: 0 0 32px;
+      font-size: 1rem;
+    }
 
     .google-login-button {
       width: 100%;
-      min-height: 48px;
-
+      min-height: 50px;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 12px;
-
       padding: 12px 18px;
-
-      background: #ffffff;
+      background: #fff;
       color: #202124;
-
-      border: 1px solid #dadce0;
+      border: 1px solid #eceff1;
       border-radius: 8px;
-
+      box-shadow: 0 2px 8px rgba(20, 30, 25, 0.08);
       font-family: "DM Sans", sans-serif;
-      font-size: 15px;
-      font-weight: 600;
-
+      font-size: 1rem;
+      font-weight: 500;
       cursor: pointer;
-
-      transition:
-        background 0.2s ease,
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
+      transition: box-shadow 0.2s ease, transform 0.15s ease;
     }
-
 
     .google-login-button:hover {
-      background: #f8f9fa;
-      border-color: #c7c7c7;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 4px 14px rgba(20, 30, 25, 0.14);
     }
 
+    .google-login-button:active {
+      transform: scale(0.99);
+    }
 
     .google-login-button:disabled {
       opacity: 0.65;
       cursor: not-allowed;
     }
 
-
     .google-icon {
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
       flex-shrink: 0;
     }
 
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 26px 0 30px;
+      color: #9aa1a9;
+      font-size: 0.95rem;
+    }
+
+    .auth-divider::before,
+    .auth-divider::after {
+      content: "";
+      flex: 1;
+      border-top: 1px dashed #c4cad0;
+    }
+
+    #login-form {
+      text-align: left;
+    }
+
+    .login-field {
+      margin-bottom: 20px;
+    }
+
+    .login-field label {
+      display: block;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #1b1f1d;
+      margin-bottom: 9px;
+    }
+
+    .login-field input {
+      width: 100%;
+      height: 50px;
+      padding: 0 16px;
+      background: #fff;
+      border: 1px solid #e3e7ea;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(20, 30, 25, 0.06);
+      font-family: "DM Sans", sans-serif;
+      font-size: 1rem;
+      color: #1b1f1d;
+      box-sizing: border-box;
+    }
+
+    .login-field input::placeholder {
+      color: #9aa1a9;
+    }
+
+    .login-field input:focus {
+      outline: 0;
+      border-color: #1f5a3a;
+      box-shadow: 0 0 0 4px rgba(31, 90, 58, 0.14);
+    }
+
+    .password-wrap {
+      position: relative;
+    }
+
+    .password-wrap input {
+      padding-right: 52px;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      background: none;
+      border: 0;
+      border-radius: 8px;
+      color: #8a929a;
+      cursor: pointer;
+    }
+
+    .password-toggle:hover {
+      color: #1f5a3a;
+      background: #eef5f0;
+    }
+
+    .password-toggle svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    #login-button {
+      width: 100%;
+      height: 50px;
+      margin-top: 6px;
+      border: 0;
+      border-radius: 8px;
+      background: #1f5a3a;
+      color: #fff;
+      font-family: "DM Sans", sans-serif;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(31, 90, 58, 0.28);
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+
+    #login-button:hover:not(:disabled) {
+      background: #174a2f;
+    }
+
+    #login-button:active:not(:disabled) {
+      transform: scale(0.99);
+    }
+
+    #login-button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
 
     #login-message {
-      margin-top: 14px;
+      margin: 16px 0 0;
       text-align: center;
+      font-size: 0.95rem;
+      color: #b52d22;
+      min-height: 1.2em;
+    }
+
+    .login-footer {
+      margin-top: 22px;
+      color: #6b7280;
+    }
+
+    .login-footer a {
+      color: #1f5a3a;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .login-footer a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+      .login-page { padding-top: 20px; }
+      .login-logo { margin-bottom: 26px; }
+      .login-shell h1 { font-size: 1.6rem; }
     }
 
   </style>
@@ -141,140 +313,33 @@
 <body data-page="login">
 
 
-  <!-- WEBSITE HEADER -->
+  <!-- WEBSITE HEADER (hidden on this page by CSS; kept so site scripts still work) -->
 
   <div id="site-header"></div>
 
 
+  <main id="main" class="login-page">
 
-  <main id="main">
+    <div class="login-shell">
 
+      <a class="login-logo" href="index.html" aria-label="Brit.Tuna home">
+        Brit<span>.</span>Tuna
+      </a>
 
-    <!-- PAGE HERO -->
+      <h1>Welcome back</h1>
 
-    <section class="page-hero">
-
-      <div class="container">
-
-        <h1>
-          Welcome Back
-        </h1>
-
-        <p>
-          Sign in to your Brit.Tuna account.
-        </p>
-
-      </div>
-
-    </section>
+      <p class="login-sub">Login to manage your account.</p>
 
 
+      <!-- GOOGLE LOGIN -->
 
-    <!-- LOGIN SECTION -->
+      <button
+        type="button"
+        id="google-login-button"
+        class="google-login-button"
+      >
 
-    <section class="auth-section">
-
-      <div class="container">
-
-        <div class="auth-card">
-
-
-          <h2>
-            Sign In
-          </h2>
-
-
-          <p>
-            Enter your email and password to continue.
-          </p>
-
-
-
-          <!-- EMAIL LOGIN FORM -->
-
-          <form id="login-form">
-
-
-            <!-- EMAIL -->
-
-            <div class="form-group">
-
-              <label for="email">
-                Email Address
-              </label>
-
-              <input
-                type="email"
-                id="email"
-                name="email"
-                placeholder="Enter your email"
-                autocomplete="email"
-                required
-              >
-
-            </div>
-
-
-
-            <!-- PASSWORD -->
-
-            <div class="form-group">
-
-              <label for="password">
-                Password
-              </label>
-
-              <input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="Enter your password"
-                autocomplete="current-password"
-                required
-              >
-
-            </div>
-
-
-
-            <!-- LOGIN BUTTON -->
-
-            <button
-              type="submit"
-              id="login-button"
-              class="btn btn-primary"
-            >
-              Sign In
-            </button>
-
-
-          </form>
-
-
-
-          <!-- OR DIVIDER -->
-
-          <div class="auth-divider">
-
-            <span>
-              OR
-            </span>
-
-          </div>
-
-
-
-          <!-- GOOGLE LOGIN -->
-
-          <button
-            type="button"
-            id="google-login-button"
-            class="google-login-button"
-          >
-
-            <!-- GOOGLE ICON -->
-
-            <svg
+        <svg
               class="google-icon"
               viewBox="0 0 24 24"
               aria-hidden="true"
@@ -302,51 +367,100 @@
 
             </svg>
 
+        <span id="google-button-text">
+          Continue with Google
+        </span>
 
-            <span id="google-button-text">
-              Continue with Google
-            </span>
-
-          </button>
-
+      </button>
 
 
-          <!-- LOGIN / GOOGLE MESSAGE -->
-
-          <p
-            id="login-message"
-            role="status"
-            aria-live="polite"
-          ></p>
+      <div class="auth-divider">
+        <span>or</span>
+      </div>
 
 
+      <!-- EMAIL LOGIN FORM -->
 
-          <!-- REGISTER -->
+      <form id="login-form" novalidate>
 
-          <div class="auth-footer">
+        <div class="login-field">
 
-            <p>
+          <label for="email">Email Address</label>
 
-              Don't have an account?
-
-              <a href="register.html">
-                Create Account
-              </a>
-
-            </p>
-
-          </div>
-
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="john.doe@example.com"
+            autocomplete="email"
+            required
+          >
 
         </div>
 
-      </div>
+        <div class="login-field">
 
-    </section>
+          <label for="password">Password</label>
 
+          <div class="password-wrap">
+
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Enter your password"
+              autocomplete="current-password"
+              required
+            >
+
+            <button
+              type="button"
+              class="password-toggle"
+              id="password-toggle"
+              aria-label="Show password"
+              aria-pressed="false"
+            >
+
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path id="eye-open" d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/>
+                <circle id="eye-pupil" cx="12" cy="12" r="3"/>
+                <path id="eye-slash" d="M3 3l18 18" style="display:none"/>
+              </svg>
+
+            </button>
+
+          </div>
+
+        </div>
+
+        <button
+          type="submit"
+          id="login-button"
+          class="btn btn-primary"
+        >
+          Sign In
+        </button>
+
+      </form>
+
+
+      <!-- LOGIN / GOOGLE MESSAGE -->
+
+      <p
+        id="login-message"
+        role="status"
+        aria-live="polite"
+      ></p>
+
+
+      <p class="login-footer">
+        Don't have an account yet?
+        <a href="register.html">Create New Account</a>
+      </p>
+
+    </div>
 
   </main>
-
 
 
   <!-- FOOTER -->
@@ -861,6 +975,24 @@
 
 </script>
 
+
+
+<script>
+  /* Show / hide password (UI only - does not touch login logic) */
+  (function () {
+    var btn = document.getElementById('password-toggle');
+    var input = document.getElementById('password');
+    if (!btn || !input) return;
+
+    btn.addEventListener('click', function () {
+      var show = input.type === 'password';
+      input.type = show ? 'text' : 'password';
+      btn.setAttribute('aria-pressed', show ? 'true' : 'false');
+      btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+      document.getElementById('eye-slash').style.display = show ? '' : 'none';
+    });
+  })();
+</script>
 
 </body>
 
