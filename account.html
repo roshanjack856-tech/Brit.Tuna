@@ -76,6 +76,307 @@
       margin-top: 14px;
     }
 
+
+    /* =======================================================
+       ACCOUNT PAGE — app-style profile (desktop + phone)
+    ======================================================= */
+
+    body[data-page="account"] {
+      background: #f7f9f6;
+    }
+
+    body[data-page="account"] .page-hero,
+    body[data-page="account"] .bg-slides {
+      display: none !important;
+    }
+
+    .acct-page {
+      padding: 28px 16px 60px;
+    }
+
+    .acct-wrap {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .acct-side {
+      position: sticky;
+      top: 120px;
+    }
+
+    .acct-topbar-m,
+    .acct-tabbar {
+      display: none;
+    }
+
+    /* ---- profile header ---- */
+    .acct-head {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 4px 18px;
+      border-bottom: 1px solid #e3e7e3;
+      margin-bottom: 8px;
+    }
+
+    .acct-avatar {
+      flex: none;
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #1f5a3a, #2f7d52);
+      color: #fff;
+      font-size: 1.9rem;
+      font-weight: 700;
+      font-family: "DM Sans", system-ui, sans-serif;
+      box-shadow: 0 6px 16px rgba(31, 90, 58, 0.3);
+      border: 3px solid #fff;
+    }
+
+    .acct-head h1 {
+      font-family: "DM Sans", system-ui, sans-serif;
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: #1b1f1d;
+      margin: 0 0 2px;
+      line-height: 1.2;
+    }
+
+    .acct-head p {
+      margin: 2px 0 0;
+      color: #6b7280;
+      font-size: 0.9rem;
+      overflow-wrap: anywhere;
+    }
+
+    .acct-head .account-user-box {
+      background: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* ---- section label + rows ---- */
+    .acct-label {
+      margin: 22px 0 10px 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #7b838a;
+      letter-spacing: 0.02em;
+    }
+
+    .acct-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .acct-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-height: 54px;
+      padding: 0 16px;
+      border-radius: 12px;
+      background: #eceeec;
+      color: #1b1f1d;
+      font-size: 0.98rem;
+      text-decoration: none;
+      transition: background 0.15s, transform 0.12s, box-shadow 0.15s;
+    }
+
+    .acct-row:hover {
+      background: #e3ede6;
+      box-shadow: 0 4px 12px rgba(31, 90, 58, 0.12);
+    }
+
+    .acct-row:active {
+      transform: scale(0.99);
+    }
+
+    .acct-row svg {
+      flex: none;
+      width: 22px;
+      height: 22px;
+      color: #1f5a3a;
+    }
+
+    .acct-row .acct-text {
+      flex: 1;
+    }
+
+    .acct-row .acct-chev {
+      width: 18px;
+      height: 18px;
+      color: #9aa1a9;
+    }
+
+    /* ---- sign in / out buttons ---- */
+    .acct-actions {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .acct-actions [hidden] {
+      display: none !important;
+    }
+
+    #logout-button {
+      margin-top: 0;
+      color: #b52d22;
+      border-color: #e9c7c3;
+      background: #fff;
+    }
+
+    #logout-button:hover {
+      background: #fdf0ee;
+    }
+
+    /* ---- profile form card ---- */
+    .acct-main .form-card {
+      border-radius: 18px;
+      border: 1px solid #e3e7e3;
+      background: #fff;
+      box-shadow: 0 6px 20px rgba(20, 30, 25, 0.06);
+      scroll-margin-top: 130px;
+    }
+
+    .acct-main .form-card h2 {
+      font-family: "DM Sans", system-ui, sans-serif;
+      font-size: 1.25rem;
+    }
+
+    .acct-main .form-card input,
+    .acct-main .form-card textarea {
+      border-radius: 10px;
+      background: #f6f8f6;
+    }
+
+    .acct-main .form-card input:disabled,
+    .acct-main .form-card textarea:disabled {
+      opacity: 0.6;
+    }
+
+    #account-notice {
+      margin: 0 0 14px;
+    }
+
+    /* =======================================================
+       PHONE VIEW — app screen with bottom tab bar
+    ======================================================= */
+
+    @media (max-width: 860px) {
+
+      body[data-page="account"] #site-header,
+      body[data-page="account"] #site-footer,
+      body[data-page="account"] .topbar {
+        display: none !important;
+      }
+
+      body[data-page="account"] .wa-float {
+        bottom: 84px !important;
+      }
+
+      .acct-page {
+        padding: 0 0 96px;
+      }
+
+      .acct-topbar-m {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 54px;
+        padding: 0 14px;
+        background: #fff;
+        box-shadow: 0 1px 0 #e3e7e3;
+        font-weight: 600;
+        color: #1b1f1d;
+      }
+
+      .acct-topbar-m a {
+        width: 40px;
+        height: 40px;
+        display: grid;
+        place-items: center;
+        color: #1b1f1d;
+        border-radius: 50%;
+      }
+
+      .acct-topbar-m a svg {
+        width: 22px;
+        height: 22px;
+      }
+
+      .acct-topbar-m .acct-top-right {
+        display: flex;
+        gap: 2px;
+      }
+
+      .acct-wrap {
+        grid-template-columns: 1fr;
+        gap: 0;
+        padding: 0 16px;
+      }
+
+      .acct-side {
+        position: static;
+      }
+
+      .acct-main {
+        margin-top: 26px;
+      }
+
+      .acct-tabbar {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 40;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        background: #fff;
+        padding: 8px 6px calc(8px + env(safe-area-inset-bottom));
+        box-shadow: 0 -6px 18px rgba(20, 30, 25, 0.1);
+        border-radius: 18px 18px 0 0;
+      }
+
+      .acct-tabbar a {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        padding: 4px 0;
+        font-size: 0.68rem;
+        color: #7b838a;
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      .acct-tabbar a svg {
+        width: 24px;
+        height: 24px;
+      }
+
+      .acct-tabbar a.active {
+        color: #1f5a3a;
+        font-weight: 700;
+      }
+
+      .acct-tabbar a.active svg {
+        fill: currentColor;
+      }
+    }
+
   </style>
 
 </head>
@@ -96,52 +397,143 @@
        MAIN
   ============================================= -->
 
-  <main id="main">
+  <main id="main" class="acct-page">
 
+    <!-- PHONE TOP BAR -->
 
-    <!-- PAGE HERO -->
-
-    <section class="page-hero">
-
-      <div class="container">
-
-        <h1>
-          My Account
-        </h1>
-
-        <p>
-          Your profile and delivery details.
-        </p>
-
+    <div class="acct-topbar-m">
+      <a href="index.html" aria-label="Back to home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></a>
+      <span>Profile</span>
+      <div class="acct-top-right">
+        <a href="shop.html" aria-label="Search products"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></a>
+        <a href="wishlist.html" aria-label="Wishlist"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-9-9.2C1.8 7.4 4 4.5 7 4.5c1.9 0 3.4 1 5 3 1.6-2 3.1-3 5-3 3 0 5.2 2.9 4 6.3-2 4.8-9 9.2-9 9.2z"/></svg></a>
       </div>
-
-    </section>
-
+    </div>
 
 
-    <div class="container page-body">
+    <div class="acct-wrap">
+
+      <!-- ===============================================
+           LEFT: PROFILE HEADER + MENU
+      ================================================ -->
+
+      <aside class="acct-side" aria-label="Account menu">
+
+        <div class="acct-head">
+
+          <div class="acct-avatar" id="acct-avatar" aria-hidden="true">B</div>
+
+          <div>
+
+            <h1 id="acct-title">My Account</h1>
+
+            <p id="acct-sub">Sign in to manage your account</p>
+
+            <div id="account-user-box" class="account-user-box" hidden>
+              <p class="account-status">Signed in</p>
+              <p id="account-user-name"></p>
+            </div>
+
+          </div>
+
+        </div>
 
 
-      <!-- ACCOUNT NOTICE -->
-
-      <p
-        class="notice notice-error"
-        id="account-notice"
-        role="status"
-        hidden
-      ></p>
+        <p
+          class="notice notice-error"
+          id="account-notice"
+          role="status"
+          hidden
+        ></p>
 
 
+        <p class="acct-label">Shopping</p>
 
-      <div
-        class="checkout-layout"
-        style="margin-top:18px"
-      >
+        <nav class="acct-list">
+          <a class="acct-row" href="orders.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg>
+            <span class="acct-text">My Orders</span>
+            <svg class="acct-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+          </a>
+          <a class="acct-row" href="cart.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.6 12.4a1 1 0 0 0 1 .8h9.2a1 1 0 0 0 1-.8L21 7H6"/></svg>
+            <span class="acct-text">My Cart</span>
+            <svg class="acct-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+          </a>
+          <a class="acct-row" href="wishlist.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-9-9.2C1.8 7.4 4 4.5 7 4.5c1.9 0 3.4 1 5 3 1.6-2 3.1-3 5-3 3 0 5.2 2.9 4 6.3-2 4.8-9 9.2-9 9.2z"/></svg>
+            <span class="acct-text">Wishlist</span>
+            <svg class="acct-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+          </a>
+        </nav>
 
 
-        <!-- =====================================
-             PROFILE FORM
-        ====================================== -->
+        <p class="acct-label">Account</p>
+
+        <nav class="acct-list">
+          <a class="acct-row" href="#profile-form">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>
+            <span class="acct-text">Saved Address</span>
+            <svg class="acct-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+          </a>
+          <a class="acct-row" href="#profile-form">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+            <span class="acct-text">Profile Settings</span>
+            <svg class="acct-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+          </a>
+        </nav>
+
+
+        <p class="acct-label">Help and Services</p>
+
+        <nav class="acct-list">
+          <a class="acct-row" href="contact.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7"/><circle cx="12" cy="17" r=".6"/></svg>
+            <span class="acct-text">Support</span>
+            <svg class="acct-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+          </a>
+          <a class="acct-row" href="faq.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5z"/><path d="M8 9h8M8 12h5"/></svg>
+            <span class="acct-text">FAQs</span>
+            <svg class="acct-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+          </a>
+          <a class="acct-row" href="about.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><circle cx="12" cy="7.8" r=".6"/></svg>
+            <span class="acct-text">About Brit.Tuna</span>
+            <svg class="acct-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+          </a>
+          <a class="acct-row" href="privacy-policy.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/></svg>
+            <span class="acct-text">Privacy Policy</span>
+            <svg class="acct-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+          </a>
+        </nav>
+
+
+        <div class="acct-actions" id="account-actions">
+
+          <a class="btn btn-primary btn-block" href="login.html" id="signin-link">
+            Sign in
+          </a>
+
+          <a class="btn btn-outline btn-block" href="register.html" id="register-link">
+            Create account
+          </a>
+
+          <button type="button" class="btn btn-outline btn-block" id="logout-button" hidden>
+            Sign out
+          </button>
+
+        </div>
+
+      </aside>
+
+
+      <!-- ===============================================
+           RIGHT: PROFILE FORM (existing form, unchanged)
+      ================================================ -->
+
+      <section class="acct-main" aria-label="Profile settings">
 
         <form
           class="form-card"
@@ -150,7 +542,7 @@
         >
 
           <h2>
-            Profile
+            Profile Settings
           </h2>
 
 
@@ -357,109 +749,12 @@
 
         </form>
 
-
-
-        <!-- =====================================
-             ACCOUNT MENU
-        ====================================== -->
-
-        <aside
-          class="summary-box"
-          aria-label="Account menu"
-        >
-
-          <h2>
-            Account
-          </h2>
-
-
-          <ul>
-
-            <li class="summary-row">
-
-              <a href="account.html">
-                <strong>Profile</strong>
-              </a>
-
-            </li>
-
-
-            <li class="summary-row">
-
-              <a href="orders.html">
-                My orders
-              </a>
-
-            </li>
-
-
-            <li class="summary-row">
-
-              <a href="cart.html">
-                My cart
-              </a>
-
-            </li>
-
-          </ul>
-
-
-
-          <div
-            id="account-actions"
-            style="margin-top:14px"
-          >
-
-
-            <!-- SIGN IN -->
-
-            <a
-              class="btn btn-primary btn-block"
-              href="login.html"
-              id="signin-link"
-            >
-              Sign in
-            </a>
-
-
-
-            <!-- REGISTER -->
-
-            <a
-              class="btn btn-outline btn-block"
-              href="register.html"
-              id="register-link"
-            >
-              Create account
-            </a>
-
-
-
-            <!-- LOGOUT -->
-
-            <button
-              type="button"
-              class="btn btn-outline btn-block"
-              id="logout-button"
-              hidden
-            >
-              Sign out
-            </button>
-
-
-          </div>
-
-
-        </aside>
-
-
-      </div>
-
+      </section>
 
     </div>
 
-
   </main>
+
 
 
 
@@ -468,6 +763,17 @@
   ============================================= -->
 
   <div id="site-footer"></div>
+
+  <!-- PHONE BOTTOM TAB BAR -->
+
+  <nav class="acct-tabbar" aria-label="Main">
+    <a href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5 5-2z"/></svg><span>Discover</span></a>
+    <a href="shop.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9l1.5-5h13L20 9"/><path d="M4 9a2.7 2.7 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0A2.7 2.7 0 0 0 20 9"/><path d="M5 12v8h14v-8"/></svg><span>Shop</span></a>
+    <a href="orders.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="7" width="16" height="13" rx="2"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg><span>My order</span></a>
+    <a href="cart.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.6 12.4a1 1 0 0 0 1 .8h9.2a1 1 0 0 0 1-.8L21 7H6"/></svg><span>Bag</span></a>
+    <a href="account.html" class="active" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg><span>Profile</span></a>
+  </nav>
+
 
 
 
@@ -1793,6 +2099,41 @@
 
   </script>
 
+
+
+<script>
+  /* Header avatar initial + greeting (display only; account logic untouched) */
+  (function () {
+    var box = document.getElementById('account-user-box');
+    var nameEl = document.getElementById('account-user-name');
+    var sub = document.getElementById('acct-sub');
+    var avatar = document.getElementById('acct-avatar');
+    var title = document.getElementById('acct-title');
+    var pName = document.getElementById('p-name');
+    if (!box || !avatar) return;
+
+    function refresh() {
+      var signedIn = !box.hidden;
+      var name = ((pName && pName.value) || (nameEl && nameEl.textContent) || '').trim();
+
+      if (sub) sub.hidden = signedIn;
+
+      if (signedIn && name) {
+        if (title) title.textContent = name;
+        avatar.textContent = name.charAt(0).toUpperCase();
+      } else {
+        if (title) title.textContent = 'My Account';
+        avatar.textContent = 'B';
+      }
+    }
+
+    new MutationObserver(refresh).observe(box, { attributes: true, attributeFilter: ['hidden'] });
+    if (nameEl) new MutationObserver(refresh).observe(nameEl, { childList: true, characterData: true, subtree: true });
+    if (pName) pName.addEventListener('input', refresh);
+    setInterval(refresh, 1500);
+    refresh();
+  })();
+</script>
 
 </body>
 
