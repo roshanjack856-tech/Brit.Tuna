@@ -257,19 +257,16 @@
 
 /* ---------- promo reels: tablet / phone ---------- */
 @media (max-width: 900px) {
-  .reel { min-height: 240px; }
+  .reel { min-height: 280px; }
+  .reel-art { --s: 0.9; }
 }
 
 @media (max-width: 640px) {
-  .reel { min-height: 236px; border-radius: 18px; }
-  .reel-slide { grid-template-columns: 1.2fr 0.8fr; padding: 20px 16px 38px 18px; gap: 4px; }
-  .reel-copy h3 { font-size: 1.2rem; }
-  .reel-copy p { font-size: 0.82rem; margin-bottom: 12px; }
-  .reel-art { min-height: 140px; }
-  .reel-photo { width: min(100%, 118px); border-width: 4px; }
-  .reel-fallback { font-size: 3.4rem; }
-  .spice { font-size: 1.3rem; }
-  .spice.s1 { font-size: 1.5rem; }
-  .spice.s4 { font-size: 1.45rem; }
-  .reel-dots { left: 18px; }
+  .reel { min-height: 250px; border-radius: 18px; }
+  .reel-slide { grid-template-columns: 1.05fr 0.95fr; padding: 18px 4px 36px 16px; }
+  .reel-copy h3 { font-size: 1.35rem; }
+  .reel-copy p { font-size: 0.8rem; margin-bottom: 12px; max-width: 160px; }
+  .reel-art { --s: 0.56; min-height: 190px; }
+  .reel-art::before { width: 360px; height: 360px; margin: -180px 0 0 -180px; }
+  .reel-dots { left: 16px; }
 }
