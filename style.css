@@ -5373,16 +5373,16 @@ footer a:hover {
 
 
 /* ==========================================================
-   PROMO REELS — animated product cards (home page)
-   Bright product-ad look; slide changes every 2 seconds,
-   spices and the product drift and float.
+   PROMO REELS — illustrated product-ad banners (home page)
+   Product in the middle, ingredients burst out and float.
+   Slide changes every 2 seconds (see script in index.html).
    ========================================================== */
 
 .reel {
   position: relative;
   overflow: hidden;
   border-radius: 22px;
-  min-height: 250px;
+  min-height: 290px;
   box-shadow: var(--shadow);
   isolation: isolate;
 }
@@ -5391,43 +5391,29 @@ footer a:hover {
   position: absolute;
   inset: 0;
   display: grid;
-  grid-template-columns: 1.1fr 1fr;
+  grid-template-columns: 1fr 1.05fr;
   align-items: center;
-  gap: 8px;
-  padding: 26px 28px 40px;
-  background: var(--bg);
+  padding: 24px 12px 38px 28px;
+  background: radial-gradient(circle at 70% 45%, var(--bg), var(--bg2) 120%);
   color: var(--ink);
   text-decoration: none;
   opacity: 0;
   visibility: hidden;
-  transform: translateX(8%);
-  transition: opacity 0.5s ease, transform 0.5s ease, visibility 0s 0.5s;
+  transition: opacity 0.45s ease, visibility 0s 0.45s;
+  overflow: hidden;
 }
 
 .reel-slide.is-active {
   opacity: 1;
   visibility: visible;
-  transform: none;
-  transition: opacity 0.5s ease, transform 0.5s ease;
+  transition: opacity 0.45s ease;
   z-index: 1;
 }
 
-/* soft light blobs, like the product-ad reference */
-.reel-slide::before,
-.reel-slide::after {
-  content: "";
-  position: absolute;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.16);
-  pointer-events: none;
-}
-
-.reel-slide::before { width: 260px; height: 260px; right: -60px; top: -90px; }
-.reel-slide::after  { width: 160px; height: 160px; left: -40px; bottom: -70px; }
-
+/* ---- copy ---- */
 .reel-copy {
   position: relative;
-  z-index: 2;
+  z-index: 3;
 }
 
 .reel-copy .promo-tag {
@@ -5438,106 +5424,158 @@ footer a:hover {
   text-transform: uppercase;
   padding: 4px 10px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.3);
   color: inherit;
 }
 
 .reel-copy h3 {
   margin: 10px 0 8px;
-  font-size: clamp(1.35rem, 2.4vw, 1.9rem);
-  line-height: 1.15;
+  font-size: clamp(1.7rem, 3.4vw, 2.5rem);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
   color: inherit;
+  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.22);
 }
 
 .reel-copy p {
   margin: 0 0 16px;
-  max-width: 330px;
+  max-width: 300px;
   font-size: 0.95rem;
   color: inherit;
-  opacity: 0.92;
+  opacity: 0.95;
 }
 
 .reel-copy .btn {
   background: #fff;
   color: #1b1f1d;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.22);
 }
 
-/* ---- product photo + floating spices ---- */
+/* ---- art stage ---- */
 .reel-art {
+  --s: 1;
   position: relative;
   height: 100%;
-  min-height: 190px;
-  display: grid;
-  place-items: center;
+  min-height: 230px;
 }
 
-.reel-photo {
-  position: relative;
-  width: min(100%, 190px);
-  aspect-ratio: 1 / 1;
+/* sunburst rays / concentric rings behind the product */
+.reel-art::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 560px;
+  height: 560px;
+  margin: -280px 0 0 -280px;
   border-radius: 50%;
-  overflow: hidden;
-  border: 5px solid rgba(255, 255, 255, 0.9);
-  background: rgba(255, 255, 255, 0.35);
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.28);
-  display: grid;
-  place-items: center;
-}
-
-.reel-photo img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.reel-fallback {
-  font-size: 5.2rem;
-  line-height: 1;
-}
-
-.spice {
-  position: absolute;
-  font-size: 1.9rem;
-  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.25));
   pointer-events: none;
+  -webkit-mask-image: radial-gradient(circle, #000 25%, transparent 68%);
+  mask-image: radial-gradient(circle, #000 25%, transparent 68%);
+}
+
+.theme-rays .reel-art::before {
+  background: repeating-conic-gradient(rgba(255, 255, 255, 0.34) 0 7deg, transparent 7deg 18deg);
+  animation: reel-spin 26s linear infinite;
+}
+
+.theme-rings .reel-art::before {
+  background: repeating-radial-gradient(circle, rgba(255, 255, 255, 0.2) 0 26px, transparent 26px 52px);
+  animation: reel-ring 3s ease-in-out infinite;
+}
+
+/* hero product */
+.hero-prod {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(150px * var(--s));
+  margin: calc(-92px * var(--s)) 0 0 calc(-75px * var(--s));
+  filter: drop-shadow(0 14px 14px rgba(0, 0, 0, 0.32));
+  z-index: 2;
+}
+
+.hero-prod svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* flying ingredients */
+.fx {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--w) * var(--s));
+  height: calc(var(--h) * var(--s));
+  margin: calc(var(--h) * var(--s) / -2) 0 0 calc(var(--w) * var(--s) / -2);
+  z-index: 1;
+  opacity: 0;
   will-change: transform;
 }
 
-.spice.s1 { top: 4%;  left: 6%;  font-size: 2.2rem; }
-.spice.s2 { top: 8%;  right: 4%; font-size: 1.8rem; }
-.spice.s3 { bottom: 10%; left: 2%; font-size: 1.7rem; }
-.spice.s4 { bottom: 6%; right: 8%; font-size: 2.1rem; }
-.spice.s5 { top: 44%; right: -2%; font-size: 1.3rem; }
-
-@keyframes reel-photo-in {
-  0%   { transform: scale(0.6) rotate(-14deg); opacity: 0; }
-  60%  { transform: scale(1.06) rotate(3deg);  opacity: 1; }
-  100% { transform: scale(1) rotate(0);        opacity: 1; }
+.fx-in {
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.28));
 }
 
-@keyframes reel-drift {
-  0%   { transform: translate(0, 0) rotate(0deg); }
-  25%  { transform: translate(8px, -14px) rotate(14deg); }
-  50%  { transform: translate(-6px, -4px) rotate(-10deg); }
-  75%  { transform: translate(10px, 10px) rotate(12deg); }
-  100% { transform: translate(0, 0) rotate(0deg); }
+/* ---- motion ---- */
+@keyframes reel-spin { to { transform: rotate(360deg); } }
+
+@keyframes reel-ring {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.08); }
 }
 
-@keyframes reel-pop {
-  0%   { transform: scale(0) rotate(-60deg); opacity: 0; }
-  100% { transform: scale(1) rotate(0); opacity: 1; }
+@keyframes hero-drop {
+  0%   { transform: translateY(-140%) rotate(-14deg) scale(0.8); opacity: 0; }
+  55%  { transform: translateY(6%) rotate(4deg) scale(1.03); opacity: 1; }
+  75%  { transform: translateY(-3%) rotate(-2deg); }
+  100% { transform: none; opacity: 1; }
+}
+
+@keyframes hero-bob {
+  0%, 100% { transform: translateY(0) rotate(-1.5deg); }
+  50%      { transform: translateY(-9px) rotate(2deg); }
+}
+
+@keyframes fx-burst {
+  0%   { opacity: 0; transform: translate(0, 0) scale(0.1) rotate(0deg); }
+  15%  { opacity: 1; }
+  100% {
+    opacity: 1;
+    transform: translate(calc(var(--x) * var(--s)), calc(var(--y) * var(--s))) scale(1) rotate(var(--r));
+  }
+}
+
+@keyframes fx-float {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25%      { transform: translate(5px, -11px) rotate(10deg); }
+  50%      { transform: translate(-4px, -3px) rotate(-8deg); }
+  75%      { transform: translate(6px, 8px) rotate(9deg); }
 }
 
 @keyframes reel-copy-in {
-  from { opacity: 0; transform: translateY(14px); }
+  from { opacity: 0; transform: translateX(-18px); }
   to   { opacity: 1; transform: none; }
 }
 
-.reel-slide.is-active .reel-photo {
-  animation: reel-photo-in 0.7s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+.reel-slide.is-active .hero-prod {
+  animation:
+    hero-drop 0.75s cubic-bezier(0.2, 0.8, 0.3, 1) both,
+    hero-bob 3.2s ease-in-out 0.8s infinite;
+}
+
+.reel-slide.is-active .fx {
+  animation: fx-burst 0.75s cubic-bezier(0.2, 0.9, 0.3, 1.15) var(--d) both;
+}
+
+.reel-slide.is-active .fx-in {
+  animation: fx-float var(--fd) ease-in-out calc(var(--d) + 0.8s) infinite;
 }
 
 .reel-slide.is-active .reel-copy > * {
@@ -5548,24 +5586,12 @@ footer a:hover {
 .reel-slide.is-active .reel-copy > *:nth-child(3) { animation-delay: 0.16s; }
 .reel-slide.is-active .reel-copy > *:nth-child(4) { animation-delay: 0.24s; }
 
-.reel-slide.is-active .spice {
-  animation:
-    reel-pop 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.3) both,
-    reel-drift 3.6s ease-in-out 0.6s infinite;
-}
-
-.reel-slide.is-active .spice.s1 { animation-delay: 0.05s, 0.6s; }
-.reel-slide.is-active .spice.s2 { animation-delay: 0.15s, 0.9s; animation-duration: 0.55s, 4.2s; }
-.reel-slide.is-active .spice.s3 { animation-delay: 0.25s, 0.5s; animation-duration: 0.55s, 3.1s; }
-.reel-slide.is-active .spice.s4 { animation-delay: 0.35s, 1.1s; animation-duration: 0.55s, 4.8s; }
-.reel-slide.is-active .spice.s5 { animation-delay: 0.45s, 0.7s; animation-duration: 0.55s, 3.4s; }
-
 /* ---- dots ---- */
 .reel-dots {
   position: absolute;
   left: 28px;
   bottom: 14px;
-  z-index: 3;
+  z-index: 4;
   display: flex;
   gap: 7px;
 }
@@ -5576,8 +5602,8 @@ footer a:hover {
   padding: 0;
   border: 0;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.55);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
   cursor: pointer;
   transition: width 0.3s, background 0.3s;
 }
@@ -5589,14 +5615,23 @@ footer a:hover {
 
 @media (prefers-reduced-motion: reduce) {
   .reel-slide,
-  .reel-slide.is-active {
-    transition: none;
-    transform: none;
-  }
+  .reel-slide.is-active { transition: none; }
 
-  .reel-slide.is-active .reel-photo,
-  .reel-slide.is-active .reel-copy > *,
-  .reel-slide.is-active .spice {
+  .reel-art::before,
+  .reel-slide.is-active .hero-prod,
+  .reel-slide.is-active .fx,
+  .reel-slide.is-active .fx-in,
+  .reel-slide.is-active .reel-copy > * {
     animation: none !important;
   }
+
+  .reel-slide.is-active .fx {
+    opacity: 1;
+    transform: translate(calc(var(--x) * var(--s)), calc(var(--y) * var(--s))) rotate(var(--r));
+  }
+}
+
+/* both promo reels get equal width */
+.promo-row {
+  grid-template-columns: 1fr 1fr;
 }
