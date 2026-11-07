@@ -213,7 +213,7 @@
 
 
     <!-- =====================================================
-         PROMO BANNERS
+         PROMO BANNERS  (animated product reels, change every 2 s)
     ====================================================== -->
 
     <section class="section" style="padding-bottom:0">
@@ -222,21 +222,111 @@
 
         <div class="promo-row">
 
-          <a class="promo-card promo-offers" href="#offers">
-            <span class="promo-tag">Today's offers</span>
-            <h3>Fresh deals on everyday food</h3>
-            <p>Peanuts, pickles, chilli and rice at better prices.</p>
-            <span class="btn btn-sm">See offers</span>
-            <span class="promo-emoji" aria-hidden="true">🥜</span>
-          </a>
+          <div class="reel reel-offers" data-reel aria-label="Today's offers">
 
-          <a class="promo-card promo-bulk" href="contact.html">
-            <span class="promo-tag">Wholesale</span>
-            <h3>Buying in bulk?</h3>
-            <p>Shops and caterers, ask about large quantities.</p>
-            <span class="btn btn-sm">Send an enquiry</span>
-            <span class="promo-emoji" aria-hidden="true">📦</span>
-          </a>
+            <a class="reel-slide is-active" href="products.html?category=mango-pickles" style="--bg:#ffc400;--ink:#3a2300">
+              <div class="reel-copy">
+                <span class="promo-tag">Today's offers</span>
+                <h3>Traditional Mango Pickle</h3>
+                <p>Raw mangoes and traditional spices, made for everyday meals.</p>
+                <span class="btn btn-sm">Shop pickles</span>
+              </div>
+              <div class="reel-art" aria-hidden="true">
+                <span class="reel-photo">
+                  <span class="reel-fallback">🥭</span>
+                  <img src="https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=500&q=70" alt="" width="200" height="200" loading="eager" onerror="this.remove()">
+                </span>
+                <span class="spice s1" aria-hidden="true">🌶️</span><span class="spice s2" aria-hidden="true">🧄</span><span class="spice s3" aria-hidden="true">🌿</span><span class="spice s4" aria-hidden="true">🥭</span><span class="spice s5" aria-hidden="true">✨</span>
+              </div>
+            </a>
+
+            <a class="reel-slide" href="products.html?category=red-chilli" style="--bg:#d63b2f;--ink:#ffffff" tabindex="-1" aria-hidden="true">
+              <div class="reel-copy">
+                <span class="promo-tag">Today's offers</span>
+                <h3>Red Chilli &amp; Spices</h3>
+                <p>Whole, dried and powder chilli for colour and heat.</p>
+                <span class="btn btn-sm">Shop chilli</span>
+              </div>
+              <div class="reel-art" aria-hidden="true">
+                <span class="reel-photo">
+                  <span class="reel-fallback">🌶️</span>
+                  <img src="https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=500&q=70" alt="" width="200" height="200" loading="lazy" onerror="this.remove()">
+                </span>
+                <span class="spice s1" aria-hidden="true">🌶️</span><span class="spice s2" aria-hidden="true">🧄</span><span class="spice s3" aria-hidden="true">🧅</span><span class="spice s4" aria-hidden="true">🌿</span><span class="spice s5" aria-hidden="true">✨</span>
+              </div>
+            </a>
+
+            <a class="reel-slide" href="products.html?category=peanuts" style="--bg:#f29b2c;--ink:#2b1700" tabindex="-1" aria-hidden="true">
+              <div class="reel-copy">
+                <span class="promo-tag">Today's offers</span>
+                <h3>Crunchy Peanuts</h3>
+                <p>Raw, roasted and skinless peanuts in retail packs.</p>
+                <span class="btn btn-sm">Shop peanuts</span>
+              </div>
+              <div class="reel-art" aria-hidden="true">
+                <span class="reel-photo">
+                  <span class="reel-fallback">🥜</span>
+                  <img src="https://images.unsplash.com/photo-1567892320421-1c657571ea4a?auto=format&fit=crop&w=500&q=70" alt="" width="200" height="200" loading="lazy" onerror="this.remove()">
+                </span>
+                <span class="spice s1" aria-hidden="true">🥜</span><span class="spice s2" aria-hidden="true">🌾</span><span class="spice s3" aria-hidden="true">🧂</span><span class="spice s4" aria-hidden="true">🌶️</span><span class="spice s5" aria-hidden="true">✨</span>
+              </div>
+            </a>
+
+            <div class="reel-dots" role="tablist" aria-label="Offer slides"></div>
+          </div>
+
+          <div class="reel reel-bulk" data-reel aria-label="Wholesale and bulk orders">
+
+            <a class="reel-slide is-active" href="contact.html" style="--bg:#1f5a3a;--ink:#ffffff">
+              <div class="reel-copy">
+                <span class="promo-tag">Wholesale</span>
+                <h3>Buying in bulk?</h3>
+                <p>Shops and caterers, ask about large quantities.</p>
+                <span class="btn btn-sm">Send an enquiry</span>
+              </div>
+              <div class="reel-art" aria-hidden="true">
+                <span class="reel-photo">
+                  <span class="reel-fallback">🍚</span>
+                  <img src="https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=500&q=70" alt="" width="200" height="200" loading="lazy" onerror="this.remove()">
+                </span>
+                <span class="spice s1" aria-hidden="true">🌾</span><span class="spice s2" aria-hidden="true">🍚</span><span class="spice s3" aria-hidden="true">🥜</span><span class="spice s4" aria-hidden="true">🌶️</span><span class="spice s5" aria-hidden="true">✨</span>
+              </div>
+            </a>
+
+            <a class="reel-slide" href="contact.html" style="--bg:#143d27;--ink:#ffffff" tabindex="-1" aria-hidden="true">
+              <div class="reel-copy">
+                <span class="promo-tag">Wholesale</span>
+                <h3>Rice by the sack</h3>
+                <p>Ponni, basmati and sona masoori in 5 kg to 25 kg packs.</p>
+                <span class="btn btn-sm">Ask for a quote</span>
+              </div>
+              <div class="reel-art" aria-hidden="true">
+                <span class="reel-photo">
+                  <span class="reel-fallback">🌾</span>
+                  <img src="https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=500&q=70" alt="" width="200" height="200" loading="lazy" onerror="this.remove()">
+                </span>
+                <span class="spice s1" aria-hidden="true">🌾</span><span class="spice s2" aria-hidden="true">🍚</span><span class="spice s3" aria-hidden="true">✨</span><span class="spice s4" aria-hidden="true">🌿</span><span class="spice s5" aria-hidden="true">🌾</span>
+              </div>
+            </a>
+
+            <a class="reel-slide" href="contact.html" style="--bg:#2f7d52;--ink:#ffffff" tabindex="-1" aria-hidden="true">
+              <div class="reel-copy">
+                <span class="promo-tag">Wholesale</span>
+                <h3>Bulk peanuts &amp; chilli</h3>
+                <p>Large packs for shops, caterers and food businesses.</p>
+                <span class="btn btn-sm">Contact us</span>
+              </div>
+              <div class="reel-art" aria-hidden="true">
+                <span class="reel-photo">
+                  <span class="reel-fallback">📦</span>
+                  <img src="https://images.unsplash.com/photo-1567892320421-1c657571ea4a?auto=format&fit=crop&w=500&q=70" alt="" width="200" height="200" loading="lazy" onerror="this.remove()">
+                </span>
+                <span class="spice s1" aria-hidden="true">🥜</span><span class="spice s2" aria-hidden="true">🌶️</span><span class="spice s3" aria-hidden="true">📦</span><span class="spice s4" aria-hidden="true">🌾</span><span class="spice s5" aria-hidden="true">✨</span>
+              </div>
+            </a>
+
+            <div class="reel-dots" role="tablist" aria-label="Wholesale slides"></div>
+          </div>
 
         </div>
 
@@ -1154,6 +1244,72 @@
 
 <!-- Shared Website UI -->
 <script src="script.js"></script>
+
+
+<script>
+  /* Promo reels: slide changes every 2 seconds. Pauses on hover/focus
+     and when the tab is hidden; off for people who prefer reduced motion. */
+  (function () {
+    var INTERVAL = 2000;
+    var reduce = window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    document.querySelectorAll('[data-reel]').forEach(function (reel, reelIndex) {
+      var slides = Array.prototype.slice.call(reel.querySelectorAll('.reel-slide'));
+      var dotsBox = reel.querySelector('.reel-dots');
+      if (slides.length < 2) return;
+
+      var current = 0, timer = null, paused = false;
+
+      var dots = slides.map(function (slide, i) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'reel-dot' + (i === 0 ? ' is-active' : '');
+        b.setAttribute('role', 'tab');
+        b.setAttribute('aria-label', 'Show slide ' + (i + 1));
+        b.addEventListener('click', function (e) {
+          e.preventDefault();
+          show(i);
+          restart();
+        });
+        dotsBox.appendChild(b);
+        return b;
+      });
+
+      function show(n) {
+        slides[current].classList.remove('is-active');
+        slides[current].setAttribute('aria-hidden', 'true');
+        slides[current].tabIndex = -1;
+        dots[current].classList.remove('is-active');
+
+        current = (n + slides.length) % slides.length;
+
+        slides[current].classList.add('is-active');
+        slides[current].removeAttribute('aria-hidden');
+        slides[current].tabIndex = 0;
+        dots[current].classList.add('is-active');
+      }
+
+      function start() {
+        if (reduce || timer) return;
+        timer = setInterval(function () {
+          if (!paused && !document.hidden) show(current + 1);
+        }, INTERVAL);
+      }
+
+      function stop() { clearInterval(timer); timer = null; }
+      function restart() { stop(); start(); }
+
+      reel.addEventListener('mouseenter', function () { paused = true; });
+      reel.addEventListener('mouseleave', function () { paused = false; });
+      reel.addEventListener('focusin', function () { paused = true; });
+      reel.addEventListener('focusout', function () { paused = false; });
+
+      /* the second reel starts 1 s later so both do not flip together */
+      setTimeout(start, reelIndex * 1000);
+    });
+  })();
+</script>
 
 </body>
 </html>
