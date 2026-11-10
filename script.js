@@ -2808,3 +2808,18 @@
 
 
 })();
+
+/* Performance: pause CSS animations of blocks that are off-screen */
+(function () {
+  if (!('IntersectionObserver' in window)) return;
+  function watch() {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        e.target.classList.toggle('is-offscreen', !e.isIntersecting);
+      });
+    }, { rootMargin: '80px' });
+    document.querySelectorAll('.showcase, .reel, .hero').forEach(function (el) { io.observe(el); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watch);
+  else watch();
+})();
