@@ -5894,3 +5894,65 @@ footer a:hover {
     transform: translate(calc(var(--x) * var(--s)), calc(var(--y) * var(--s))) rotate(var(--r));
   }
 }
+
+
+/* ==========================================================
+   SMOOTH SCROLL / PERFORMANCE
+   - no backdrop blur (panels are already ~90% opaque)
+   - background photo on its own GPU layer
+   - animated pieces: no filters, own layers, paused off-screen
+   ========================================================== */
+
+.section > .container,
+.page-body,
+.market-category-section > .container,
+.market-brands-section > .container,
+.site-header {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+.bg-slides {
+  transform: translateZ(0);
+  contain: strict;
+  will-change: transform;
+}
+
+.bg-slides img {
+  will-change: opacity;
+}
+
+.sc-fx .fx-in,
+.sc-fx.sc-blur .fx-in,
+.reel .fx-in,
+.fx .fx-in {
+  filter: none !important;
+}
+
+.fx,
+.sc-prod,
+.hero-prod {
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.showcase,
+.reel {
+  contain: layout paint;
+}
+
+/* set by script when the block is off-screen or tab hidden */
+.is-offscreen *,
+.is-offscreen *::before,
+.is-offscreen *::after {
+  animation-play-state: paused !important;
+}
+
+.skeleton-card,
+[class*="skeleton"] {
+  will-change: auto;
+}
+
+@media (max-width: 760px) {
+  .sc-fx.sc-blur { display: none; }
+}
