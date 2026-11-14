@@ -2852,3 +2852,22 @@
   if (document.readyState === 'complete') ready();
   else window.addEventListener('load', ready);
 })();
+
+
+/* Extra shopping features (search suggestions, quick view, recently
+   viewed, sticky cart bar, share, back-to-top). Loaded after the page
+   has finished loading so it never slows the first paint. */
+(function () {
+  function loadFeatures() {
+    var l = document.createElement('link');
+    l.rel = 'stylesheet';
+    l.href = 'features.css';
+    document.head.appendChild(l);
+
+    var s = document.createElement('script');
+    s.src = 'features.js';
+    document.body.appendChild(s);
+  }
+  if (document.readyState === 'complete') loadFeatures();
+  else window.addEventListener('load', loadFeatures);
+})();
