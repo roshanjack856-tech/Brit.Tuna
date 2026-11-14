@@ -2488,6 +2488,16 @@
 
 
   /* ==========================================================
+     BACKGROUND IMAGE SIZE
+     Phones get a smaller file (same picture, less data).
+  ========================================================== */
+  function sizedBackground(src) {
+    var w = window.innerWidth || 1280;
+    var target = w <= 640 ? 800 : (w <= 1100 ? 1200 : 1600);
+    return String(src).replace(/([?&]w=)1600(?=&|$)/, '$1' + target);
+  }
+
+  /* ==========================================================
      PAGE BACKGROUND
   ========================================================== */
 
@@ -2531,7 +2541,7 @@
 
             '<img ' +
               'src="' +
-              src +
+              sizedBackground(src) +
               '" ' +
               'alt="" ' +
               (
@@ -2545,7 +2555,13 @@
                   ? 'eager'
                   : 'lazy'
               ) +
-              '">'
+              '"' +
+              (
+                i === 0
+                  ? ' fetchpriority="high"'
+                  : ''
+              ) +
+              '>'
 
           );
 
