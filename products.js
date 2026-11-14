@@ -1237,7 +1237,7 @@ function fromRow(r) {
    LOAD PRODUCTS FROM SUPABASE
 ========================================================== */
 
-async function load() {
+async function loadFromDatabase() {
 
   if (!window.supabaseClient) {
 
@@ -1350,6 +1350,7 @@ async function load() {
 
       cache =
         databaseProducts;
+      loadedFromDatabase = true;
 
 
       console.log(
@@ -1382,6 +1383,59 @@ async function load() {
     return cache;
   }
 }
+
+/* ==========================================================
+   LOAD PRODUCTS (shared)
+   Several scripts (products, cart, wishlist) call load() on the
+   same page. Only ONE Supabase request is made; everyone shares it.
+   load({ force: true }) always asks Supabase again.
+   A failed / demo load is never kept, so the next call retries.
+========================================================== */
+
+var loadedFromDatabase = false;
+var sharedLoad = null;
+
+function load(options) {
+
+  var force = !!(options && options.force);
+
+  if (sharedLoad && !force) {
+    return sharedLoad;
+  }
+
+  loadedFromDatabase = false;
+
+  var thisLoad = loadFromDatabase().then(
+    function (result) {
+
+      if (!loadedFromDatabase && sharedLoad === thisLoad) {
+        sharedLoad = null;
+      }
+
+      return result;
+    },
+    function (error) {
+
+      if (sharedLoad === thisLoad) {
+        sharedLoad = null;
+      }
+
+      throw error;
+    }
+  );
+
+  sharedLoad = thisLoad;
+
+  /* keep the shared result for 60 seconds, then allow a fresh request */
+  setTimeout(function () {
+    if (sharedLoad === thisLoad) {
+      sharedLoad = null;
+    }
+  }, 60000);
+
+  return thisLoad;
+}
+
 
   /* ==========================================================
      GET PRODUCTS
