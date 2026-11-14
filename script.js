@@ -305,6 +305,7 @@
           '<a ' +
             'class="icon-link" ' +
             'id="account-link" ' +
+            'aria-label="Account" ' +
             'href="login.html">' +
 
             ICON.user +
@@ -2838,4 +2839,16 @@
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watch);
   else watch();
+})();
+
+/* Performance: banner / showcase animations start AFTER the page has
+   finished loading, so they do not compete with the first paint. */
+(function () {
+  function ready() {
+    setTimeout(function () {
+      document.documentElement.classList.add('anim-ready');
+    }, 250);
+  }
+  if (document.readyState === 'complete') ready();
+  else window.addEventListener('load', ready);
 })();
