@@ -5956,3 +5956,39 @@ footer a:hover {
 @media (max-width: 760px) {
   .sc-fx.sc-blur { display: none; }
 }
+
+
+/* ==========================================================
+   PERFORMANCE B-1  (no visible design change)
+   1. below-the-fold sections are drawn only when they come near
+      the screen
+   2. banner / showcase animations wait until the page is loaded
+   3. bigger touch area for the small banner dots
+   ========================================================== */
+
+.trust-strip ~ .section,
+.trust-strip ~ .section-alt,
+.trust-strip ~ .market-category-section,
+.trust-strip ~ .market-brands-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 640px;
+}
+
+html:not(.anim-ready) .reel *,
+html:not(.anim-ready) .reel *::before,
+html:not(.anim-ready) .reel *::after,
+html:not(.anim-ready) .showcase *,
+html:not(.anim-ready) .showcase *::before,
+html:not(.anim-ready) .showcase *::after {
+  animation-play-state: paused !important;
+}
+
+.reel-dot {
+  position: relative;
+}
+
+.reel-dot::after {
+  content: "";
+  position: absolute;
+  inset: -12px -6px;
+}
