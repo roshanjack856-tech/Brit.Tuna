@@ -2864,10 +2864,99 @@
     l.href = 'features.css';
     document.head.appendChild(l);
 
+    var f = document.createElement('link');
+    f.rel = 'stylesheet';
+    f.href = 'https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&display=swap';
+    document.head.appendChild(f);
+
+    var m = document.createElement('link');
+    m.rel = 'stylesheet';
+    m.href = 'market-ui.css';
+    document.head.appendChild(m);
+
     var s = document.createElement('script');
     s.src = 'features.js';
     document.body.appendChild(s);
+
+    var u = document.createElement('script');
+    u.src = 'market-ui.js';
+    document.body.appendChild(u);
   }
   if (document.readyState === 'complete') loadFeatures();
   else window.addEventListener('load', loadFeatures);
+})();
+
+
+/* ==========================================================
+   AUTO LITE MODE
+   If the device is slow (or busy zooming / scrolling) the endless
+   decorative motion stops by itself. Nothing else changes.
+   ?lite=1 forces it, ?lite=0 turns it off.
+========================================================== */
+(function () {
+  var html = document.documentElement;
+  var KEY = 'bt_lite';
+
+  function setLite(on) {
+    html.classList.toggle('perf-lite', on);
+    try { sessionStorage.setItem(KEY, on ? '1' : '0'); } catch (e) {}
+  }
+
+  var forced = null;
+  try {
+    var q = new URLSearchParams(location.search).get('lite');
+    if (q === '1') forced = true;
+    if (q === '0') forced = false;
+  } catch (e) {}
+
+  if (forced !== null) { setLite(forced); return; }
+
+  var saved = null;
+  try { saved = sessionStorage.getItem(KEY); } catch (e) {}
+  if (saved === '1') { html.classList.add('perf-lite'); return; }
+  if (saved === '0') { return; }
+
+  var nav = navigator;
+  if (
+    (nav.connection && nav.connection.saveData) ||
+    (nav.hardwareConcurrency && nav.hardwareConcurrency <= 2) ||
+    (nav.deviceMemory && nav.deviceMemory <= 2)
+  ) {
+    setLite(true);
+    return;
+  }
+
+  function probe(ms, limit, onSlow) {
+    var last = 0, n = 0, sum = 0, start = 0;
+    function frame(t) {
+      if (!start) start = t;
+      if (last) {
+        var d = t - last;
+        if (d < 400) { sum += d; n++; }
+      }
+      last = t;
+      if (t - start < ms) {
+        requestAnimationFrame(frame);
+      } else if (n > 10 && sum / n > limit) {
+        onSlow();
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function startProbes() {
+    setTimeout(function () {
+      probe(1500, 26, function () { setLite(true); });
+    }, 1200);
+
+    var scrolled = false;
+    window.addEventListener('scroll', function () {
+      if (scrolled) return;
+      scrolled = true;
+      probe(1500, 32, function () { setLite(true); });
+    }, { passive: true });
+  }
+
+  if (document.readyState === 'complete') startProbes();
+  else window.addEventListener('load', startProbes);
 })();
