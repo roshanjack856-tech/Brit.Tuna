@@ -9,7 +9,7 @@
   var P = window.BTProducts;
   var path = location.pathname;
   var page = (path.split('/').pop() || 'index.html').toLowerCase();
-  var SHOW_STRIP = ['', 'index.html', 'shop.html', 'products.html', 'product-details.html', 'wishlist.html'];
+  var SHOW_STRIP = [];
 
   function $(s, r) { return (r || document).querySelector(s); }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
