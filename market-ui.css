@@ -533,3 +533,11 @@ body.bk-on #category-tabs { display: none; }
 body:not([data-page="home"]) .bg-slides{display:none !important}
 
 .mk-cat-ico.has-img::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--img) center/cover no-repeat}
+
+/* remove static yellow top line */
+.topbar{display:none !important}
+
+.mk-marquee{background:#ffc700;border:0;padding:8px 0}
+.mk-marquee-set span::after{background:#111}
+
+.mk-marquee{background:#fff;border-bottom:1px solid #eee}
