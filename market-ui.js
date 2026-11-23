@@ -262,21 +262,21 @@
     paintRail();
   }
 
-  /* home: background photo only behind the first screen */
+  /* home: background photo only behind the hero; it scrolls away with it */
   function heroBg() {
     if (document.body.getAttribute('data-page') !== 'home') return;
     var hero = document.querySelector('.hero');
     if (!hero) return;
-    var ticking = false;
-    function check() {
-      ticking = false;
-      var past = hero.getBoundingClientRect().bottom < (window.innerHeight * 0.35);
-      document.body.classList.toggle('bk-past-hero', past);
+    function size() {
+      var r = hero.getBoundingClientRect();
+      var h = Math.max(0, Math.round(r.bottom + (window.pageYOffset || 0)));
+      document.documentElement.style.setProperty('--hero-h', h + 'px');
     }
-    window.addEventListener('scroll', function () {
-      if (!ticking) { ticking = true; requestAnimationFrame(check); }
-    }, { passive: true });
-    check();
+    size();
+    window.addEventListener('resize', size);
+    window.addEventListener('load', size);
+    setTimeout(size, 600);
+    setTimeout(size, 1800);
   }
 
   function start() {
