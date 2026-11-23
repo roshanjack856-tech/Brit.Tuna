@@ -544,7 +544,6 @@ body:not([data-page="home"]) .bg-slides{display:none !important}
 
 #mk-cats,.mk-cats{display:none !important}
 
-/* home: background photo only on the first screen */
-body[data-page="home"] .bg-slides{transition:opacity .35s ease}
-body[data-page="home"].bk-past-hero .bg-slides{opacity:0;visibility:hidden}
-body[data-page="home"].bk-past-hero{background:#fff}
+/* home: background photo only behind the hero (scrolls away with it) */
+body[data-page="home"]{background:#fff}
+body[data-page="home"] .bg-slides{position:absolute !important;top:0;left:0;right:0;bottom:auto !important;inset:auto !important;top:0 !important;left:0 !important;right:0 !important;width:100%;height:var(--hero-h,640px);overflow:hidden;contain:none !important;will-change:auto !important}
