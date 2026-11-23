@@ -32,12 +32,23 @@
     var cats = catList();
     if (!cats.length) return;
 
+    var U = 'https://images.unsplash.com/photo-';
+    var PH = {
+      'all': U + '1542838132-92c53300491e',
+      'peanuts': U + '1567892320421-1c657571ea4a',
+      'mango-pickles': U + '1601050690597-df0568f70950',
+      'red-chilli': U + '1588252303782-cb80119abd6d',
+      'rice': U + '1586201375761-83865001e31c'
+    };
+    function ph(id) { return PH[id] ? PH[id] + '?auto=format&fit=crop&w=240&q=70' : ''; }
     var items = cats.map(function (c) {
+      var img = ph(c.id);
       return '<a class="mk-cat" href="shop.html?category=' + encodeURIComponent(c.id) + '">' +
-        '<span class="mk-cat-ico" style="background:' + esc(c.color) + '" aria-hidden="true">' + esc(c.icon) + '</span>' +
+        '<span class="mk-cat-ico' + (img ? ' has-img' : '') + '" style="background-color:' + esc(c.color) +
+        (img ? ';--img:url(\'' + img + '\')' : '') + '" aria-hidden="true">' + esc(c.icon) + '</span>' +
         '<span>' + esc(c.name) + '</span></a>';
     }).join('');
-    var all = '<a class="mk-cat" href="shop.html"><span class="mk-cat-ico" aria-hidden="true">🛍️</span><span>All</span></a>';
+    var all = '<a class="mk-cat" href="shop.html"><span class="mk-cat-ico has-img" style="--img:url(\'' + ph('all') + '\')" aria-hidden="true">🛍️</span><span>All</span></a>';
 
     var wrap = document.createElement('div');
     wrap.id = 'mk-cats';
@@ -45,6 +56,24 @@
     wrap.innerHTML = '<nav class="container mk-cats-inner" aria-label="Shop by category">' +
       '<div class="mk-cats-track">' + all + items + '</div></nav>';
     header.parentNode.insertBefore(wrap, header.nextSibling);
+  }
+
+  /* ---------- moving message bar (home page) ---------- */
+  function buildMarquee() {
+    if ($('#mk-marquee') || page !== 'index.html') return;
+    var header = $('#site-header');
+    if (!header || !header.firstChild) return;
+    var msgs = ['Cash on Delivery available', 'Fresh peanuts, mango pickles, red chilli &amp; rice',
+      'Direct from sellers \u2022 Quality checked', 'Order on WhatsApp for any help'];
+    var one = msgs.map(function (m) { return '<span>' + m + '</span>'; }).join('');
+    var bar = document.createElement('div');
+    bar.id = 'mk-marquee';
+    bar.className = 'mk-marquee';
+    bar.setAttribute('aria-label', 'Store announcements');
+    bar.innerHTML = '<div class="mk-marquee-track"><div class="mk-marquee-set">' + one +
+      '</div><div class="mk-marquee-set" aria-hidden="true">' + one + '</div></div>';
+    var strip = $('#mk-cats');
+    (strip || header).insertAdjacentElement('afterend', bar);
   }
 
   /* ---------- Blinkit-style list: category rail + compact grid ---------- */
@@ -228,6 +257,7 @@
 
   function run() {
     buildStrip();
+    buildMarquee();
     buildList();
     buildQuickFilters();
     decorate();
