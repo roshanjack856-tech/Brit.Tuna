@@ -514,3 +514,22 @@ body.bk-on #category-tabs { display: none; }
 
 .hero .btn-red, .hero-actions .btn-red { background: var(--bk-yellow); color: #111; }
 .hero .btn-outline, .hero-actions .btn-outline { background: #fff; border-color: #fff; color: #111; }
+
+/* moving message bar */
+.mk-marquee{background:#fff3c4;border-top:1px solid #f0dc8a;border-bottom:1px solid #f0dc8a;overflow:hidden;white-space:nowrap;padding:9px 0;font-weight:600;font-size:14px;color:#111}
+.mk-marquee-track{display:flex;width:max-content;animation:mkScroll 28s linear infinite}
+.mk-marquee:hover .mk-marquee-track{animation-play-state:paused}
+.mk-marquee-set{display:flex;flex-shrink:0}
+.mk-marquee-set span{display:inline-flex;align-items:center;padding:0 22px}
+.mk-marquee-set span::after{content:"";width:7px;height:7px;border-radius:50%;background:#111;margin-left:44px}
+@keyframes mkScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.mk-marquee-track{animation:none}}
+@media (max-width:760px){.mk-marquee{font-size:13px;padding:7px 0}}
+
+/* real photos in category circles */
+.mk-cat-ico.has-img{position:relative;overflow:hidden;width:74px;height:74px;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+@media (max-width:760px){.mk-cat-ico.has-img{width:60px;height:60px}}
+/* no page background photos except home */
+body:not([data-page="home"]) .bg-slides{display:none !important}
+
+.mk-cat-ico.has-img::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--img) center/cover no-repeat}
