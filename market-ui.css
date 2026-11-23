@@ -543,3 +543,8 @@ body:not([data-page="home"]) .bg-slides{display:none !important}
 .mk-marquee{background:#fff;border-bottom:1px solid #eee}
 
 #mk-cats,.mk-cats{display:none !important}
+
+/* home: background photo only on the first screen */
+body[data-page="home"] .bg-slides{transition:opacity .35s ease}
+body[data-page="home"].bk-past-hero .bg-slides{opacity:0;visibility:hidden}
+body[data-page="home"].bk-past-hero{background:#fff}
