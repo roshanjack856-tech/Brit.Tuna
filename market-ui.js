@@ -60,11 +60,10 @@
 
   /* ---------- moving message bar (home page) ---------- */
   function buildMarquee() {
-    if ($('#mk-marquee') || page !== 'index.html') return;
+    if ($('#mk-marquee')) return;
     var header = $('#site-header');
     if (!header || !header.firstChild) return;
-    var msgs = ['Cash on Delivery available', 'Fresh peanuts, mango pickles, red chilli &amp; rice',
-      'Direct from sellers \u2022 Quality checked', 'Order on WhatsApp for any help'];
+    var msgs = ['Cash on Delivery available', 'Fresh peanuts, mango pickles, red chilli &amp; rice', 'Direct from sellers \u2022 Quality checked', 'Order on WhatsApp for any help'];
     var one = msgs.map(function (m) { return '<span>' + m + '</span>'; }).join('');
     var bar = document.createElement('div');
     bar.id = 'mk-marquee';
@@ -72,8 +71,7 @@
     bar.setAttribute('aria-label', 'Store announcements');
     bar.innerHTML = '<div class="mk-marquee-track"><div class="mk-marquee-set">' + one +
       '</div><div class="mk-marquee-set" aria-hidden="true">' + one + '</div></div>';
-    var strip = $('#mk-cats');
-    (strip || header).insertAdjacentElement('afterend', bar);
+    header.parentNode.insertBefore(bar, header);
   }
 
   /* ---------- Blinkit-style list: category rail + compact grid ---------- */
