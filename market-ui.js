@@ -262,7 +262,25 @@
     paintRail();
   }
 
+  /* home: background photo only behind the first screen */
+  function heroBg() {
+    if (document.body.getAttribute('data-page') !== 'home') return;
+    var hero = document.querySelector('.hero');
+    if (!hero) return;
+    var ticking = false;
+    function check() {
+      ticking = false;
+      var past = hero.getBoundingClientRect().bottom < (window.innerHeight * 0.35);
+      document.body.classList.toggle('bk-past-hero', past);
+    }
+    window.addEventListener('scroll', function () {
+      if (!ticking) { ticking = true; requestAnimationFrame(check); }
+    }, { passive: true });
+    check();
+  }
+
   function start() {
+    heroBg();
     run();
     window.addEventListener('resize', headerHeight);
     setTimeout(headerHeight, 400);
