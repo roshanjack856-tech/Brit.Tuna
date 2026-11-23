@@ -2504,6 +2504,9 @@
 
   function setupPageBackground() {
 
+    /* Background photos: home page only */
+    if (document.body.getAttribute('data-page') !== 'home') { return; }
+
     var slides =
       getPageSlides();
 
