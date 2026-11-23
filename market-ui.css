@@ -541,3 +541,5 @@ body:not([data-page="home"]) .bg-slides{display:none !important}
 .mk-marquee-set span::after{background:#111}
 
 .mk-marquee{background:#fff;border-bottom:1px solid #eee}
+
+#mk-cats,.mk-cats{display:none !important}
