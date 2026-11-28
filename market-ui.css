@@ -574,3 +574,83 @@ body[data-page="home"] .section-alt,
 body[data-page="home"] .market-category-section,
 body[data-page="home"] .market-brands-section{background-color:transparent}
 body[data-page="home"] .section-alt{background:rgba(255,243,196,.45)}
+
+/* home: festive purple + yellow glow background below the hero */
+body[data-page="home"]{
+  background-color:#2b0b40;
+  background-image:
+    radial-gradient(circle at 12% 10%, rgba(255,199,0,.38) 0, rgba(255,199,0,0) 16%),
+    radial-gradient(circle at 90% 22%, rgba(255,199,0,.30) 0, rgba(255,199,0,0) 14%),
+    radial-gradient(circle at 20% 48%, rgba(255,120,200,.22) 0, rgba(255,120,200,0) 18%),
+    radial-gradient(circle at 88% 62%, rgba(255,199,0,.26) 0, rgba(255,199,0,0) 15%),
+    radial-gradient(circle at 10% 88%, rgba(255,199,0,.30) 0, rgba(255,199,0,0) 16%),
+    radial-gradient(circle at 50% 100%, rgba(255,199,0,.20) 0, rgba(255,199,0,0) 30%),
+    linear-gradient(180deg, #3a0f55 0%, #2b0b40 45%, #1f0630 100%);
+  background-size:auto;
+  background-repeat:no-repeat;
+}
+body[data-page="home"] .section-alt{background:rgba(255,255,255,.06)}
+body[data-page="home"] .trust-strip ~ footer,
+body[data-page="home"] footer{position:relative}
+
+/* home: black + yellow sale-poster background below the hero */
+body[data-page="home"]{
+  background-color:#111;
+  background-image:
+    radial-gradient(circle at 100% 0, #ffc700 0, #ffc700 130px, transparent 131px),
+    radial-gradient(circle at 0 38%, #ffc700 0, #ffc700 90px, transparent 91px),
+    radial-gradient(circle at 100% 72%, #ffc700 0, #ffc700 110px, transparent 111px),
+    radial-gradient(circle at 0 100%, #ffc700 0, #ffc700 140px, transparent 141px),
+    repeating-linear-gradient(135deg, rgba(255,199,0,.07) 0 2px, transparent 2px 26px),
+    radial-gradient(rgba(255,199,0,.16) 1.3px, transparent 1.4px);
+  background-size:auto,auto,auto,auto,auto,22px 22px;
+  background-repeat:no-repeat,no-repeat,no-repeat,no-repeat,repeat,repeat;
+}
+body[data-page="home"] .section-alt{background:rgba(255,255,255,.05)}
+
+/* home: clean real-ecommerce background (light grey page, white cards) */
+body[data-page="home"]{
+  background:#f1f2f4 !important;
+  background-image:none !important;
+}
+body[data-page="home"] .section,
+body[data-page="home"] .section-alt,
+body[data-page="home"] .market-category-section,
+body[data-page="home"] .market-brands-section{background:transparent}
+body[data-page="home"] .section > .container,
+body[data-page="home"] .section-alt > .container,
+body[data-page="home"] .market-category-section > .container,
+body[data-page="home"] .market-brands-section > .container{background:#fff;border-radius:16px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+
+/* ===== product animations ===== */
+@keyframes mkUp{from{opacity:0;transform:translateY(26px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes mkFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes mkShine{0%{transform:translateX(-120%) skewX(-20deg)}60%,100%{transform:translateX(260%) skewX(-20deg)}}
+@keyframes mkPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,199,0,.55)}50%{box-shadow:0 0 0 7px rgba(255,199,0,0)}}
+.mk-rv{opacity:0}
+.mk-rv.mk-in{animation:mkUp .6s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--d,0ms)}
+
+.product-card{transition:transform .25s ease,box-shadow .25s ease}
+.product-card:hover{transform:translateY(-6px);box-shadow:0 14px 28px rgba(0,0,0,.16)}
+.product-card .pc-img img{transition:transform .5s ease}
+.product-card:hover .pc-img img{transform:scale(1.08)}
+.product-card .pc-image-wrap{position:relative;overflow:hidden}
+.product-card .pc-image-wrap::after{content:"";position:absolute;top:0;left:0;width:40%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);transform:translateX(-120%) skewX(-20deg);pointer-events:none}
+.product-card:hover .pc-image-wrap::after{animation:mkShine .9s ease}
+.product-card .pc-badge{animation:mkPulse 2.2s ease-in-out infinite}
+.product-card .js-add-card{transition:transform .15s ease,background .2s ease,color .2s ease}
+.product-card .js-add-card:hover{transform:scale(1.06)}
+.product-card .js-add-card:active{transform:scale(.94)}
+
+.offer-tile{transition:transform .3s ease,box-shadow .3s ease}
+.offer-tile:hover{transform:translateY(-6px) scale(1.02);box-shadow:0 16px 30px rgba(0,0,0,.28)}
+.offer-tile img{animation:mkFloat 3.4s ease-in-out infinite}
+.offer-tile:nth-child(2n) img{animation-delay:.5s}
+.offer-tile:nth-child(3n) img{animation-delay:1s}
+.offer-pct{animation:mkPulse 2.2s ease-in-out infinite}
+
+@media (prefers-reduced-motion:reduce){
+  .mk-rv{opacity:1}.mk-rv.mk-in,.offer-tile img,.offer-pct,.product-card .pc-badge{animation:none}
+  .product-card:hover,.offer-tile:hover{transform:none}
+}
