@@ -251,6 +251,32 @@
     q.click();
   }, true);
 
+  /* ---------- product animations: reveal on scroll ---------- */
+  var rvObs = null;
+  function reveal() {
+    var nodes = document.querySelectorAll('.product-card:not([data-rv]), .offer-tile:not([data-rv])');
+    if (!nodes.length) return;
+    if (!('IntersectionObserver' in window) ||
+        (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+      for (var k = 0; k < nodes.length; k++) nodes[k].setAttribute('data-rv', '1');
+      return;
+    }
+    if (!rvObs) {
+      rvObs = new IntersectionObserver(function (es) {
+        es.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('mk-in'); rvObs.unobserve(e.target); }
+        });
+      }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+    }
+    for (var i = 0; i < nodes.length; i++) {
+      var n = nodes[i];
+      n.setAttribute('data-rv', '1');
+      n.style.setProperty('--d', (i % 6) * 70 + 'ms');
+      n.classList.add('mk-rv');
+      rvObs.observe(n);
+    }
+  }
+
   /* ---------- start ---------- */
 
   function run() {
@@ -259,6 +285,7 @@
     buildList();
     buildQuickFilters();
     decorate();
+    reveal();
     paintRail();
   }
 
